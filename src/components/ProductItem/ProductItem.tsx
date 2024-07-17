@@ -66,7 +66,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   setError,
   addToCart,
 }: ProductProps) => {
-  const { product, productView } = item;
+  const { product, productView, labels } = item;
   const [selectedSwatch, setSelectedSwatch] = useState('');
   const [imagesFromRefinedProduct, setImagesFromRefinedProduct] = useState<
     ProductViewMedia[] | null
@@ -82,6 +82,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   } = useStore();
 
   const { screenSize } = useSensor();
+
+  console.log(labels)
 
   const handleMouseOver = () => {
     setIsHovering(true);
@@ -107,7 +109,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const productImageArray = imagesFromRefinedProduct
     ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
     : getProductImagesFromAttribute(item);
-    
+
   let optimizedImageArray: { src: string; srcset: any }[] = [];
 
   if (optimizeImages) {
@@ -333,6 +335,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+            {/* add label here */}
             {productImageArray.length ? (
               <ImageHover
                 images={
