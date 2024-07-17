@@ -13,19 +13,27 @@ import { updateSearchInputCtx, updateSearchResultsCtx } from '../context';
 import {
   AttributeMetadataResponse,
   ClientProps,
+  Label,
   MagentoHeaders,
+  Product,
   ProductSearchQuery,
   ProductSearchResponse,
   RefinedProduct,
   RefineProductQuery,
 } from '../types/interface';
 import { SEARCH_UNIT_ID } from '../utils/constants';
+import { getGraphQL } from './graphql';
 import {
   ATTRIBUTE_METADATA_QUERY,
   CATEGORY_QUERY,
+  GET_PRODUCT_LABELS_QUERY,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
 } from './queries';
+
+interface LabelLookup {
+  [key: number]: Label[];
+}
 
 const getHeaders = (headers: MagentoHeaders) => {
   return {
@@ -116,20 +124,62 @@ const getProductSearch = async ({
     sort
   );
 
-  window.adobeDataLayer.push((dl : any) => {
-    dl.push({ event: 'search-request-sent', eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID } })
-  })
+  window.adobeDataLayer.push((dl: any) => {
+    dl.push({
+      event: 'search-request-sent',
+      eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+    });
+  });
   // ======  end of data collection =====
 
-  const query = categorySearch && categoryId ? CATEGORY_QUERY : PRODUCT_SEARCH_QUERY;
+  const query =
+    categorySearch && categoryId ? CATEGORY_QUERY : PRODUCT_SEARCH_QUERY;
+
   const results = await fetch(apiUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      query: query.replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ').replace(/\s\s+/g, ' '),
+      query: query
+        .replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ')
+        .replace(/\s\s+/g, ' '),
       variables: { ...variables },
     }),
   }).then((res) => res.json());
+
+  const items = results?.data?.productSearch?.items ?? [];
+
+  const productIds = items.map((item: Product) => item.product.id);
+
+  const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
+    productIds,
+    mode: 'PRODUCT',
+  });
+
+  const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+
+  const labelLookup: LabelLookup = labels.reduce(
+    (acc: LabelLookup, label: Label) => {
+      if (!acc[label.product_id]) {
+        acc[label.product_id] = [];
+      }
+      acc[label.product_id].push(label);
+      return acc;
+    },
+    {}
+  );
+
+  const itemsWithLabels = items.map((item: Product) => {
+    const productId = item.product.id;
+    return {
+      ...item,
+      labels: labelLookup[productId] || [],
+    };
+  });
+
+  // Replace the data in results.data.productSearch.items with itemsWithLabels
+  if (results?.data?.productSearch) {
+    results.data.productSearch.items = itemsWithLabels;
+  }
 
   // ======  initialize data collection =====
   updateSearchResultsCtx(
@@ -138,18 +188,27 @@ const getProductSearch = async ({
     results?.data?.productSearch
   );
 
-  window.adobeDataLayer.push((dl : any) => {
-    dl.push({ event: 'search-response-received', eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID } })
+  window.adobeDataLayer.push((dl: any) => {
+    dl.push({
+      event: 'search-response-received',
+      eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+    });
   });
 
   if (categorySearch && categoryId) {
-    window.adobeDataLayer.push((dl : any) => {
+    window.adobeDataLayer.push((dl: any) => {
       dl.push({ categoryContext: results?.data?.categories?.[0] });
-      dl.push({ event: 'category-results-view', eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID } })
+      dl.push({
+        event: 'category-results-view',
+        eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+      });
     });
   } else {
-    window.adobeDataLayer.push((dl : any) => {
-      dl.push({ event: 'search-results-view', eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID } })
+    window.adobeDataLayer.push((dl: any) => {
+      dl.push({
+        event: 'search-results-view',
+        eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+      });
     });
   }
   // ======  end of data collection =====
