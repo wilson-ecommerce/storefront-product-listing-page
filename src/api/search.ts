@@ -152,7 +152,7 @@ const getProductSearch = async ({
 
   const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
     productIds,
-    mode: 'PRODUCT',
+    mode: 'CATEGORY',
   });
 
   const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
