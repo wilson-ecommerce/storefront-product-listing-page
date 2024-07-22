@@ -31,7 +31,8 @@ import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
-import ProductLabel from '../ProductLabel/ProductLabel';
+import ProductLabelPrimary from '../ProductLabel/ProductLabelPrimary';
+import ProductLabelSecondary from '../ProductLabel/ProductLabelSecondary';
 import { SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
@@ -67,7 +68,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   setError,
   addToCart,
 }: ProductProps) => {
-  const { product, productView, labels } = item;
+  const { product, productView, labels = [] } = item;
   const [selectedSwatch, setSelectedSwatch] = useState('');
   const [imagesFromRefinedProduct, setImagesFromRefinedProduct] = useState<
     ProductViewMedia[] | null
@@ -206,8 +207,80 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     updateCart(selectedVariants);
   };
 
-  // label logic
-  console.log(labels)
+  // const mockLabels = [
+  //   {
+  //     label_id: 31,
+  //     product_id: 173269,
+  //     position: 'top-right',
+  //     name: 'Wil - New',
+  //     txt: 'New',
+  //     image: null,
+  //     size: '',
+  //     style: '',
+  //     is_visible: true,
+  //     redirect_url: '',
+  //     alt_tag: '2024 A2K 1786 11.5” Infield Baseball Glove',
+  //     additional_data: {
+  //       place: 'gallery',
+  //       icon: '',
+  //       text_color: '#000000',
+  //       background_color: '#ffffff',
+  //     },
+  //   },
+  //   {
+  //     label_id: 61,
+  //     product_id: 173269,
+  //     position: 'top-left',
+  //     name: 'Wil - Custom Option - Zone 2',
+  //     txt: 'Customizable',
+  //     image: null,
+  //     size: '',
+  //     style: '',
+  //     is_visible: true,
+  //     redirect_url: '',
+  //     alt_tag: '2023 A2K 1786 11.5” Infield Baseball Glove',
+  //     additional_data: {
+  //       place: 'undername',
+  //       icon: '',
+  //       text_color: '#d2e6c9',
+  //       background_color: '#f0f0f0',
+  //     },
+  //   },
+  //   {
+  //     label_id: 30,
+  //     product_id: 173269,
+  //     position: 'top-right',
+  //     name: 'Wil - Out of Stock (Model)',
+  //     txt: 'Out of Stock',
+  //     image: null,
+  //     size: '',
+  //     style: '',
+  //     is_visible: true,
+  //     redirect_url: '',
+  //     alt_tag: '2022 A2K 1786 11.5” Infield Baseball Glove',
+  //     additional_data: {
+  //       place: 'price',
+  //       icon: '',
+  //       text_color: '#000000',
+  //       background_color: '#ffffff',
+  //     },
+  //   },
+  // ];
+
+  // Filter for "price"
+  const priceLabels = labels.filter(
+    (label) => label.additional_data.place === 'price'
+  );
+
+  // Filter for "gallery"
+  const galleryLabels = labels.filter(
+    (label) => label.additional_data.place === 'gallery'
+  );
+
+  // Filter for "undername"
+  const undernameLabels = labels.filter(
+    (label) => label.additional_data.place === 'under_name'
+  );
 
   if (listview && viewType === 'listview') {
     return (
@@ -344,11 +417,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden target">
             {/* add label here */}
-            {labels?.map((label) => (
-              <ProductLabel
-                key={label.label_id + label.product_id}
-                label={label}
-              />
+            {galleryLabels.map((label) => (
+              <ProductLabelPrimary key={label.alt_tag} label={label} />
             ))}
             {productImageArray.length ? (
               <ImageHover
@@ -433,7 +503,11 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
             />
+            {undernameLabels.map((label) => (
+              <ProductLabelSecondary key={label.alt_tag} label={label} />
+            ))}
           </div>
         </div>
       </a>
