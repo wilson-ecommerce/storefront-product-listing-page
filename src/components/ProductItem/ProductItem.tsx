@@ -207,65 +207,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     updateCart(selectedVariants);
   };
 
-  // const mockLabels = [
-  //   {
-  //     label_id: 31,
-  //     product_id: 173269,
-  //     position: 'top-right',
-  //     name: 'Wil - New',
-  //     txt: 'New',
-  //     image: null,
-  //     size: '',
-  //     style: '',
-  //     is_visible: true,
-  //     redirect_url: '',
-  //     alt_tag: '2024 A2K 1786 11.5” Infield Baseball Glove',
-  //     additional_data: {
-  //       place: 'gallery',
-  //       icon: '',
-  //       text_color: '#000000',
-  //       background_color: '#ffffff',
-  //     },
-  //   },
-  //   {
-  //     label_id: 61,
-  //     product_id: 173269,
-  //     position: 'top-left',
-  //     name: 'Wil - Custom Option - Zone 2',
-  //     txt: 'Customizable',
-  //     image: null,
-  //     size: '',
-  //     style: '',
-  //     is_visible: true,
-  //     redirect_url: '',
-  //     alt_tag: '2023 A2K 1786 11.5” Infield Baseball Glove',
-  //     additional_data: {
-  //       place: 'undername',
-  //       icon: '',
-  //       text_color: '#d2e6c9',
-  //       background_color: '#f0f0f0',
-  //     },
-  //   },
-  //   {
-  //     label_id: 30,
-  //     product_id: 173269,
-  //     position: 'top-right',
-  //     name: 'Wil - Out of Stock (Model)',
-  //     txt: 'Out of Stock',
-  //     image: null,
-  //     size: '',
-  //     style: '',
-  //     is_visible: true,
-  //     redirect_url: '',
-  //     alt_tag: '2022 A2K 1786 11.5” Infield Baseball Glove',
-  //     additional_data: {
-  //       place: 'price',
-  //       icon: '',
-  //       text_color: '#000000',
-  //       background_color: '#ffffff',
-  //     },
-  //   },
-  // ];
 
   // Filter for "price"
   const priceLabels = labels.filter(

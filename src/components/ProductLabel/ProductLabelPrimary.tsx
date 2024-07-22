@@ -21,7 +21,13 @@ export const ProductLabelPrimary: FunctionComponent<ProductProps> = ({
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
 
   return (
-    <div className={`${baseClass}`}>
+    <div
+      className={`${baseClass}`}
+      style={{
+        color: label.additional_data.text_color,
+        backgroundColor: label.additional_data.background_color,
+      }}
+    >
       <p className="text-[12px] font-medium label-line">{textToRender}</p>
     </div>
   );
