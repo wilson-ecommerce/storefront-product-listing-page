@@ -368,7 +368,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                     ? optimizedImageArray
                     : productImageArray
                 }
-                // productName={product.name}
               />
             ) : (
               <NoImage
