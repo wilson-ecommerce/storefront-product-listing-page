@@ -135,7 +135,7 @@ const getProductSearch = async ({
   const query =
     categorySearch && categoryId ? CATEGORY_QUERY : PRODUCT_SEARCH_QUERY;
 
-  const fetchProducts = fetch(apiUrl, {
+  const results = await fetch(apiUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -146,23 +146,16 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  let getProductLabels = null;
-
-  const results = await fetchProducts;
   const items = results?.data?.productSearch?.items ?? [];
+
   const productIds = items.map((item: Product) => item.product.id);
 
-  if (productIds.length > 0) {
-    getProductLabels = getGraphQL(GET_PRODUCT_LABELS_QUERY, {
-      productIds,
-      mode: 'CATEGORY',
-    }).then((res) => res?.data?.wilsonAmLabelProvider.items ?? []);
-  }
+  const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
+    productIds,
+    mode: 'CATEGORY',
+  });
 
-  // Wait for both promises to resolve
-  const [productLabelsResults] = await Promise.all([getProductLabels]);
-
-  const labels = productLabelsResults || [];
+  const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
 
   const labelLookup: LabelLookup = labels.reduce(
     (acc: LabelLookup, label: Label) => {

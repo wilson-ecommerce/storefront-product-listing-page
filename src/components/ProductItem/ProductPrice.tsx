@@ -8,7 +8,6 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { ReactNode } from 'preact/compat';
 import { useContext } from 'preact/hooks';
 
 import { TranslationContext } from '../../context/translation';
