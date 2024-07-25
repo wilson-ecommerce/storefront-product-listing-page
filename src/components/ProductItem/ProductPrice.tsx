@@ -11,7 +11,7 @@ import { FunctionComponent } from 'preact';
 import { useContext } from 'preact/hooks';
 
 import { TranslationContext } from '../../context/translation';
-import { Product, RefinedProduct } from '../../types/interface';
+import { Label, Product, RefinedProduct } from '../../types/interface';
 import { getProductPrice } from '../../utils/getProductPrice';
 
 export interface ProductPriceProps {
@@ -24,6 +24,7 @@ export interface ProductPriceProps {
   discount: boolean | undefined;
   currencySymbol: string;
   currencyRate?: string;
+  priceLabel?: Label;
 }
 
 export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
@@ -36,6 +37,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
   discount,
   currencySymbol,
   currencyRate,
+  priceLabel,
 }: ProductPriceProps) => {
   const translation = useContext(TranslationContext);
   let price;
@@ -119,9 +121,9 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
     ) : (
       getProductPrice(item, currencySymbol, currencyRate, false, true)
     );
-    const discountedPriceTranslation = translation.ProductCard.asLowAs;
-    const discountedPriceTranslationOrder =
-      discountedPriceTranslation.split('{discountPrice}');
+    // const discountedPriceTranslation = translation.ProductCard.asLowAs;
+    // const discountedPriceTranslationOrder =
+    //   discountedPriceTranslation.split('{discountPrice}');
     return discountPrice;
     // return discountedPriceTranslationOrder.map((word: string, index: any) =>
     //   word === '' ? (
@@ -136,6 +138,23 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
     //   )
     // );
   };
+
+  const getPriceLabel = () => {
+    if (priceLabel) {
+      return <span className="ml-2 text-neutral-700">{priceLabel.txt}</span>;
+    }
+  };
+
+  // const renderPriceWithLabel = (price: string | ReactNode) => {
+  //   const priceClass = priceLabel ? 'line-through' : '';
+
+  //   return (
+  //     <span className="price-wrapper">
+  //       <span className={priceClass}>{price}</span>
+  //       {priceLabel && <span>{priceLabel.txt}</span>}
+  //     </span>
+  //   );
+  // };
 
   return (
     <>
@@ -165,6 +184,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
                     true
                   )}
                 </span>
+                {getPriceLabel()}
               </p>
             )}
 
@@ -182,6 +202,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
                   false,
                   true
                 )}
+                {getPriceLabel()}
               </p>
             )}
 
@@ -189,6 +210,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
             <div className="ds-sdk-product-price--bundle">
               <p className="mt-xs font-headline-4-default">
                 {getBundledPrice(item, currencySymbol, currencyRate)}
+                {getPriceLabel()}
               </p>
             </div>
           )}
@@ -196,12 +218,14 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
           {isGrouped && (
             <p className="ds-sdk-product-price--grouped font-headline-4-strong">
               {getPriceFormat(item, currencySymbol, currencyRate, false)}
+              {getPriceLabel()}
             </p>
           )}
 
           {isGiftCard && (
             <p className="ds-sdk-product-price--gift-card font-headline-4-strong">
               {getPriceFormat(item, currencySymbol, currencyRate, true)}
+              {getPriceLabel()}
             </p>
           )}
 
@@ -210,6 +234,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
             (isConfigurable || isComplexProductView) && (
               <p className="ds-sdk-product-price--configurable font-headline-4-strong">
                 {getDiscountedPrice(discount)}
+                {getPriceLabel()}
               </p>
             )}
         </div>

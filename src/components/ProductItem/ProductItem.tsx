@@ -19,18 +19,20 @@ import {
   ProductViewMedia,
   RedirectRouteFunc,
   RefinedProduct,
-  SwatchValues
+  SwatchValues,
 } from '../../types/interface';
 import { SEARCH_UNIT_ID } from '../../utils/constants';
 import {
   generateOptimizedImages,
   getProductImagesFromAttribute,
-  getProductImageURLs
+  getProductImageURLs,
 } from '../../utils/getProductImage';
 import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
+import ProductLabelPrimary from '../ProductLabel/ProductLabelPrimary';
+import ProductLabelSecondary from '../ProductLabel/ProductLabelSecondary';
 import { SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
@@ -66,7 +68,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   setError,
   addToCart,
 }: ProductProps) => {
-  const { product, productView } = item;
+  const { product, productView, labels = [] } = item;
   const [selectedSwatch, setSelectedSwatch] = useState('');
   const [imagesFromRefinedProduct, setImagesFromRefinedProduct] = useState<
     ProductViewMedia[] | null
@@ -107,7 +109,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const productImageArray = imagesFromRefinedProduct
     ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
     : getProductImagesFromAttribute(item);
-    
+
   let optimizedImageArray: { src: string; srcset: any }[] = [];
 
   if (optimizeImages) {
@@ -132,7 +134,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const isGrouped = product?.__typename === 'GroupedProduct';
   const isGiftCard = product?.__typename === 'GiftCardProduct';
   const isConfigurable = product?.__typename === 'ConfigurableProduct';
-  const shouldShowAddToBagButton = isSportsWear(item) && (!screenSize.desktop || isHovering) && !showSizes;
+  const shouldShowAddToBagButton =
+    isSportsWear(item) && (!screenSize.desktop || isHovering) && !showSizes;
 
   const onProductClick = () => {
     window.adobeDataLayer.push((dl: any) => {
@@ -158,7 +161,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       await addToCart(productView.sku, selectedVariants, 1);
     } else {
       // Add to cart using GraphQL & Luma extension
-      const response = await addToCartGraphQL(productView.sku, selectedVariants);
+      const response = await addToCartGraphQL(
+        productView.sku,
+        selectedVariants
+      );
 
       if (
         response?.errors ||
@@ -172,13 +178,15 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       refreshCart && refreshCart();
       setCartUpdated(true);
     }
-  }
+  };
 
   const handleAddToCart = async (evt: any) => {
     evt.preventDefault();
     evt.stopPropagation();
 
-    const hasSizeOptions = productView?.options?.some((swatches) => swatches.title === SWATCH_SIZE);
+    const hasSizeOptions = productView?.options?.some(
+      (swatches) => swatches.title === SWATCH_SIZE
+    );
     if ((!listview || viewType !== 'listview') && hasSizeOptions) {
       setShowSizes(true);
       return;
@@ -198,6 +206,22 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
 
     updateCart(selectedVariants);
   };
+
+
+  // Filter for "price"
+  const priceLabels = labels.filter(
+    (label) => label.additional_data.place === 'price'
+  );
+
+  // Filter for "gallery"
+  const galleryLabels = labels.filter(
+    (label) => label.additional_data.place === 'gallery'
+  );
+
+  // Filter for "undername"
+  const undernameLabels = labels.filter(
+    (label) => label.additional_data.place === 'under_name'
+  );
 
   if (listview && viewType === 'listview') {
     return (
@@ -247,22 +271,22 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
 
               {/* Swatch */}
               <div className="ds-sdk-product-item__product-swatch flex flex-row mt-sm text-sm text-brand-700 pb-6">
-                {productView?.options?.map(
-                  (swatches) => {
-                      // swatches.id === 'color' && (
-                     return swatches.title === SWATCH_COLORS && (
-                        <SwatchButtonGroup
-                          key={productView?.sku}
-                          isSelected={isSelected}
-                          swatches={swatches.values ?? []}
-                          showMore={onProductClick}
-                          productUrl={productUrl as string}
-                          onClick={handleSelection}
-                          sku={productView?.sku}
-                        />
-                      )
-                  }
-                )}
+                {productView?.options?.map((swatches) => {
+                  // swatches.id === 'color' && (
+                  return (
+                    swatches.title === SWATCH_COLORS && (
+                      <SwatchButtonGroup
+                        key={productView?.sku}
+                        isSelected={isSelected}
+                        swatches={swatches.values ?? []}
+                        showMore={onProductClick}
+                        productUrl={productUrl as string}
+                        onClick={handleSelection}
+                        sku={productView?.sku}
+                      />
+                    )
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -332,7 +356,11 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         className="!text-brand-700 hover:no-underline hover:text-brand-700"
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
-          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden target">
+            {/* add label here */}
+            {galleryLabels.map((label) => (
+              <ProductLabelPrimary key={label.alt_tag} label={label} />
+            ))}
             {productImageArray.length ? (
               <ImageHover
                 images={
@@ -340,7 +368,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                     ? optimizedImageArray
                     : productImageArray
                 }
-                // productName={product.name}
               />
             ) : (
               <NoImage
@@ -348,50 +375,59 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               />
             )}
             <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px]">
-              {shouldShowAddToBagButton && <AddToCartButton onClick={handleAddToCart} />}
-              {showSizes && productView?.options?.map((swatches) => {
-                if (swatches.title === SWATCH_SIZE) {
-                  const swatchItems: SwatchValues[] = (swatches.values ?? []).map((swatch) => ({
-                    ...swatch,
-                    type: 'SIZE',
-                  }));
+              {shouldShowAddToBagButton && (
+                <AddToCartButton onClick={handleAddToCart} />
+              )}
+              {showSizes &&
+                productView?.options?.map((swatches) => {
+                  if (swatches.title === SWATCH_SIZE) {
+                    const swatchItems: SwatchValues[] = (
+                      swatches.values ?? []
+                    ).map((swatch) => ({
+                      ...swatch,
+                      type: 'SIZE',
+                    }));
 
-                  return (
-                    <SwatchButtonGroup
-                      key={product?.sku}
-                      isSelected={isSelected}
-                      swatches={swatchItems}
-                      showMore={onProductClick}
-                      productUrl={productUrl as string}
-                      onClick={handleSizeSelection}
-                      sku={product?.sku}
-                      maxSwatches={swatchItems.length}
-                    />
-                  );
-                }
-              })}
+                    return (
+                      <SwatchButtonGroup
+                        key={product?.sku}
+                        isSelected={isSelected}
+                        swatches={swatchItems}
+                        showMore={onProductClick}
+                        productUrl={productUrl as string}
+                        onClick={handleSizeSelection}
+                        sku={product?.sku}
+                        maxSwatches={swatchItems.length}
+                      />
+                    );
+                  }
+                })}
             </div>
           </div>
           <div className="flex flex-col px-xsmall py-small gap-2">
             {productView?.options && productView.options?.length > 0 && (
               <div className="ds-sdk-product-item__product-swatch flex flex-row text-sm text-brand-700">
-                {productView?.options?.map(
-                  (swatches) => {
-                    if ([SWATCH_COLORS, SWATCH_COLORS_TEAM, SWATCH_COLORS_TEAM_NAME].includes(swatches.title || '')) {
-                      return (
-                        <SwatchButtonGroup
-                          key={product?.sku}
-                          isSelected={isSelected}
-                          swatches={swatches.values ?? []}
-                          showMore={onProductClick}
-                          productUrl={productUrl as string}
-                          onClick={handleSelection}
-                          sku={product?.sku}
-                        />
-                      );
-                    }
+                {productView?.options?.map((swatches) => {
+                  if (
+                    [
+                      SWATCH_COLORS,
+                      SWATCH_COLORS_TEAM,
+                      SWATCH_COLORS_TEAM_NAME,
+                    ].includes(swatches.title || '')
+                  ) {
+                    return (
+                      <SwatchButtonGroup
+                        key={product?.sku}
+                        isSelected={isSelected}
+                        swatches={swatches.values ?? []}
+                        showMore={onProductClick}
+                        productUrl={productUrl as string}
+                        onClick={handleSelection}
+                        sku={product?.sku}
+                      />
+                    );
                   }
-                )}
+                })}
               </div>
             )}
             <div className="ds-sdk-product-item__product-name font-medium text-lg">
@@ -407,7 +443,11 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
             />
+            {undernameLabels.map((label) => (
+              <ProductLabelSecondary key={label.alt_tag} label={label} />
+            ))}
           </div>
         </div>
       </a>

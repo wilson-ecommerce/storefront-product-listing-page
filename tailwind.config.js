@@ -23,6 +23,7 @@ module.exports = {
           600: 'var(--color-brand-600)',
           700: 'var(--color-brand-700)',
         },
+        labelGold: 'var(--color-label-gold)'
       },
       spacing: {
         xxsmall: 'var(--spacing-xxsmall)',
