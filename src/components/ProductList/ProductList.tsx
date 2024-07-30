@@ -93,6 +93,7 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
                 key={product?.productView?.id}
                 currencySymbol={currencySymbol}
                 currencyRate={currencyRate}
+                viewType={viewType}
                 setRoute={setRoute}
                 refineProduct={refineProduct}
                 setCartUpdated={setCartUpdated}

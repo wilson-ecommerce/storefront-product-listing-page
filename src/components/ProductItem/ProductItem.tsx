@@ -12,7 +12,7 @@ import { useEffect,useRef, useState } from 'preact/hooks';
 
 import '../ProductItem/ProductItem.css';
 
-import { useCart, useProducts, useSensor, useStore } from '../../context';
+import { useCart, useSensor, useStore } from '../../context';
 import NoImage from '../../icons/NoImage.svg';
 import {
   Product,
@@ -38,11 +38,12 @@ export interface ProductProps {
   item: Product;
   currencySymbol: string;
   currencyRate?: string;
+  viewType?: string;
   setRoute?: RedirectRouteFunc | undefined;
   refineProduct: (optionIds: string[], sku: string) => any;
-  setCartUpdated: (cartUpdated: boolean) => void;
-  setItemAdded: (itemAdded: string) => void;
-  setError: (error: boolean) => void;
+  setCartUpdated?: (cartUpdated: boolean) => void;
+  setItemAdded?: (itemAdded: string) => void;
+  setError?: (error: boolean) => void;
   addToCart?: (
     sku: string,
     options: string[],
@@ -57,6 +58,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
   currencySymbol,
   currencyRate,
+  viewType,
   setRoute,
   refineProduct,
   setCartUpdated,
@@ -77,7 +79,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const prevSelectedSwatch = useRef<string | null>(null);
 
   const { addToCartGraphQL, refreshCart } = useCart();
-  const { viewType } = useProducts();
   const {
     config: { optimizeImages, imageBaseWidth, listview, imageBackgroundColor },
   } = useStore();
@@ -196,7 +197,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     : product?.canonical_url;
 
   const updateCart = async (selectedVariants: string[] = []) => {
-    setError(false);
+    setError && setError(false);
     if (addToCart) {
       //Custom add to cart function passed in
       await addToCart(productView.sku, selectedVariants, 1);
@@ -208,13 +209,13 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         response?.errors ||
         response?.data?.addProductsToCart?.user_errors.length > 0
       ) {
-        setError(true);
+        setError && setError(true);
         return;
       }
 
-      setItemAdded(product.name);
+      setItemAdded && setItemAdded(product.name);
       refreshCart && refreshCart();
-      setCartUpdated(true);
+      setCartUpdated && setCartUpdated(true);
     }
   }
 
