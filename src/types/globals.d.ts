@@ -12,6 +12,7 @@ export {};
 declare global {
   interface Window {
     LiveSearchPLP: typeof import('../index');
+    ProductCard: typeof import('../index');
     adobeDataLayer: any;
   }
   const Sentry: any;
