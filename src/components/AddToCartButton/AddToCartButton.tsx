@@ -21,9 +21,9 @@ export const AddToCartButton: FunctionComponent<AddToCartButtonProps> = ({
   const { screenSize } = useSensor();
 
   return (
-    <div className="ds-sdk-add-to-cart-button h-[40px] w-[40px] lg:h-[100%] lg:w-full">
+    <div className="ds-sdk-add-to-cart-button h-[40px] w-[40px] lg:h-full lg:w-full">
       <button
-        className="flex items-center justify-center h-[100%] w-full gap-2 lg:px-big lg:py-[10px]"
+        className="flex items-center justify-center h-full w-full gap-2 lg:px-big lg:py-[10px]"
         onClick={onClick}
       >
         <PlusIcon className="w-[14px]" />

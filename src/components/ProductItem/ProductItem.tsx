@@ -38,6 +38,7 @@ export interface ProductProps {
   item: Product;
   currencySymbol: string;
   currencyRate?: string;
+  categoryConfig?: Record<string, any>;
   setRoute?: RedirectRouteFunc | undefined;
   refineProduct: (optionIds: string[], sku: string) => any;
   setCartUpdated: (cartUpdated: boolean) => void;
@@ -46,7 +47,8 @@ export interface ProductProps {
   addToCart?: (
     sku: string,
     options: string[],
-    quantity: number
+    quantity: number,
+    source: string,
   ) => Promise<void | undefined>;
 }
 
@@ -57,6 +59,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
   currencySymbol,
   currencyRate,
+  categoryConfig,
   setRoute,
   refineProduct,
   setCartUpdated,
@@ -156,7 +159,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const isGrouped = product?.__typename === 'GroupedProduct';
   const isGiftCard = product?.__typename === 'GiftCardProduct';
   const isConfigurable = product?.__typename === 'ConfigurableProduct';
-  const shouldShowAddToBagButton = isSportsWear(item) && (!screenSize.desktop || isHovering) && !showSizes;
+  const shouldShowAddToBagButton = isSportsWear(item)
+    && categoryConfig?.['plp_quick_view_modal_enabled'] === '1'
+    && (!screenSize.desktop || isHovering)
+    && !showSizes;
 
   const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(item);
   let colorSwatches: SwatchValues[] = [];
@@ -199,7 +205,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     setError(false);
     if (addToCart) {
       //Custom add to cart function passed in
-      await addToCart(productView.sku, selectedVariants, 1);
+      await addToCart(productView.sku, selectedVariants, 1, 'product-list-page');
     } else {
       // Add to cart using GraphQL & Luma extension
       const response = await addToCartGraphQL(productView.sku, selectedVariants);
@@ -229,18 +235,24 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     }
 
     const selectedVariants = selectedSwatch ? [selectedSwatch] : [];
-    updateCart(selectedVariants);
+    await updateCart(selectedVariants);
   };
 
   const handleSizeSelection = async (optionIds: string[]) => {
-    setShowSizes(false);
+    let selectedVariants: string[] = [];
+    // Sportswear products do not have multiple color swatches
+    // Select the default color variant
+    const colorVariant = item.productView?.options?.find((option) => option.title === SWATCH_COLORS)?.values?.[0].id;
+    if (colorVariant) {
+      selectedVariants = [colorVariant];
+    }
 
-    let selectedVariants = selectedSwatch ? [selectedSwatch] : [];
     if (optionIds) {
       selectedVariants = [...selectedVariants, ...optionIds];
     }
 
-    updateCart(selectedVariants);
+    await updateCart(selectedVariants);
+    setShowSizes(false);
   };
 
   if (listview && viewType === 'listview') {

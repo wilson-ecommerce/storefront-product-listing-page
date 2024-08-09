@@ -79,4 +79,8 @@ function getDefaultColorSwatchId(item: Product) {
   return colorOptionsFromAttribute?.images?.[0]?.id;
 }
 
-export { isSportsWear, getColorSwatchesFromAttribute, getDefaultColorSwatchId };
+export { 
+  isSportsWear,
+  getColorSwatchesFromAttribute,
+  getDefaultColorSwatchId
+};
