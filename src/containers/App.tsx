@@ -24,6 +24,7 @@ import {
 } from '../context';
 import { MobileFilterHeader } from './MobileFilterHeader';
 import { ProductsContainer } from './ProductsContainer';
+import { ProductsHeader } from './ProductsHeader';
 
 
 export const App: FunctionComponent = () => {
@@ -52,6 +53,9 @@ export const App: FunctionComponent = () => {
       {!(displayMode === 'PAGE') &&
         (!screenSize.mobile && showFilters && productsCtx.facets.length > 0 ? (
           <div className="ds-widgets bg-body py-2">
+            <ProductsHeader
+              title={searchCtx.phrase || title}
+            />
             <Enrichment position={'below-title'} />
             <div className="flex flex-col">
               <CategoryFilters
@@ -69,17 +73,15 @@ export const App: FunctionComponent = () => {
               <div
                 className={`ds-widgets_results flex flex-col items-center flex-[75] `}
               >
-                {/* <ProductsHeader
-                  facets={productsCtx.facets}
-                  totalCount={productsCtx.totalCount}
-                  screenSize={screenSize}
-                /> */}
                 <ProductsContainer showFilters={showFilters} />
               </div>
             </div>
           </div>
         ) : (
           <div className="ds-widgets bg-body py-2">
+            <ProductsHeader
+              title={searchCtx.phrase || title}
+            />
             <Enrichment position={'below-title'} />
             <div className="flex flex-col">
               <div className="flex flex-col items-center w-full h-full">
