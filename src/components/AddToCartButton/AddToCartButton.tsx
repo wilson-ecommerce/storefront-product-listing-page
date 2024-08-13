@@ -9,7 +9,7 @@ it.
 
 import { FunctionComponent } from 'preact';
 
-import { useSensor } from '../../context';
+import { useSensor, useTranslation } from '../../context';
 import PlusIcon from '../../icons/plus.svg';
 
 export interface AddToCartButtonProps {
@@ -19,6 +19,7 @@ export const AddToCartButton: FunctionComponent<AddToCartButtonProps> = ({
   onClick,
 }: AddToCartButtonProps) => {
   const { screenSize } = useSensor();
+  const translation = useTranslation();
 
   return (
     <div className="ds-sdk-add-to-cart-button h-[40px] w-[40px] lg:h-full lg:w-full">
@@ -27,7 +28,7 @@ export const AddToCartButton: FunctionComponent<AddToCartButtonProps> = ({
         onClick={onClick}
       >
         <PlusIcon className="w-[14px]" />
-        {screenSize.desktop && 'Quick Add'}
+        {screenSize.desktop && translation.ProductCard.quickAdd}
       </button>
     </div>
   );

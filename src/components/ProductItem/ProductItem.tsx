@@ -12,7 +12,7 @@ import { useEffect,useRef, useState } from 'preact/hooks';
 
 import '../ProductItem/ProductItem.css';
 
-import { useCart, useProducts, useSensor, useStore } from '../../context';
+import { useProducts, useSensor, useStore, useTranslation } from '../../context';
 import NoImage from '../../icons/NoImage.svg';
 import {
   Product,
@@ -44,16 +44,23 @@ export interface ProductProps {
   setCartUpdated: (cartUpdated: boolean) => void;
   setItemAdded: (itemAdded: string) => void;
   setError: (error: boolean) => void;
-  addToCart?: (
+  addToCart: (
     sku: string,
     options: string[],
     quantity: number,
     source: string,
-  ) => Promise<void | undefined>;
+  ) => Promise<{
+    user_errors: any[];
+  }>;
 }
 
 const SWATCH_COLORS = 'Colors';
 const SWATCH_SIZE = 'Size';
+
+const QUICK_ADD_STATUS_IDLE = 'IDLE';
+const QUICK_ADD_STATUS_PENDING = 'PENDING';
+const QUICK_ADD_STATUS_SUCCESS = 'SUCCESS';
+const QUICK_ADD_STATUS_ERROR = 'ERROR';
 
 export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
@@ -62,9 +69,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   categoryConfig,
   setRoute,
   refineProduct,
-  setCartUpdated,
-  setItemAdded,
-  setError,
   addToCart,
 }: ProductProps) => {
   const { product, productView } = item;
@@ -77,15 +81,15 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const [refinedProduct, setRefinedProduct] = useState<RefinedProduct>();
   const [isHovering, setIsHovering] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
+  const [quickAddStatus, setQuickAddStatus] = useState(QUICK_ADD_STATUS_IDLE);
   const prevSelectedSwatch = useRef<string | null>(null);
-
-  const { addToCartGraphQL, refreshCart } = useCart();
   const { viewType } = useProducts();
   const {
     config: { optimizeImages, imageBaseWidth, listview, imageBackgroundColor },
   } = useStore();
 
   const { screenSize } = useSensor();
+  const translation = useTranslation();
 
   useEffect(() => {
     prevSelectedSwatch.current = selectedSwatch;
@@ -98,6 +102,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const handleMouseOut = () => {
     setIsHovering(false);
     setShowSizes(false);
+    setQuickAddStatus(QUICK_ADD_STATUS_IDLE);
   };
 
   const handleSelection = async (optionIds: string[], sku: string) => {
@@ -162,7 +167,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const shouldShowAddToBagButton = isSportsWear(item)
     && categoryConfig?.['plp_quick_view_modal_enabled'] === '1'
     && (!screenSize.desktop || isHovering)
-    && !showSizes;
+    && !showSizes
+    && quickAddStatus === QUICK_ADD_STATUS_IDLE;
 
   const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(item);
   let colorSwatches: SwatchValues[] = [];
@@ -201,29 +207,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       })
     : product?.canonical_url;
 
-  const updateCart = async (selectedVariants: string[] = []) => {
-    setError(false);
-    if (addToCart) {
-      //Custom add to cart function passed in
-      await addToCart(productView.sku, selectedVariants, 1, 'product-list-page');
-    } else {
-      // Add to cart using GraphQL & Luma extension
-      const response = await addToCartGraphQL(productView.sku, selectedVariants);
-
-      if (
-        response?.errors ||
-        response?.data?.addProductsToCart?.user_errors.length > 0
-      ) {
-        setError(true);
-        return;
-      }
-
-      setItemAdded(product.name);
-      refreshCart && refreshCart();
-      setCartUpdated(true);
-    }
-  }
-
   const handleAddToCart = async (evt: any) => {
     evt.preventDefault();
     evt.stopPropagation();
@@ -235,7 +218,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     }
 
     const selectedVariants = selectedSwatch ? [selectedSwatch] : [];
-    await updateCart(selectedVariants);
+    await addToCart(productView.sku, selectedVariants, 1, 'product-list-page');
   };
 
   const handleSizeSelection = async (optionIds: string[]) => {
@@ -251,8 +234,15 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       selectedVariants = [...selectedVariants, ...optionIds];
     }
 
-    await updateCart(selectedVariants);
     setShowSizes(false);
+    setQuickAddStatus(QUICK_ADD_STATUS_PENDING);
+    const addedToCart = await addToCart(productView.sku, selectedVariants, 1, 'product-list-page');
+
+    if (addedToCart?.user_errors?.length) {
+      setQuickAddStatus(QUICK_ADD_STATUS_ERROR);
+    } else {
+      setQuickAddStatus(QUICK_ADD_STATUS_SUCCESS);
+    }
   };
 
   if (listview && viewType === 'listview') {
@@ -404,6 +394,19 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               />
             )}
             <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px]">
+              {quickAddStatus !== QUICK_ADD_STATUS_IDLE && (
+                <div className="status-container flex items-center justify-center h-full w-full">
+                  {quickAddStatus === QUICK_ADD_STATUS_PENDING && (
+                    <span className="loader" />
+                  )}
+                  {quickAddStatus === QUICK_ADD_STATUS_SUCCESS && (
+                    <span className="status status-success">{translation.ProductCard.quickAddSuccess}</span>
+                  )}
+                  {quickAddStatus === QUICK_ADD_STATUS_ERROR && (
+                    <span className="status status-error">{translation.ProductCard.quickAddError}</span>
+                  )}
+                </div>
+              )}
               {shouldShowAddToBagButton && <AddToCartButton onClick={handleAddToCart} />}
               {showSizes && productView?.options?.map((swatches) => {
                 if (swatches.title === SWATCH_SIZE) {
