@@ -1961,7 +1961,7 @@ video {
 .add-to-cart-overlay .status::before {
   content: '';
   position: absolute;
-  left: calc(-1*var(--spacing-sm));
+  left: -5px;
 }
 
 .add-to-cart-overlay .status.status-success::before {
