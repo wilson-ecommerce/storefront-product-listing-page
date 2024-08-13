@@ -349,6 +349,7 @@ export interface SwatchValues {
   id: string;
   type: SwatchType;
   value: string;
+  inStock?: boolean;
 }
 
 export interface CustomAttribute {

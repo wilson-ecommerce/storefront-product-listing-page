@@ -222,6 +222,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   };
 
   const handleSizeSelection = async (optionIds: string[]) => {
+    const sizeVariants = item.productView?.options?.find((option) => option.title === SWATCH_SIZE)?.values;
+    const selectedSize = sizeVariants?.find((size) => optionIds.includes(size.id));
+    if (selectedSize && !selectedSize.inStock) {
+      return;
+    }
+
     let selectedVariants: string[] = [];
     // Sportswear products do not have multiple color swatches
     // Select the default color variant
