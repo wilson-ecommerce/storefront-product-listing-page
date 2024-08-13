@@ -8,18 +8,133 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
+import ViewSwitcher from 'src/components/ViewSwitcher';
+
+import Facets from '../components/Facets';
+import { FilterButton } from '../components/FilterButton';
+import { SearchBar } from '../components/SearchBar';
+import { SortDropdown } from '../components/SortDropdown';
+import {
+  useAttributeMetadata,
+  useProducts,
+  useSearch,
+  useStore,
+  useTranslation,
+} from '../context';
+import { Facet } from '../types/interface';
+import { getValueFromUrl, handleUrlSort } from '../utils/handleUrlFilters';
+import {
+  defaultSortOptions,
+  generateGQLSortInput,
+  getSortOptionsfromMetadata,
+} from '../utils/sort';
 
 interface Props {
-  title: string,
+  facets: Facet[];
+  totalCount: number;
+  screenSize: {
+    mobile: boolean;
+    tablet: boolean;
+    desktop: boolean;
+    columns: number;
+  };
 }
 export const ProductsHeader: FunctionComponent<Props> = ({
-  title,
+  facets,
+  totalCount,
+  screenSize,
 }) => {
+  const searchCtx = useSearch();
+  const storeCtx = useStore();
+  const attributeMetadata = useAttributeMetadata();
+  const productsCtx = useProducts();
+  const translation = useTranslation();
+
+  const [showMobileFacet, setShowMobileFacet] = useState(
+    !!productsCtx.variables.filter?.length
+  );
+  const [sortOptions, setSortOptions] = useState(defaultSortOptions());
+
+  const getSortOptions = useCallback(() => {
+    setSortOptions(
+      getSortOptionsfromMetadata(
+        translation,
+        attributeMetadata?.sortable,
+        storeCtx?.config?.displayOutOfStock,
+        storeCtx?.config?.currentCategoryUrlPath,
+        storeCtx?.config?.currentCategoryId
+      )
+    );
+  }, [storeCtx, translation, attributeMetadata]);
+
+  useEffect(() => {
+    getSortOptions();
+  }, [getSortOptions]);
+
+  const defaultSortOption = (storeCtx.config?.currentCategoryUrlPath || storeCtx.config?.currentCategoryId)
+    ? 'position_ASC'
+    : 'relevance_DESC';
+  const sortFromUrl = getValueFromUrl('product_list_order');
+  const sortByDefault = sortFromUrl ? sortFromUrl : defaultSortOption;
+  const [sortBy, setSortBy] = useState<string>(sortByDefault);
+  const onSortChange = (sortOption: string) => {
+    setSortBy(sortOption);
+    searchCtx.setSort(generateGQLSortInput(sortOption));
+    handleUrlSort(sortOption);
+  };
+
   return (
-    <div className="product-list-page-header flex flex-col gap-4 justify-center items-center h-[180px] lg:h-[248px]">
-      <h1 className="text-center capitalize">
-        {title}
-      </h1>
+    <div className="flex flex-col max-w-5xl lg:max-w-full ml-auto w-full h-full">
+      <div
+        className={`flex gap-x-2.5 mb-[1px] ${
+          screenSize.mobile ? 'justify-between' : 'justify-between'
+        }`}
+      >
+        {/* <div> */}
+          {screenSize.mobile
+            && totalCount > 0 && (
+                <div className="pb-4">
+                  <FilterButton
+                    displayFilter={() => setShowMobileFacet(!showMobileFacet)}
+                    type="mobile"
+                  />
+                </div>
+
+              )
+
+            // storeCtx.config.displaySearchBox && (
+              //     <SearchBar
+            //       phrase={searchCtx.phrase}
+            //       onKeyPress={(e: any) => {
+              //         if (e.key === 'Enter') {
+                //           searchCtx.setPhrase(e?.target?.value);
+            //         }
+            //       }}
+            //       onClear={() => searchCtx.setPhrase('')}
+            //       placeholder={translation.SearchBar.placeholder}
+            //     />
+            //   )}
+          }
+        {/* </div> */}
+        {totalCount > 0 && (
+          <>
+            {/* <div>
+            {`${
+                totalCount > 0 ? `${totalCount}` : ''
+              } ${translation.CategoryFilters.results}`}
+            </div> */}
+
+            {storeCtx?.config?.listview && <ViewSwitcher />}
+            <SortDropdown
+              sortOptions={sortOptions}
+              value={sortBy}
+              onChange={onSortChange}
+            />
+          </>
+        )}
+      </div>
+      {screenSize.mobile && showMobileFacet && <Facets searchFacets={facets} />}
     </div>
   );
 };

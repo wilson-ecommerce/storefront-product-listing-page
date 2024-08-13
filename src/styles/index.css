@@ -639,9 +639,6 @@ video {
   .grid {
     display: grid;
   }
-  .hidden {
-    display: none;
-  }
   .aspect-auto {
     aspect-ratio: auto;
   }
@@ -926,6 +923,10 @@ video {
   .gap-x-2 {
     -moz-column-gap: 0.5rem;
          column-gap: 0.5rem;
+  }
+  .gap-x-2\.5 {
+    -moz-column-gap: 0.625rem;
+         column-gap: 0.625rem;
   }
   .gap-x-6 {
     -moz-column-gap: 1.5rem;
