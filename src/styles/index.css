@@ -901,8 +901,14 @@ video {
   .gap-4 {
     gap: 1rem;
   }
+  .gap-8 {
+    gap: 2rem;
+  }
   .gap-\[10px\] {
     gap: 10px;
+  }
+  .gap-\[12px\] {
+    gap: 12px;
   }
   .gap-\[16px\] {
     gap: 16px;
@@ -1125,6 +1131,9 @@ video {
   }
   .p-4 {
     padding: 1rem;
+  }
+  .p-\[14px\] {
+    padding: 14px;
   }
   .p-sm {
     padding: var(--spacing-sm);

@@ -53,22 +53,26 @@ export const App: FunctionComponent = () => {
       {!(displayMode === 'PAGE') &&
         (!screenSize.mobile && showFilters && productsCtx.facets.length > 0 ? (
           <div className="ds-widgets bg-body py-2">
-            <ProductsHeader
-              title={searchCtx.phrase || title}
-            />
+            {searchCtx.phrase && (
+              <ProductsHeader
+                title={searchCtx.phrase}
+              />
+            )}
             <Enrichment position={'below-title'} />
             <div className="flex flex-col">
-              <CategoryFilters
-                loading={productsCtx.loading}
-                pageLoading={productsCtx.pageLoading}
-                facets={productsCtx.facets}
-                totalCount={productsCtx.totalCount}
-                categoryName={productsCtx.categoryName ?? ''}
-                phrase={productsCtx.variables.phrase ?? ''}
-                showFilters={showFilters}
-                setShowFilters={setShowFilters}
-                filterCount={searchCtx.filterCount}
-              />
+              {productsCtx.totalCount && (
+                <CategoryFilters
+                  loading={productsCtx.loading}
+                  pageLoading={productsCtx.pageLoading}
+                  facets={productsCtx.facets}
+                  totalCount={productsCtx.totalCount}
+                  categoryName={productsCtx.categoryName ?? ''}
+                  phrase={productsCtx.variables.phrase ?? ''}
+                  showFilters={showFilters}
+                  setShowFilters={setShowFilters}
+                  filterCount={searchCtx.filterCount}
+                />
+              )}
               <Enrichment position={'above-grid'} />
               <div
                 className={`ds-widgets_results flex flex-col items-center flex-[75] `}
@@ -79,9 +83,11 @@ export const App: FunctionComponent = () => {
           </div>
         ) : (
           <div className="ds-widgets bg-body py-2">
-            <ProductsHeader
-              title={searchCtx.phrase || title}
-            />
+            {searchCtx.phrase && (
+              <ProductsHeader
+                title={searchCtx.phrase}
+              />
+            )}
             <Enrichment position={'below-title'} />
             <div className="flex flex-col">
               <div className="flex flex-col items-center w-full h-full">
