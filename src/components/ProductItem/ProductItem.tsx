@@ -378,7 +378,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       <meta itemProp="description" content={product?.short_description?.html} />
       <meta itemProp="availability" content={productView?.inStock ? 'InStock' : 'OutOfStock'} />
       {ratingCount > 0 ? (
-        <div itemprop="aggregateRating"
+        <div itemprop="aggregateRating" style="display:none"
              itemscope itemtype="https://schema.org/AggregateRating">
           <meta itemprop="ratingValue" content={ratingValue.toFixed(2).toString()}/>
           <meta itemprop="ratingCount" content={ratingCount.toString()}/>
