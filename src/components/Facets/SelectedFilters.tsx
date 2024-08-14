@@ -79,7 +79,7 @@ export const SelectedFilters: FunctionComponent<SelectedFiltersProps> = ({
           </div>
         )}
       </div>
-      <p>{totalCount} Results</p>
+      <p className="result-count">{totalCount} Results</p>
     </div>
   );
 };

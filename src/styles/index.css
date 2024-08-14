@@ -1589,13 +1589,13 @@ video {
     }
   }
   @media (min-width: 1024px) {
-    .lg\:h-full {
-      height: 100%;
+    .lg\:h-\[248px\] {
+      height: 248px;
     }
   }
   @media (min-width: 1024px) {
-    .lg\:h-\[248px\] {
-      height: 248px;
+    .lg\:h-full {
+      height: 100%;
     }
   }
   @media (min-width: 1024px) {
