@@ -10,7 +10,7 @@ it.
 import {  FunctionComponent } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { ProductCardShimmer } from 'src/components/ProductCardShimmer';
-import { useProducts, useSensor, useTranslation } from 'src/context';
+import {useProducts, useSearch, useSensor, useStore, useTranslation} from 'src/context';
 import {
   handleUrlPagination,
 } from 'src/utils/handleUrlFilters';
@@ -26,7 +26,9 @@ interface Props {
 export const ProductsContainer: FunctionComponent<Props> = ({
   showFilters,
 }) => {
+  const storeCtx = useStore();
   const productsCtx = useProducts();
+  const { displayFranchises } = useSearch();
   const { screenSize } = useSensor();
 
   const {
@@ -40,6 +42,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
     minQueryLength,
     minQueryLengthReached,
     loading,
+    franchises,
   } = productsCtx;
 
   useEffect(() => {
@@ -73,12 +76,20 @@ export const ProductsContainer: FunctionComponent<Props> = ({
 
   if (!totalCount) {
     return (
-      <div className="ds-sdk-no-results__page mx-auto max-w-8xl py-12 px-4 sm:px-6 lg:px-8">
-        <Alert
-          title={translation.ProductContainers.noresults}
-          type="warning"
-          description=""
-        />
+      <div className="ds-sdk-no-results__page flex flex-col gap-8 justify-center items-center w-full">
+        <p className="text-center px-md">0 {translation.ProductContainers.resultsText}</p>
+        <p className="text-center px-md">{translation.ProductContainers.noresults}</p>
+        {storeCtx.config.noResultsLinks && (
+          <ul className="flex flex-wrap justify-center items-center gap-[12px] px-md">
+            {storeCtx.config.noResultsLinks.map((link) => (
+              <li key={link.text} className="inline-block p-[14px] bg-black text-white uppercase">
+                <a href={link.url} className="">
+                  {link.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     );
   }
@@ -100,6 +111,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
       ) : (
         <ProductList
           products={items}
+          franchises={franchises}
           numberOfColumns={screenSize.columns}
           showFilters={showFilters}
         />
@@ -109,10 +121,12 @@ export const ProductsContainer: FunctionComponent<Props> = ({
           showFilters ? 'mx-auto' : 'mr-auto'
         } w-full h-full text-[14px] font-normal`}
       >
-        <span className="flex items-center justify-center text-neutral-700">
-          {`${Math.max((currentPage-1)*pageSize, 1)}-${Math.min(currentPage*pageSize, totalCount)}`} of {totalCount}
-        </span>
-        {totalPages > 1 && (
+        {!displayFranchises && (
+          <span className="flex items-center justify-center text-neutral-700">
+            {`${Math.max((currentPage - 1) * pageSize, 1)}-${Math.min(currentPage * pageSize, totalCount)}`} of {totalCount}
+          </span>
+        )}
+        {!displayFranchises && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

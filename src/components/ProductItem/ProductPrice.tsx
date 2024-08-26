@@ -12,7 +12,7 @@ import { useContext } from 'preact/hooks';
 
 import { TranslationContext } from '../../context/translation';
 import { Label, Product, RefinedProduct } from '../../types/interface';
-import { getProductPrice } from '../../utils/getProductPrice';
+import { getOnlyProductPrice, getProductPrice } from '../../utils/getProductPrice';
 
 export interface ProductPriceProps {
   isComplexProductView: boolean;
@@ -25,6 +25,7 @@ export interface ProductPriceProps {
   currencySymbol: string;
   currencyRate?: string;
   priceLabel?: Label;
+  inStock?: boolean | undefined;
 }
 
 export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
@@ -38,6 +39,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
   currencySymbol,
   currencyRate,
   priceLabel,
+  inStock
 }: ProductPriceProps) => {
   const translation = useContext(TranslationContext);
   let price;
@@ -60,24 +62,34 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
       translation.ProductCard.bundlePrice.split(' ');
     return bundlePriceTranslationOrder.map((word: string, index: any) =>
       word === '{fromBundlePrice}' ? (
-        <span
-          className="text-brand-600 font-headline-4-default mr-xs"
-          key={index}
-        >
-          {getProductPrice(item, currencySymbol, currencyRate, false, true)}
+          <span
+              className="text-brand-600 font-headline-4-default mr-xs"
+              key={index}
+          >
+          <meta itemProp="price" content={getOnlyProductPrice(
+              item,
+              currencyRate,
+              false,
+              true)}/>
+            {getProductPrice(item, currencySymbol, currencyRate, false, true)}
         </span>
       ) : word === '{toBundlePrice}' ? (
-        <span
-          className="text-brand-600 font-headline-4-default mr-xs"
-          key={index}
-        >
-          {getProductPrice(item, currencySymbol, currencyRate, true, true)}
+          <span
+              className="text-brand-600 font-headline-4-default mr-xs"
+              key={index}
+          >
+            <meta itemProp="price" content={getOnlyProductPrice(
+                item,
+                currencyRate,
+                true,
+                true)}/>
+            {getProductPrice(item, currencySymbol, currencyRate, true, true)}
         </span>
       ) : (
-        <span
-          className="text-brand-300 font-headline-4-default mr-xs"
-          key={index}
-        >
+          <span
+              className="text-brand-300 font-headline-4-default mr-xs"
+              key={index}
+          >
           {word}
         </span>
       )
@@ -109,34 +121,44 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
   };
 
   const getDiscountedPrice = (discount: boolean | undefined) => {
+    const productSalability = item.productView?.attributes?.find((attr) =>
+        attr.name === 'pcm_product_salability')?.value;
+    if (productSalability === 'SOLD_OUT') {
+      return (
+          <>
+        <span className="line-through text-back">
+          {getProductPrice(item, currencySymbol, currencyRate, false, true)}
+        </span>
+          </>
+      );
+    }
+
     const discountPrice = discount ? (
       <>
-        <span className="line-through text-black">
+        <span className="line-through text-neutral-700">
           {getProductPrice(item, currencySymbol, currencyRate, false, false)}
         </span>
-        <span className="font-headline-4-strong text-neutral-700 ml-2">
+        <span className="font-headline-4-strong text-black ml-2">
+          <meta itemProp="price" content={getOnlyProductPrice(
+            item,
+            currencyRate,
+            false,
+            true)}/>
           {getProductPrice(item, currencySymbol, currencyRate, false, true)}
         </span>
       </>
     ) : (
-      getProductPrice(item, currencySymbol, currencyRate, false, true)
-    );
-    // const discountedPriceTranslation = translation.ProductCard.asLowAs;
-    // const discountedPriceTranslationOrder =
-    //   discountedPriceTranslation.split('{discountPrice}');
+        <>
+          <meta itemProp="price" content={getOnlyProductPrice(
+            item,
+            currencyRate,
+            false,
+            true)}/>
+          {getProductPrice(item, currencySymbol, currencyRate, false, true)}
+        </>
+      );
+
     return discountPrice;
-    // return discountedPriceTranslationOrder.map((word: string, index: any) =>
-    //   word === '' ? (
-    //     discountPrice
-    //   ) : (
-    //     <span
-    //       className="text-brand-300 font-headline-4-default mr-xs"
-    //       key={index}
-    //     >
-    //       {word}
-    //     </span>
-    //   )
-    // );
   };
 
   const getPriceLabel = () => {
@@ -159,7 +181,17 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
   return (
     <>
       {price && (
-        <div className="ds-sdk-product-price">
+        <div
+          className="ds-sdk-product-price"
+          itemProp="offers"
+          itemScope
+          itemType="https://schema.org/Offer"
+        >
+          <meta itemProp="priceCurrency" content="USD" />
+          <meta
+            itemProp="availability"
+            content={inStock ? 'InStock' : 'OutOfStock'}
+          />
           {!isBundle &&
             !isGrouped &&
             !isConfigurable &&
@@ -176,6 +208,15 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
                   )}
                 </span>
                 <span className="text-brand-600">
+                  <meta
+                    itemProp="price"
+                    content={getOnlyProductPrice(
+                      item,
+                      currencyRate,
+                      false,
+                      true
+                    )}
+                  />
                   {getProductPrice(
                     item,
                     currencySymbol,
@@ -195,6 +236,10 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
             !isComplexProductView &&
             !discount && (
               <p className="ds-sdk-product-price--no-discount font-headline-4-strong">
+                <meta
+                  itemProp="price"
+                  content={getOnlyProductPrice(item, currencyRate, false, true)}
+                />
                 {getProductPrice(
                   item,
                   currencySymbol,

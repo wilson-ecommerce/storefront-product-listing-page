@@ -8,7 +8,7 @@ it.
 */
 
 import { createContext, FunctionComponent, useContext } from 'preact/compat';
-import { useState } from 'preact/hooks';
+import {useCallback, useState} from 'preact/hooks';
 import { useEffect } from 'react';
 
 import {
@@ -43,6 +43,8 @@ interface SearchContextProps {
   updateFilterOptions(filter: FacetFilter, option: string): void;
   removeFilter: (name: string, option?: string) => void;
   clearFilters: () => void;
+  displayFranchises: boolean;
+  toggleFranchiseView: (showFranchise: boolean) => void;
 }
 
 export const SearchContext = createContext({} as SearchContextProps);
@@ -66,6 +68,7 @@ const SearchProvider: FunctionComponent = ({ children }) => {
   >([]);
   const [sort, setSort] = useState<ProductSearchSortInput[]>(sortDefault);
   const [filterCount, setFilterCount] = useState<number>(0);
+  const [preferFranchiseView, setPreferFranchiseView] = useState<boolean>(true);
 
   const createFilter = (filter: SearchClauseInput) => {
     const newFilters = [...filters, filter];
@@ -132,6 +135,19 @@ const SearchProvider: FunctionComponent = ({ children }) => {
     setFilterCount(count);
   }, [filters]);
 
+  const displayFranchises = storeCtx.config.categoryConfig?.pcm_display_by_franchise === '1'
+    && (filters.length === 0)
+    && (sort.length === 1)
+    && (sort[0].attribute === 'relevance')
+    && preferFranchiseView;
+
+  const toggleFranchiseView = useCallback(async (showFranchise: boolean) => {
+    setFilters([]);
+    setSort(SEARCH_SORT_DEFAULT);
+    window.history.pushState({}, '', `${window.location.pathname}`);
+    setPreferFranchiseView(showFranchise);
+  }, []);
+
   const context: SearchContextProps = {
     phrase,
     categoryPath,
@@ -149,6 +165,8 @@ const SearchProvider: FunctionComponent = ({ children }) => {
     updateFilterOptions,
     removeFilter,
     clearFilters,
+    displayFranchises,
+    toggleFranchiseView,
   };
 
   return (

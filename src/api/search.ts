@@ -25,7 +25,7 @@ import { SEARCH_UNIT_ID } from '../utils/constants';
 import { getGraphQL } from './graphql';
 import {
   ATTRIBUTE_METADATA_QUERY,
-  CATEGORY_QUERY,
+  CATEGORY_QUERY, FranchiseQueryFragment,
   GET_PRODUCT_LABELS_QUERY,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
@@ -48,6 +48,87 @@ const getHeaders = (headers: MagentoHeaders) => {
   };
 };
 
+const getFranchiseSearch = async ({
+  environmentId,
+  websiteCode,
+  storeCode,
+  storeViewCode,
+  apiKey,
+  apiUrl,
+  xRequestId = uuidv4(),
+  context,
+  categories = [],
+  pageSize = 20,
+  currentPage = 1,
+}: {
+  environmentId: string;
+  websiteCode: string;
+  storeCode: string;
+  storeViewCode: string;
+  apiKey: string;
+  apiUrl: string;
+  xRequestId?: string;
+  context?: any;
+  categories: string[];
+  pageSize?: number;
+  currentPage?: number;
+}) => {
+  const headers = getHeaders({
+    environmentId,
+    websiteCode,
+    storeCode,
+    storeViewCode,
+    apiKey,
+    xRequestId,
+    customerGroup: context?.customerGroup ?? '',
+  });
+
+  const query = `
+    query getFranchises(
+      $pageSize: Int = 20
+      $currentPage: Int = 1
+    ) {
+      ${categories.map((category) => `
+        ${category.split('/').at(-1)?.replaceAll('-', '')}: productSearch(
+          phrase: "",
+          page_size: $pageSize
+          current_page: $currentPage
+          filter: [
+            { attribute: "categoryPath", eq: "${category}" },
+            {
+              attribute: "pcm_product_salability",
+              in: ["STANDARD", "COMING_SOON", "DRAW_CAMPAIGN", "EARLY_ACCESS", "SOLD_OUT", "PRE_ORDER", "NOT_SOLD_ONLINE"],
+            }
+          ]
+        ) {
+          items {
+            ... FRANCHISE_QUERY
+          }
+        }
+      `).join(' ')}
+    }
+    ${Product}
+    ${ProductView}
+    ${FranchiseQueryFragment}
+  `;
+
+  const variables = {
+    pageSize,
+    currentPage,
+  };
+
+  const results = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      query: query.replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ').replace(/\s\s+/g, ' '),
+      variables,
+    }),
+  }).then((res) => res.json());
+
+  return results?.data;
+}
+
 const getProductSearch = async ({
   environmentId,
   websiteCode,
@@ -65,6 +146,7 @@ const getProductSearch = async ({
   context,
   categorySearch = false,
   categoryId,
+  route,
 }: ProductSearchQuery & ClientProps): Promise<
   ProductSearchResponse['data']
 > => {
@@ -96,6 +178,13 @@ const getProductSearch = async ({
     attribute: 'inStock',
     eq: 'true',
   };
+
+  const discontinuedFilter = {
+    attribute: 'pcm_product_salability',
+    in: ['STANDARD','COMING_SOON','DRAW_CAMPAIGN','EARLY_ACCESS','SOLD_OUT','PRE_ORDER','NOT_SOLD_ONLINE'],
+  };
+
+  variables.filter?.push(discontinuedFilter);
 
   if (displayInStockOnly) {
     variables.filter.push(inStockFilter);
@@ -134,7 +223,6 @@ const getProductSearch = async ({
 
   const query =
     categorySearch && categoryId ? CATEGORY_QUERY : PRODUCT_SEARCH_QUERY;
-
   const results = await fetch(apiUrl, {
     method: 'POST',
     headers,
@@ -185,7 +273,8 @@ const getProductSearch = async ({
   updateSearchResultsCtx(
     SEARCH_UNIT_ID,
     searchRequestId,
-    results?.data?.productSearch
+    results?.data?.productSearch,
+    route
   );
 
   window.adobeDataLayer.push((dl: any) => {
@@ -285,4 +374,4 @@ const refineProductSearch = async ({
   return results?.data;
 };
 
-export { getAttributeMetadata, getProductSearch, refineProductSearch };
+export { getAttributeMetadata, getProductSearch, refineProductSearch, getFranchiseSearch };
