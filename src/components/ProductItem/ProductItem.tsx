@@ -19,18 +19,20 @@ import {
   ProductViewMedia,
   RedirectRouteFunc,
   RefinedProduct,
-  SwatchValues
+  SwatchValues,
 } from '../../types/interface';
 import { SEARCH_UNIT_ID } from '../../utils/constants';
 import {
   generateOptimizedImages,
   getProductImagesFromAttribute,
-  getProductImageURLs
+  getProductImageURLs,
 } from '../../utils/getProductImage';
 import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
+import ProductLabelPrimary from '../ProductLabel/ProductLabelPrimary';
+import ProductLabelSecondary from '../ProductLabel/ProductLabelSecondary';
 import { SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
@@ -73,7 +75,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   addToCart,
   disableAllPurchases,
 }: ProductProps) => {
-  const { product, productView } = item;
+  const { product, productView, labels = []} = item;
   const {
     config: { optimizeImages, imageBaseWidth, listview, imageBackgroundColor, currentCategoryId },
   } = useStore();
@@ -219,7 +221,9 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     evt.preventDefault();
     evt.stopPropagation();
 
-    const hasSizeOptions = productView?.options?.some((swatches) => swatches.title === SWATCH_SIZE);
+    const hasSizeOptions = productView?.options?.some(
+      (swatches) => swatches.title === SWATCH_SIZE
+    );
     if ((!listview || viewType !== 'listview') && hasSizeOptions) {
       setShowSizes(true);
       return;
@@ -258,6 +262,22 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       setQuickAddStatus(QUICK_ADD_STATUS_SUCCESS);
     }
   };
+
+
+  // Filter for "price"
+  const priceLabels = labels.filter(
+    (label) => label.additional_data.place === 'price'
+  );
+
+  // Filter for "gallery"
+  const galleryLabels = labels.filter(
+    (label) => label.additional_data.place === 'gallery'
+  );
+
+  // Filter for "undername"
+  const undernameLabels = labels.filter(
+    (label) => label.additional_data.place === 'under_name'
+  );
 
   if (listview && viewType === 'listview') {
     return (
@@ -307,22 +327,22 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
 
               {/* Swatch */}
               <div className="ds-sdk-product-item__product-swatch flex flex-row mt-sm text-sm text-brand-700 pb-6">
-                {productView?.options?.map(
-                  (swatches) => {
-                      // swatches.id === 'color' && (
-                     return swatches.title === SWATCH_COLORS && (
-                        <SwatchButtonGroup
-                          key={productView?.sku}
-                          isSelected={isSelected}
-                          swatches={swatches.values ?? []}
-                          showMore={onProductClick}
-                          productUrl={productUrl as string}
-                          onClick={handleSelection}
-                          sku={productView?.sku}
-                        />
-                      )
-                  }
-                )}
+                {productView?.options?.map((swatches) => {
+                  // swatches.id === 'color' && (
+                  return (
+                    swatches.title === SWATCH_COLORS && (
+                      <SwatchButtonGroup
+                        key={productView?.sku}
+                        isSelected={isSelected}
+                        swatches={swatches.values ?? []}
+                        showMore={onProductClick}
+                        productUrl={productUrl as string}
+                        onClick={handleSelection}
+                        sku={productView?.sku}
+                      />
+                    )
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -402,7 +422,11 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         className="!text-brand-700 hover:no-underline"
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
-          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden target">
+            {/* add label here */}
+            {galleryLabels.map((label) => (
+              <ProductLabelPrimary key={label.alt_tag} label={label} />
+            ))}
             {productImageArray.length ? (
               <ImageHover
                 images={
@@ -410,7 +434,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                     ? optimizedImageArray
                     : productImageArray
                 }
-                // productName={product.name}
               />
             ) : (
               <NoImage
@@ -481,8 +504,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
               inStock={productView?.inStock}
             />
+            {undernameLabels.map((label) => (
+              <ProductLabelSecondary key={label.alt_tag} label={label} />
+            ))}
           </div>
         </div>
       </a>

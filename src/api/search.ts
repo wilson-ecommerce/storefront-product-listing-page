@@ -13,20 +13,27 @@ import { updateSearchInputCtx, updateSearchResultsCtx } from '../context';
 import {
   AttributeMetadataResponse,
   ClientProps,
+  Label,
   MagentoHeaders,
+  Product,
   ProductSearchQuery,
   ProductSearchResponse,
   RefinedProduct,
   RefineProductQuery,
 } from '../types/interface';
 import { SEARCH_UNIT_ID } from '../utils/constants';
-import {Product, ProductView} from "./fragments";
+import { getGraphQL } from './graphql';
 import {
   ATTRIBUTE_METADATA_QUERY,
   CATEGORY_QUERY, FranchiseQueryFragment,
+  GET_PRODUCT_LABELS_QUERY,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
 } from './queries';
+
+interface LabelLookup {
+  [key: number]: Label[];
+}
 
 const getHeaders = (headers: MagentoHeaders) => {
   return {
@@ -88,7 +95,7 @@ const getFranchiseSearch = async ({
           current_page: $currentPage
           filter: [
             { attribute: "categoryPath", eq: "${category}" },
-            { 
+            {
               attribute: "pcm_product_salability",
               in: ["STANDARD", "COMING_SOON", "DRAW_CAMPAIGN", "EARLY_ACCESS", "SOLD_OUT", "PRE_ORDER", "NOT_SOLD_ONLINE"],
             }
@@ -226,6 +233,41 @@ const getProductSearch = async ({
       variables: { ...variables },
     }),
   }).then((res) => res.json());
+
+  const items = results?.data?.productSearch?.items ?? [];
+
+  const productIds = items.map((item: Product) => item.product.id);
+
+  const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
+    productIds,
+    mode: 'CATEGORY',
+  });
+
+  const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+
+  const labelLookup: LabelLookup = labels.reduce(
+    (acc: LabelLookup, label: Label) => {
+      if (!acc[label.product_id]) {
+        acc[label.product_id] = [];
+      }
+      acc[label.product_id].push(label);
+      return acc;
+    },
+    {}
+  );
+
+  const itemsWithLabels = items.map((item: Product) => {
+    const productId = item.product.id;
+    return {
+      ...item,
+      labels: labelLookup[productId] || [],
+    };
+  });
+
+  // Replace the data in results.data.productSearch.items with itemsWithLabels
+  if (results?.data?.productSearch) {
+    results.data.productSearch.items = itemsWithLabels;
+  }
 
   // ======  initialize data collection =====
   updateSearchResultsCtx(
