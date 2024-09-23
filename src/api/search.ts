@@ -15,17 +15,20 @@ import {
   ClientProps,
   Label,
   MagentoHeaders,
-  Product,
+  Product as ProductType,
   ProductSearchQuery,
   ProductSearchResponse,
+  ProductView as ProductViewType,
   RefinedProduct,
   RefineProductQuery,
 } from '../types/interface';
 import { SEARCH_UNIT_ID } from '../utils/constants';
+import { Product, ProductView } from './fragments';
 import { getGraphQL } from './graphql';
 import {
   ATTRIBUTE_METADATA_QUERY,
-  CATEGORY_QUERY, FranchiseQueryFragment,
+  CATEGORY_QUERY,
+  FranchiseQueryFragment,
   GET_PRODUCT_LABELS_QUERY,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
@@ -236,7 +239,7 @@ const getProductSearch = async ({
 
   const items = results?.data?.productSearch?.items ?? [];
 
-  const productIds = items.map((item: Product) => item.product.id);
+  const productIds = items.map((item: ProductType) => item.product.id);
 
   const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
     productIds,
@@ -256,7 +259,7 @@ const getProductSearch = async ({
     {}
   );
 
-  const itemsWithLabels = items.map((item: Product) => {
+  const itemsWithLabels = items.map((item: ProductType) => {
     const productId = item.product.id;
     return {
       ...item,
