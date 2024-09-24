@@ -9,17 +9,21 @@ it.
 
 import { createContext } from 'preact';
 import { useContext, useEffect, useMemo, useState } from 'preact/hooks';
+import { getGraphQL } from 'src/api/graphql';
+import { GET_PRODUCT_LABELS_QUERY } from 'src/api/queries';
+import { getColorSwatchesFromAttribute } from 'src/utils/productUtils';
 
 import {getFranchiseSearch, getProductSearch, refineProductSearch} from '../api/search';
 import {
   CategoryView,
   Facet,
   FacetFilter,
+  Label,
   PageSizeOption,
   Product,
   ProductSearchQuery, ProductSearchResponse,
   RedirectRouteFunc,
-  SearchClauseInput,
+  SearchClauseInput
 } from '../types/interface';
 import {
   CATEGORY_SORT_DEFAULT,
@@ -52,6 +56,8 @@ const ProductsContext = createContext<{
   loading: boolean;
   items: Product[];
   setItems: (items: Product[]) => void;
+  labels: Label[];
+  setLabels: (labels: Label[]) => void;
   franchises: any;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -99,6 +105,8 @@ const ProductsContext = createContext<{
   loading: false,
   items: [],
   setItems: () => {},
+  labels: [],
+  setLabels: () => {},
   currentPage: 1,
   setCurrentPage: () => {},
   pageSize: DEFAULT_PAGE_SIZE,
@@ -160,6 +168,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
   const [loading, setLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(true);
   const [items, setItems] = useState<Product[]>([]);
+  const [labels, setLabels] = useState<Label[]>([]);
   const [franchises, setFranchises] = useState<Record<string, Franchise> | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(pageDefault);
   const [pageSize, setPageSize] = useState<number>(pageSizeDefault);
@@ -242,7 +251,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
       if (!franchises) {
         return franchises;
       }
-      
+
       return {
         ...franchises,
         [category]: {
@@ -263,6 +272,8 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
     loading,
     items,
     setItems,
+    labels,
+    setLabels,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -350,7 +361,30 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
           categoryId,
         });
 
+        const testItems = [...(data?.productSearch?.items || [])];
+
+        const productIds: string[] = [];
+
+        testItems.forEach((item) => {
+          const colorSwatch = getColorSwatchesFromAttribute(
+            item.productView,
+            storeCtx.config.currentCategoryId
+          );
+          colorSwatch.forEach((swatch) => {
+            productIds.push(swatch.config_id);
+          });
+        });
+
+        const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
+          productIds,
+          mode: 'CATEGORY',
+        });
+
+
+        const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+
         setItems(data?.productSearch?.items || []);
+        setLabels(labels || []);
         setFacets(data?.productSearch?.facets || []);
         setTotalCount(data?.productSearch?.total_count || 0);
         setTotalPages(data?.productSearch?.page_info?.total_pages || 1);
@@ -383,6 +417,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
         (Number(storeCtx.config.minQueryLength) || DEFAULT_MIN_QUERY_LENGTH)
     ) {
       setItems([]);
+      setLabels([]);
       setFacets([]);
       setTotalCount(0);
       setTotalPages(1);

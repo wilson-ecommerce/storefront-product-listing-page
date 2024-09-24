@@ -15,7 +15,7 @@ import './product-list.css';
 
 import {Alert} from '../../components/Alert';
 import {useProducts, useSearch, useStore} from '../../context';
-import {Product} from '../../types/interface';
+import {Label,Product} from '../../types/interface';
 import {classNames} from '../../utils/dom';
 import ProductItem, {ProductProps} from '../ProductItem';
 
@@ -114,17 +114,19 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
 
 export interface ProductListProps extends HTMLAttributes<HTMLDivElement> {
   products: Array<Product> | null | undefined;
+  labels: Array<Label> | null | undefined;
   numberOfColumns: number;
   showFilters: boolean;
   franchises: any;
 }
 
 export const ProductList: FunctionComponent<ProductListProps> = ({
-                                                                   products,
-                                                                   numberOfColumns,
-                                                                   showFilters,
-                                                                   franchises,
-                                                                 }) => {
+  products,
+  labels,
+  numberOfColumns,
+  showFilters,
+  franchises,
+}) => {
   const productsCtx = useProducts();
   const {
     currencySymbol,
@@ -139,12 +141,12 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
   } = productsCtx;
   const [cartUpdated, setCartUpdated] = useState(false);
   const [itemAdded, setItemAdded] = useState('');
-  const {viewType} = useProducts();
+  const { viewType } = useProducts();
   const [error, setError] = useState<boolean>(false);
   const {
-    config: {listview},
+    config: { listview },
   } = useStore();
-  const {displayFranchises } = useSearch();
+  const { displayFranchises } = useSearch();
 
   const className = showFilters
     ? 'ds-sdk-product-list bg-body max-w-full pb-2xl sm:pb-24'
@@ -153,6 +155,8 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
   useEffect(() => {
     refreshCart && refreshCart();
   }, [itemAdded]);
+
+  const testProducts = products?.slice(0, 3)
 
   return (
     <div
@@ -182,7 +186,8 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
         </div>
       )}
 
-      {displayFranchises && franchises && (<div className="w-full">
+      {displayFranchises && franchises && (
+        <div className="w-full">
           {Object.keys(franchises).map((franchise) => (
             <Franchises
               numberOfColumns={numberOfColumns}
@@ -202,15 +207,43 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
               getMoreFranchiseProducts={getMoreFranchiseProducts}
             />
           ))}
-        </div>)
-      }
+        </div>
+      )}
 
-      {!displayFranchises && (listview && viewType === 'listview' ? (
-        <div className="w-full">
-          <div className="ds-sdk-product-list__list-view-default mt-md grid grid-cols-none pt-[15px] w-full gap-[10px]">
-            {products?.map((product) => (
+      {!displayFranchises &&
+        (listview && viewType === 'listview' ? (
+          <div className="w-full">
+            <div className="ds-sdk-product-list__list-view-default mt-md grid grid-cols-none pt-[15px] w-full gap-[10px]">
+              {products?.map((product) => (
+                <ProductItem
+                  item={product}
+                  labels={labels ?? []}
+                  setError={setError}
+                  key={product?.productView?.id}
+                  currencySymbol={currencySymbol}
+                  currencyRate={currencyRate}
+                  categoryConfig={categoryConfig}
+                  setRoute={setRoute}
+                  refineProduct={refineProduct}
+                  setCartUpdated={setCartUpdated}
+                  setItemAdded={setItemAdded}
+                  addToCart={addToCart}
+                  disableAllPurchases={disableAllPurchases}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              gridTemplateColumns: `repeat(${numberOfColumns}, minmax(0, 1fr))`,
+            }}
+            className="ds-sdk-product-list__grid mt-md grid gap-y-8 gap-x-sm md:gap-x-9 md:gap-y-9"
+          >
+            {testProducts?.map((product) => (
               <ProductItem
                 item={product}
+                labels={labels ?? []}
                 setError={setError}
                 key={product?.productView?.id}
                 currencySymbol={currencySymbol}
@@ -225,32 +258,7 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
               />
             ))}
           </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            gridTemplateColumns: `repeat(${numberOfColumns}, minmax(0, 1fr))`,
-          }}
-          className="ds-sdk-product-list__grid mt-md grid gap-y-8 gap-x-sm md:gap-x-9 md:gap-y-9"
-        >
-          {products?.map((product) => (
-            <ProductItem
-              item={product}
-              setError={setError}
-              key={product?.productView?.id}
-              currencySymbol={currencySymbol}
-              currencyRate={currencyRate}
-              categoryConfig={categoryConfig}
-              setRoute={setRoute}
-              refineProduct={refineProduct}
-              setCartUpdated={setCartUpdated}
-              setItemAdded={setItemAdded}
-              addToCart={addToCart}
-              disableAllPurchases={disableAllPurchases}
-            />
-          ))}
-        </div>
-      ))}
+        ))}
     </div>
   );
 };

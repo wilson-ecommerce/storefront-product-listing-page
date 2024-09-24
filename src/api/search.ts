@@ -237,41 +237,40 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const items = results?.data?.productSearch?.items ?? [];
+  // const items = results?.data?.productSearch?.items ?? [];
 
-  const productIds = items.map((item: ProductType) => item.product.id);
+  // const productIds = items.map((item: ProductType) => item.product.id);
 
-  const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
-    productIds,
-    mode: 'CATEGORY',
-  });
+  // const productLabelsResults = await getGraphQL(GET_PRODUCT_LABELS_QUERY, {
+  //   productIds,
+  //   mode: 'CATEGORY',
+  // });
 
-  const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+  // const labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
 
-  const labelLookup: LabelLookup = labels.reduce(
-    (acc: LabelLookup, label: Label) => {
-      if (!acc[label.product_id]) {
-        acc[label.product_id] = [];
-      }
-      acc[label.product_id].push(label);
-      return acc;
-    },
-    {}
-  );
+  // const labelLookup: LabelLookup = labels.reduce(
+  //   (acc: LabelLookup, label: Label) => {
+  //     if (!acc[label.product_id]) {
+  //       acc[label.product_id] = [];
+  //     }
+  //     acc[label.product_id].push(label);
+  //     return acc;
+  //   },
+  //   {}
+  // );
 
-  const itemsWithLabels = items.map((item: ProductType) => {
-    const productId = item.product.id;
-    return {
-      ...item,
-      labels: labelLookup[productId] || [],
-    };
-  });
+  // const itemsWithLabels = items.map((item: ProductType) => {
+  //   const productId = item.product.id;
+  //   return {
+  //     ...item,
+  //     labels: labelLookup[productId] || [],
+  //   };
+  // });
 
-  // Replace the data in results.data.productSearch.items with itemsWithLabels
-  if (results?.data?.productSearch) {
-    results.data.productSearch.items = itemsWithLabels;
-  }
-
+  // // Replace the data in results.data.productSearch.items with itemsWithLabels
+  // if (results?.data?.productSearch) {
+  //   results.data.productSearch.items = itemsWithLabels;
+  // }
   // ======  initialize data collection =====
   updateSearchResultsCtx(
     SEARCH_UNIT_ID,

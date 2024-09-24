@@ -16,6 +16,7 @@ import { useProducts, useSensor, useStore, useTranslation } from '../../context'
 import NoImage from '../../icons/NoImage.svg';
 import {
   ColorSwatchFromAttribute,
+  Label,
   Product,
   ProductViewMedia,
   RedirectRouteFunc,
@@ -38,6 +39,7 @@ import ProductPrice from './ProductPrice';
 
 export interface ProductProps {
   item: Product;
+  labels?: Label[];
   currencySymbol: string;
   currencyRate?: string;
   categoryConfig?: Record<string, any>;
@@ -66,6 +68,7 @@ const QUICK_ADD_STATUS_ERROR = 'ERROR';
 
 export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
+  labels = [],
   currencySymbol,
   currencyRate,
   categoryConfig,
@@ -74,7 +77,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   addToCart,
   disableAllPurchases,
 }: ProductProps) => {
-  const { product, productView, labels = []} = item;
+  const { product, productView } = item;
   const {
     config: { optimizeImages, imageBaseWidth, listview, imageBackgroundColor, currentCategoryId },
   } = useStore();
@@ -159,6 +162,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           if (isSwatchUpdated) {
             return;
           }
+
+          console.log(data)
 
           setImagesFromRefinedProduct(data.refineProduct.images);
           setRefinedProduct(data);
@@ -300,6 +305,9 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       setQuickAddStatus(QUICK_ADD_STATUS_SUCCESS);
     }
   };
+
+  // console.log(refinedProduct)
+  // console.log('this is item', item)
 
 
   // Filter for "price"
