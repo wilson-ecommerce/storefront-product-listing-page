@@ -466,6 +466,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+            {/* add label here */}
+            {galleryLabels.map((label) => (
+              <ProductLabelPrimary key={label.alt_tag} label={label} />
+            ))}
             {productImageArray.length ? (
               <ImageHover
                 images={
@@ -531,8 +535,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
               inStock={productView?.inStock}
             />
+           {undernameLabels.map((label) => (
+              <ProductLabelSecondary key={label.alt_tag} label={label} />
+            ))}
           </div>
         </div>
       </a>
