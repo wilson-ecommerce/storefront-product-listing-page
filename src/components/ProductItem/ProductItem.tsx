@@ -326,6 +326,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     (label) => label.additional_data.place === 'under_name'
   );
 
+  console.log(galleryLabels)
+
   if (listview && viewType === 'listview') {
     return (
       <>

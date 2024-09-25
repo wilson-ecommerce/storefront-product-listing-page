@@ -17,15 +17,15 @@ export const ProductLabelPrimary: FunctionComponent<ProductProps> = ({
   };
 
   const baseClass =
-    'ds-sdk-product-label absolute top-2 left-2 px-2 py-1 border border-black z-5';
+    'ds-sdk-product-label absolute top-2 left-2 px-2 py-1 border border-black z-20';
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
 
   return (
     <div
       className={`${baseClass}`}
       style={{
-        color: label.additional_data.text_color,
-        backgroundColor: label.additional_data.background_color,
+        color: label.additional_data.text_color || "#000",
+        backgroundColor: label.additional_data.background_color || "#fff",
       }}
     >
       <p className="text-[12px] font-medium label-line">{textToRender}</p>
