@@ -207,7 +207,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
                     false
                   )}
                 </span>
-                <span className="text-brand-600">
+                <span className="text-labelRed">
                   <meta
                     itemProp="price"
                     content={getOnlyProductPrice(

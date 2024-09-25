@@ -1368,6 +1368,9 @@ video {
   .text-labelGold {
     color: var(--color-label-gold);
   }
+  .text-labelRed {
+    color: var(--color-label-red);
+  }
   .text-neutral-600 {
     color: var(--color-neutral-600);
   }
@@ -1718,6 +1721,7 @@ video {
   --color-neutral-800: #3d3d3d;
   --color-neutral-900: #292929;
   --color-label-gold: #995c00;
+  --color-label-red: blue;
   --grid-1-columns: 4;
   --grid-1-margins: 0;
   --grid-1-gutters: 16px;

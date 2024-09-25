@@ -24,7 +24,7 @@ export const ProductLabelPrimary: FunctionComponent<ProductProps> = ({
     <div
       className={`${baseClass}`}
       style={{
-        color: label.additional_data.text_color || "#000",
+        // color: label.additional_data.text_color || "#000",
         backgroundColor: label.additional_data.background_color || "#fff",
       }}
     >
