@@ -289,6 +289,7 @@ export interface RefinedProduct {
   refineProduct: {
     __typename: string;
     id: number;
+    externalId: string;
     uid: string;
     name: string;
     sku: string;

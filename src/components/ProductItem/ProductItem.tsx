@@ -135,13 +135,17 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   } | null>(defaultColorSwatch);
 
   const prevSelectedSwatch = useRef<{
-    sku: string,
-    optionId: string
+    sku: string;
+    optionId: string;
   } | null>(defaultColorSwatch);
 
   const productSku = refinedProduct?.refineProduct?.sku || product?.sku;
   const productOptions = refinedProduct?.refineProduct?.options || productView?.options;
   const sizeOption = productOptions?.find((option) => option.title === SWATCH_SIZE);
+  const currentProductId = Number(
+    refinedProduct?.refineProduct?.externalId || product.id
+  );
+
   const sizeSwatches: Swatch[] = (sizeOption?.values ?? []).map((swatch) => ({
     ...swatch,
     type: 'SIZE',
@@ -155,15 +159,13 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           if (!selectedColorSwatch || prevSelectedSwatch.current?.optionId === selectedColorSwatch.optionId) {
             return;
           }
-
+          
           const { sku, optionId} = selectedColorSwatch;
           const data = await refineProduct([optionId], sku);
           // Return early if different swatch is selected before request is complete
           if (isSwatchUpdated) {
             return;
           }
-
-          console.log(data)
 
           setImagesFromRefinedProduct(data.refineProduct.images);
           setRefinedProduct(data);
@@ -250,7 +252,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     && sizeSwatches.length > 0
     && !showSizes
     && quickAddStatus === QUICK_ADD_STATUS_IDLE;
-
+    
   const onProductClick = () => {
     window.adobeDataLayer.push((dl: any) => {
       dl.push({
@@ -276,9 +278,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     evt.preventDefault();
     evt.stopPropagation();
 
-    const hasSizeOptions = productView?.options?.some(
-      (swatches) => swatches.title === SWATCH_SIZE
-    );
+    const hasSizeOptions = productView?.options?.some((swatches) => swatches.title === SWATCH_SIZE);
     if ((!listview || viewType !== 'listview') && hasSizeOptions) {
       setShowSizes(true);
       return;
@@ -306,22 +306,23 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     }
   };
 
-  // console.log(refinedProduct)
-  // console.log('this is item', item)
-
+  // Label Data
+  const filteredLabels = useMemo(() => {
+    return labels.filter((label) => label.product_id === currentProductId);
+  }, [labels, currentProductId]);
 
   // Filter for "price"
-  const priceLabels = labels.filter(
+  const priceLabels = filteredLabels.filter(
     (label) => label.additional_data.place === 'price'
   );
 
   // Filter for "gallery"
-  const galleryLabels = labels.filter(
+  const galleryLabels = filteredLabels.filter(
     (label) => label.additional_data.place === 'gallery'
   );
 
   // Filter for "undername"
-  const undernameLabels = labels.filter(
+  const undernameLabels = filteredLabels.filter(
     (label) => label.additional_data.place === 'under_name'
   );
 
@@ -436,8 +437,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     );
   }
 
-  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock)
-    ? 'InStock'
+  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock) 
+    ? 'InStock' 
     : 'OutOfStock';
   return (
     <div itemScope itemType="http://schema.org/Product"
@@ -464,11 +465,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         className="!text-brand-700 hover:no-underline"
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
-          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden target">
-            {/* add label here */}
-            {galleryLabels.map((label) => (
-              <ProductLabelPrimary key={label.alt_tag} label={label} />
-            ))}
+          <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
             {productImageArray.length ? (
               <ImageHover
                 images={
@@ -476,6 +473,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                     ? optimizedImageArray
                     : productImageArray
                 }
+                // productName={product.name}
               />
             ) : (
               <NoImage
@@ -533,12 +531,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
-              priceLabel={priceLabels[0]}
               inStock={productView?.inStock}
             />
-            {undernameLabels.map((label) => (
-              <ProductLabelSecondary key={label.alt_tag} label={label} />
-            ))}
           </div>
         </div>
       </a>

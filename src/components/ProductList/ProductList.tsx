@@ -156,8 +156,6 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
     refreshCart && refreshCart();
   }, [itemAdded]);
 
-  const testProducts = products?.slice(0, 3)
-
   return (
     <div
       className={classNames(
@@ -240,7 +238,7 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
             }}
             className="ds-sdk-product-list__grid mt-md grid gap-y-8 gap-x-sm md:gap-x-9 md:gap-y-9"
           >
-            {testProducts?.map((product) => (
+            {products?.map((product) => (
               <ProductItem
                 item={product}
                 labels={labels ?? []}
