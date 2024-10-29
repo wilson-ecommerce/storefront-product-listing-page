@@ -260,6 +260,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         eventInfo: {
           ...dl.getState(),
           sku: productSku,
+          optionID: selectedColorSwatch?.optionId,
           searchUnitId: SEARCH_UNIT_ID,
         },
       });
