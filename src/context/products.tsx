@@ -151,6 +151,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
 
   const searchCtx = useSearch();
   const storeCtx = useStore();
+  console.log('this is storeCtx', storeCtx)
   const attributeMetadataCtx = useAttributeMetadata();
 
   const pageSizeValue = getValueFromUrl('page_size');

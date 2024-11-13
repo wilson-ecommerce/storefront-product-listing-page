@@ -76,8 +76,8 @@
         displaySearchBox: true, // display search box
         displayOutOfStock: true,
         allowAllProducts: false,
-        currentCategoryUrlPath: 'sportswear/women', // current category url path, please prefer using currentCategoryId
-        currentCategoryId: '488', // current category id
+        // currentCategoryUrlPath: 'sportswear/women',
+        // currentCategoryId: '488',
         /** FRANCHISE VIEW
         categoryConfig: { 'pcm_display_by_franchise': '1' },
         **/
@@ -120,6 +120,8 @@
       //   return `${redirectUrl}/${sku}`;
       // },
       // Will result to `http://localhost:8081/v1/MT11`
+      basicToken: `https://qual-it.ecom.wilson.com/en-us/graphql`,
+      graphqlEndpoint: 'd2lsc29udGVhbXNob3AtZGV2OndpbHMwbnRlYW1zaDBwLUQzVg',
     };
 
     window.adobeDataLayer = window.adobeDataLayer || [];
