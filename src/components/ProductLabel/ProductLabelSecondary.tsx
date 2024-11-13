@@ -18,7 +18,7 @@ export const ProductLabelSecondary: FunctionComponent<ProductProps> = ({
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
 
   return (
-    <div className="ds-sdk-product-label">
+    <div className="ds-sdk-product-label-secondary">
       <p className="text-[12px] font-normal uppercase text-labelGold">{textToRender}</p>
     </div>
   );

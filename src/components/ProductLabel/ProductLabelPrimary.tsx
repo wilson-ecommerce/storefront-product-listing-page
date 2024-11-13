@@ -17,7 +17,7 @@ export const ProductLabelPrimary: FunctionComponent<ProductProps> = ({
   };
 
   const baseClass =
-    'ds-sdk-product-label absolute top-2 left-2 px-2 py-1 border border-black z-20';
+    'ds-sdk-product-label-primary absolute top-2 left-2 px-2 py-1 border border-black z-20';
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
 
   return (
