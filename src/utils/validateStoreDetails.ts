@@ -14,6 +14,7 @@ const validStoreDetailsKeys: Array<keyof StoreDetailsProps> = [
   'searchQuery',
   'basicToken',
   'graphqlEndpoint',
+  'inGridPromoIndexes',
 ];
 
 export const sanitizeString = (value: any) => {

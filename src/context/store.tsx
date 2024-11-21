@@ -34,6 +34,7 @@ export interface StoreDetailsProps extends WithChildrenProps {
   searchQuery?: string; // 'q' default search query param if not provided.
   basicToken?: string;
   graphqlEndpoint?: string;
+  inGridPromoIndexes?:Array<number>;
 }
 
 const StoreContext = createContext<StoreDetailsProps>({
@@ -53,6 +54,7 @@ const StoreContext = createContext<StoreDetailsProps>({
   searchQuery: 'q',
   basicToken: '',
   graphqlEndpoint: '',
+  inGridPromoIndexes: [],
 });
 
 const StoreContextProvider = ({
@@ -69,6 +71,7 @@ const StoreContextProvider = ({
   searchQuery,
   basicToken,
   graphqlEndpoint,
+  inGridPromoIndexes,
 }: StoreDetailsProps) => {
   const storeProps = useMemo(
     () => ({
@@ -91,8 +94,9 @@ const StoreContextProvider = ({
       searchQuery,
       graphqlEndpoint,
       basicToken,
+      inGridPromoIndexes,
     }),
-    [environmentId, websiteCode, storeCode, storeViewCode]
+    [environmentId, websiteCode, storeCode, storeViewCode, inGridPromoIndexes]
   );
 
   const storeContext = {
