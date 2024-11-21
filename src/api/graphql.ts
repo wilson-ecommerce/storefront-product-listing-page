@@ -1,14 +1,30 @@
-const graphqlEndpoint = `https://qual-it.ecom.wilson.com/en-us/graphql`;
-const basicToken = 'd2lsc29udGVhbXNob3AtZGV2OndpbHMwbnRlYW1zaDBwLUQzVg==';
+async function getGraphQL(
+  query = '',
+  variables = {},
+  store = '',
+  basicToken = '',
+  graphqlEndpoint = ''
+) {
+  if (basicToken && graphqlEndpoint) {
+    const response = await fetch(graphqlEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Store: store,
+        Authorization: `Basic ${basicToken}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    }).then((res) => res.json());
 
-async function getGraphQL(query = '', variables = {}, store = '') {
+    return response;
+  }
+
   const response = await fetch(graphqlEndpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Store: store,
-      Authorization: `Basic ${basicToken}`,
-    },
+    headers: { 'Content-Type': 'application/json', Store: store },
     body: JSON.stringify({
       query,
       variables,

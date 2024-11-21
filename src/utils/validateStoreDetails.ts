@@ -12,13 +12,15 @@ const validStoreDetailsKeys: Array<keyof StoreDetailsProps> = [
   'apiKey',
   'route',
   'searchQuery',
+  'basicToken',
+  'graphqlEndpoint',
 ];
 
 export const sanitizeString = (value: any) => {
   // just incase, https://stackoverflow.com/a/23453651
   if (typeof value === 'string') {
     // eslint-disable-next-line no-useless-escape
-    value = value.replace(/[^a-z0-9áéíóúñü \.,_-]/gim, '');
+    value = value.replace(/[^a-z0-9áéíóúñü \.,_:/=-]/gim, '');
     return value.trim();
   }
   return value;
