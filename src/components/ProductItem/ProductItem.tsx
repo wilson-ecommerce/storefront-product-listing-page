@@ -16,6 +16,7 @@ import { useProducts, useSensor, useStore, useTranslation } from '../../context'
 import NoImage from '../../icons/NoImage.svg';
 import {
   ColorSwatchFromAttribute,
+  Label,
   Product,
   ProductViewMedia,
   RedirectRouteFunc,
@@ -25,17 +26,20 @@ import { SEARCH_UNIT_ID } from '../../utils/constants';
 import {
   generateOptimizedImages,
   getProductImagesFromAttribute,
-  getProductImageURLs
+  getProductImageURLs,
 } from '../../utils/getProductImage';
 import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
+import ProductLabelPrimary from '../ProductLabel/ProductLabelPrimary';
+import ProductLabelSecondary from '../ProductLabel/ProductLabelSecondary';
 import { Swatch, SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
 export interface ProductProps {
   item: Product;
+  labels?: Label[];
   currencySymbol: string;
   currencyRate?: string;
   categoryConfig?: Record<string, any>;
@@ -64,6 +68,7 @@ const QUICK_ADD_STATUS_ERROR = 'ERROR';
 
 export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
+  labels = [],
   currencySymbol,
   currencyRate,
   categoryConfig,
@@ -130,13 +135,17 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   } | null>(defaultColorSwatch);
 
   const prevSelectedSwatch = useRef<{
-    sku: string,
-    optionId: string
+    sku: string;
+    optionId: string;
   } | null>(defaultColorSwatch);
 
   const productSku = refinedProduct?.refineProduct?.sku || product?.sku;
   const productOptions = refinedProduct?.refineProduct?.options || productView?.options;
   const sizeOption = productOptions?.find((option) => option.title === SWATCH_SIZE);
+  const currentProductId = Number(
+    refinedProduct?.refineProduct?.externalId || product.id
+  );
+
   const sizeSwatches: Swatch[] = (sizeOption?.values ?? []).map((swatch) => ({
     ...swatch,
     type: 'SIZE',
@@ -243,7 +252,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     && sizeSwatches.length > 0
     && !showSizes
     && quickAddStatus === QUICK_ADD_STATUS_IDLE;
-
+    
   const onProductClick = () => {
     window.adobeDataLayer.push((dl: any) => {
       dl.push({
@@ -297,6 +306,26 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       setQuickAddStatus(QUICK_ADD_STATUS_SUCCESS);
     }
   };
+
+  // Label Data
+  const filteredLabels = useMemo(() => {
+    return labels.filter((label) => label.product_id === currentProductId);
+  }, [labels, currentProductId]);
+
+  // Filter for "price"
+  const priceLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'price'
+  );
+
+  // Filter for "gallery"
+  const galleryLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'gallery'
+  );
+
+  // Filter for "undername"
+  const undernameLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'under_name'
+  );
 
   if (listview && viewType === 'listview') {
     return (
@@ -438,6 +467,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+            {/* add label here */}
+            {galleryLabels.map((label) => (
+              <ProductLabelPrimary key={label.alt_tag} label={label} />
+            ))}
             {productImageArray.length ? (
               <ImageHover
                 images={
@@ -503,8 +536,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
               inStock={productView?.inStock}
             />
+           {undernameLabels.map((label) => (
+              <ProductLabelSecondary key={label.alt_tag} label={label} />
+            ))}
           </div>
         </div>
       </a>

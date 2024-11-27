@@ -130,6 +130,7 @@ const Product = `
     fragment Product on ProductSearchItem {
         product {
             __typename
+            id
             sku
             description {
                 html

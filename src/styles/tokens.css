@@ -22,6 +22,8 @@
   --color-neutral-700: #666;
   --color-neutral-800: #3d3d3d;
   --color-neutral-900: #292929;
+  --color-label-gold: #995c00;
+  --color-label-red: #C8102E;
 
   --grid-1-columns: 4;
   --grid-1-margins: 0;
@@ -338,7 +340,6 @@
 .add-to-cart-overlay .status.status-error::before {
   content: '✕';
 }
-
 
 .ds-sdk-product-image {
   transition: background-image .2s cubic-bezier(0.455, 0.03, 0.515, 0.955) .2s;
