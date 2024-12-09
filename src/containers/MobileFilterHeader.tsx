@@ -102,7 +102,7 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
   }
 
   return (
-    <div className="flex flex-col max-w-5xl lg:max-w-full ml-auto w-full h-full">
+    <div className="flex flex-col max-w-full ml-auto w-full h-full">
       {!screenSize.mobile && productsCtx.totalCount && (
         <CategoryFilters
           pageLoading={productsCtx.pageLoading}
