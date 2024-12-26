@@ -15,6 +15,11 @@ export const ProductLabelSecondary: FunctionComponent<ProductProps> = ({
     61: 'Custom?',
     262: 'Sold Out',
   };
+
+  if (!label.txt && !label.image) {
+    return null;
+  }
+
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
 
   return (

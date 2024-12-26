@@ -16,6 +16,10 @@ export const ProductLabelPrimary: FunctionComponent<ProductProps> = ({
     262: 'Sold Out',
   };
 
+  if (!label.txt && !label.image) {
+    return null;
+  }
+
   const baseClass =
     'ds-sdk-product-label-primary absolute top-2 left-2 px-2 py-1 border border-black z-20';
   const textToRender = label.txt || defaultTexts[label.label_id] || '';
