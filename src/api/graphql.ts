@@ -5,26 +5,24 @@ async function getGraphQL(
   basicToken = '',
   graphqlEndpoint = ''
 ) {
-  if (basicToken && graphqlEndpoint) {
-    const response = await fetch(graphqlEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Store: store,
-        Authorization: `Basic ${basicToken}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    }).then((res) => res.json());
+  const endpoint = graphqlEndpoint || `${window.origin}/graphql`;
 
-    return response;
+  const headers: {
+    'Content-Type': string;
+    Store: string;
+    Authorization?: string;
+  } = {
+    'Content-Type': 'application/json',
+    Store: store,
+  };
+
+  if (basicToken) {
+    headers.Authorization = `Basic ${basicToken}`;
   }
 
-  const response = await fetch(graphqlEndpoint, {
+  const response = await fetch(endpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Store: store },
+    headers,
     body: JSON.stringify({
       query,
       variables,
