@@ -378,11 +378,11 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
           categoryId,
         });
 
-        const testItems = [...(data?.productSearch?.items || [])];
+        const searchItems = [...(data?.productSearch?.items || [])];
 
         const productIds: string[] = [];
 
-        testItems.forEach((item) => {
+        searchItems.forEach((item) => {
           const colorSwatch = getColorSwatchesFromAttribute(
             item.productView,
             storeCtx.config.currentCategoryId
