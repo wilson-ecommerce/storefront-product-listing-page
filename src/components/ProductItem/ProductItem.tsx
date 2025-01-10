@@ -32,8 +32,7 @@ import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
-import ProductLabelPrimary from '../ProductLabel/ProductLabelPrimary';
-import ProductLabelSecondary from '../ProductLabel/ProductLabelSecondary';
+import ProductLabel from '../ProductLabel/ProductLabel';
 import { Swatch, SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
@@ -159,7 +158,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           if (!selectedColorSwatch || prevSelectedSwatch.current?.optionId === selectedColorSwatch.optionId) {
             return;
           }
-          
+
           const { sku, optionId} = selectedColorSwatch;
           const data = await refineProduct([optionId], sku);
           // Return early if different swatch is selected before request is complete
@@ -252,7 +251,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     && sizeSwatches.length > 0
     && !showSizes
     && quickAddStatus === QUICK_ADD_STATUS_IDLE;
-    
+
   const onProductClick = () => {
     window.adobeDataLayer.push((dl: any) => {
       dl.push({
@@ -438,8 +437,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     );
   }
 
-  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock) 
-    ? 'InStock' 
+  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock)
+    ? 'InStock'
     : 'OutOfStock';
   return (
     <div itemScope itemType="http://schema.org/Product"
@@ -469,7 +468,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
             {/* add label here */}
             {galleryLabels.map((label) => (
-              <ProductLabelPrimary key={label.alt_tag} label={label} />
+              <ProductLabel key={label.alt_tag} label={label} variant="primary" />
             ))}
             {productImageArray.length ? (
               <ImageHover
@@ -540,7 +539,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               inStock={productView?.inStock}
             />
            {undernameLabels.map((label) => (
-              <ProductLabelSecondary key={label.alt_tag} label={label} />
+              <ProductLabel key={label.alt_tag} label={label} variant="secondary" />
             ))}
           </div>
         </div>
