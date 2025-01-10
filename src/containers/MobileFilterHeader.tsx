@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Drawer } from 'src/components/Drawer/Drawer';
 import MobileFacets from 'src/components/MobileFacets';
 
-import { CategoryFilters } from "../components";
+import { CategoryFilters, SelectedFilters } from "../components";
 import { FilterButton } from '../components/FilterButton';
 import {
   useAttributeMetadata,
@@ -28,6 +28,7 @@ import {
   generateGQLSortInput,
   getSortOptionsfromMetadata,
 } from '../utils/sort';
+import { FranchiseViewSelector } from "../components/Facets/FranchiseViewSelector";
 
 interface Props {
   facets: Facet[];
@@ -62,7 +63,7 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
   );
 
   const [showMobileFacet, setShowMobileFacet] = useState(
-    !!productsCtx.variables.filter?.length
+    false
   );
   const [sortOptions, setSortOptions] = useState(defaultSortOptions());
 
@@ -96,13 +97,9 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
     handleUrlSort(sortOption);
   };
 
-  if (totalCount === 0) {
-    return null;
-  }
-
   return (
-    <div className="flex flex-col max-w-5xl lg:max-w-full ml-auto w-full h-full">
-      {!screenSize.mobile && productsCtx.totalCount && (
+    <div className="flex flex-col max-w-full ml-auto w-full h-full">
+      {!screenSize.mobile && (
         <CategoryFilters
           pageLoading={productsCtx.pageLoading}
           facets={productsCtx.facets}
@@ -117,6 +114,19 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
               displayFilter={() => setShowMobileFacet(!showMobileFacet)}
               type="mobile"
             />
+          </div>
+        </div>
+      )}
+      {screenSize.mobile && (
+        <div className={'mobile-franchise'}>
+          <div className={'franchise-counter'}>
+            {storeCtx.config.categoryConfig?.pcm_display_by_franchise === '0' && (
+              <FranchiseViewSelector/>
+            )}
+            <SelectedFilters totalCount={totalCount} isCount={true}/>
+          </div>
+          <div className={'mobile-pills'}>
+            <SelectedFilters totalCount={totalCount} isCount={false}/>
           </div>
         </div>
       )}

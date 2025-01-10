@@ -15,6 +15,10 @@
   float: right
 }
 
+.mobile-franchise .result-count {
+  padding-left: 12px;
+}
+
 .mobile-filters-container .apply-buttons {
   background: rgba(255, 255, 255, 0.25);
 }
@@ -37,7 +41,7 @@
 }
 
 .mobile-filters-container .price-range-submit {
-  font-family: var(--ff-gt-america-expanded)
+  font-family: var(--body-font-family)
 }
 
 @media (min-width: 768px) {
@@ -48,7 +52,6 @@
 
 @media (max-width: 768px) {
   .franchise-selector {
-    float: none;
     align-self: end;
     padding-right: 12px;
     margin-top: 15px;
