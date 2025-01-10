@@ -12,17 +12,11 @@ export const ProductLabel: FunctionComponent<ProductLabelProps> = ({
   label,
   variant,
 }) => {
-  const defaultTexts: { [key: number]: string } = {
-    30: 'Out of Stock',
-    61: 'Custom?',
-    262: 'Sold Out',
-  };
-
   if (!label.txt && !label.image) {
     return null;
   }
 
-  const textToRender = label.txt || defaultTexts[label.label_id] || '';
+  const textToRender = label.txt || '';
 
   const variantStyles = {
     primary: {
