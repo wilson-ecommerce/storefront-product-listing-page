@@ -11,8 +11,8 @@ import { FunctionComponent } from 'preact';
 import { useContext } from 'preact/hooks';
 
 import { TranslationContext } from '../../context/translation';
-import { Product, RefinedProduct } from '../../types/interface';
-import { getOnlyProductPrice,getProductPrice } from '../../utils/getProductPrice';
+import { Label, Product, RefinedProduct } from '../../types/interface';
+import { getOnlyProductPrice, getProductPrice } from '../../utils/getProductPrice';
 
 export interface ProductPriceProps {
   isComplexProductView: boolean;
@@ -24,6 +24,7 @@ export interface ProductPriceProps {
   discount: boolean | undefined;
   currencySymbol: string;
   currencyRate?: string;
+  priceLabel?: Label;
   inStock?: boolean | undefined;
 }
 
@@ -37,6 +38,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
   discount,
   currencySymbol,
   currencyRate,
+  priceLabel,
   inStock
 }: ProductPriceProps) => {
   const translation = useContext(TranslationContext);
@@ -159,94 +161,128 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
     return discountPrice;
   };
 
+  const getPriceLabel = () => {
+    if (priceLabel) {
+      return <span className="ml-2 text-neutral-700">{priceLabel.txt}</span>;
+    }
+  };
+
+  // const renderPriceWithLabel = (price: string | ReactNode) => {
+  //   const priceClass = priceLabel ? 'line-through' : '';
+
+  //   return (
+  //     <span className="price-wrapper">
+  //       <span className={priceClass}>{price}</span>
+  //       {priceLabel && <span>{priceLabel.txt}</span>}
+  //     </span>
+  //   );
+  // };
+
   return (
     <>
       {price && (
-          <div className="ds-sdk-product-price" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-            <meta itemProp="priceCurrency" content="USD"/>
-            <meta itemProp="availability" content={inStock ? 'InStock' : 'OutOfStock'}/>
-            {!isBundle &&
-                !isGrouped &&
-                !isConfigurable &&
-                !isComplexProductView &&
-                discount && (
-                    <p className="ds-sdk-product-price--discount font-headline-4-strong">
+        <div
+          className="ds-sdk-product-price"
+          itemProp="offers"
+          itemScope
+          itemType="https://schema.org/Offer"
+        >
+          <meta itemProp="priceCurrency" content="USD" />
+          <meta
+            itemProp="availability"
+            content={inStock ? 'InStock' : 'OutOfStock'}
+          />
+          {!isBundle &&
+            !isGrouped &&
+            !isConfigurable &&
+            !isComplexProductView &&
+            discount && (
+              <p className="ds-sdk-product-price--discount font-headline-4-strong">
                 <span className="line-through pr-2 text-brand-300">
                   {getProductPrice(
-                      item,
-                      currencySymbol,
-                      currencyRate,
-                      false,
-                      false
+                    item,
+                    currencySymbol,
+                    currencyRate,
+                    false,
+                    false
                   )}
                 </span>
-                      <span className="text-brand-600">
-                        <meta itemProp="price" content={getOnlyProductPrice(
-                            item,
-                            currencyRate,
-                            false,
-                            true)}/>
-                        {getProductPrice(
-                            item,
-                            currencySymbol,
-                            currencyRate,
-                            false,
-                            true
-                        )}
+                <span className="text-labelRed">
+                  <meta
+                    itemProp="price"
+                    content={getOnlyProductPrice(
+                      item,
+                      currencyRate,
+                      false,
+                      true
+                    )}
+                  />
+                  {getProductPrice(
+                    item,
+                    currencySymbol,
+                    currencyRate,
+                    false,
+                    true
+                  )}
                 </span>
-                    </p>
-                )}
-
-            {!isBundle &&
-                !isGrouped &&
-                !isGiftCard &&
-                !isConfigurable &&
-                !isComplexProductView &&
-                !discount && (
-                    <p className="ds-sdk-product-price--no-discount font-headline-4-strong">
-                      <meta itemProp="price" content={getOnlyProductPrice(
-                          item,
-                          currencyRate,
-                          false,
-                          true)}/>
-                      {getProductPrice(
-                          item,
-                          currencySymbol,
-                          currencyRate,
-                          false,
-                          true
-                      )}
-                    </p>
-                )}
-
-            {isBundle && (
-                <div className="ds-sdk-product-price--bundle">
-                  <p className="mt-xs font-headline-4-default">
-                    {getBundledPrice(item, currencySymbol, currencyRate)}
-                  </p>
-                </div>
+                {getPriceLabel()}
+              </p>
             )}
 
-            {isGrouped && (
-                <p className="ds-sdk-product-price--grouped font-headline-4-strong">
-                  {getPriceFormat(item, currencySymbol, currencyRate, false)}
-                </p>
-            )}
-
-            {isGiftCard && (
-                <p className="ds-sdk-product-price--gift-card font-headline-4-strong">
-                  {getPriceFormat(item, currencySymbol, currencyRate, true)}
-                </p>
-            )}
-
-            {!isGrouped &&
-                !isBundle &&
-                (isConfigurable || isComplexProductView) && (
-                    <p className="ds-sdk-product-price--configurable font-headline-4-strong">
-                      {getDiscountedPrice(discount)}
-                    </p>
+          {!isBundle &&
+            !isGrouped &&
+            !isGiftCard &&
+            !isConfigurable &&
+            !isComplexProductView &&
+            !discount && (
+              <p className="ds-sdk-product-price--no-discount font-headline-4-strong">
+                <meta
+                  itemProp="price"
+                  content={getOnlyProductPrice(item, currencyRate, false, true)}
+                />
+                {getProductPrice(
+                  item,
+                  currencySymbol,
+                  currencyRate,
+                  false,
+                  true
                 )}
-          </div>
+                {getPriceLabel()}
+              </p>
+            )}
+
+          {isBundle && (
+            <div className="ds-sdk-product-price--bundle">
+              <p className="mt-xs font-headline-4-default">
+                {getBundledPrice(item, currencySymbol, currencyRate)}
+                {getPriceLabel()}
+              </p>
+            </div>
+          )}
+
+          {isGrouped && (
+            <p className="ds-sdk-product-price--grouped font-headline-4-strong">
+              {getPriceFormat(item, currencySymbol, currencyRate, false)}
+              {getPriceLabel()}
+            </p>
+          )}
+
+          {isGiftCard && (
+            <p className="ds-sdk-product-price--gift-card font-headline-4-strong">
+              {getPriceFormat(item, currencySymbol, currencyRate, true)}
+              {getPriceLabel()}
+            </p>
+          )}
+
+          {!isGrouped &&
+            !isBundle &&
+            (isConfigurable || isComplexProductView) && (
+              <p className="ds-sdk-product-price--configurable font-headline-4-strong">
+                {getDiscountedPrice(discount)}
+                {getPriceLabel()}
+              </p>
+            )}
+        </div>
       )}
     </>
   );

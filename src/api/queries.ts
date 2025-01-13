@@ -149,6 +149,7 @@ const REFINE_PRODUCT_QUERY = `
         ) {
             __typename
             id
+            externalId
             sku
             name
             inStock
@@ -235,6 +236,32 @@ const GET_CUSTOMER_CART = `
     }
 `;
 
+const GET_PRODUCT_LABELS_QUERY = `
+  query WilsonAmLabelProvider($productIds: [Int]!, $mode: AmLabelMode!) {
+    wilsonAmLabelProvider(productIds: $productIds, mode: $mode) {
+      items {
+        label_id
+        product_id
+        position
+        name
+        txt
+        image
+        size
+        style
+        is_visible
+        redirect_url
+        alt_tag
+        additional_data {
+          place
+          icon
+          text_color
+          background_color
+        }
+      }
+    }
+  }
+`;
+
 export {
   ATTRIBUTE_METADATA_QUERY,
   GET_CUSTOMER_CART,
@@ -242,4 +269,5 @@ export {
   QUICK_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
   CATEGORY_QUERY,
+  GET_PRODUCT_LABELS_QUERY
 };
