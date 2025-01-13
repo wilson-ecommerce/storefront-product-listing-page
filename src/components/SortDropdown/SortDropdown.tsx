@@ -75,7 +75,7 @@ export const SortDropdown: FunctionComponent<SortDropdownProps> = ({
         >
           {translation.SortDropdown.title}
         </label>
-        <fieldset className={'ds-sdk-input__options pb-4 md:mt-0 none-display'}>
+        <fieldset className={'ds-sdk-input__options mb-md md:mt-0 none-display'}>
           <div className={'space-y-4'}>
             {sortOptions.map((option, i) => (
               <div
