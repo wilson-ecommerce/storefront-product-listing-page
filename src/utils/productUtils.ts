@@ -40,10 +40,18 @@ export function getImageConfigsFromAttribute(productView: ProductView) {
 * 6. Validate if the option has the attribute type as "visual" and show_swatches is true
 * 7. If the above condition is met, return the image options
 */
+
 function getColorSwatchesFromAttribute(productView: ProductView, categoryId?: string): ColorSwatchFromAttribute[] {
   const imageConfigsFromAttribute = getImageConfigsFromAttribute(productView);
-  const colorOptionsFromAttribute = imageConfigsFromAttribute.find((config: any) => config.attribute_type === 'visual'
-    && config.show_swatches);
+
+  //Filter out labels with "Fake Axis"
+  const filteredImageConfigs = imageConfigsFromAttribute.filter(
+    (config: any) => config.attribute_label !== "Fake Axis"
+  );
+
+  const colorOptionsFromAttribute = filteredImageConfigs.find(
+    (config: any) => config.attribute_type === 'visual' && config.show_swatches
+  );
 
   const segmentedOptions = categoryId ? getSegmentedOptions(productView, colorOptionsFromAttribute?.attribute_id, categoryId) : null;
   return (colorOptionsFromAttribute?.images ?? [])
