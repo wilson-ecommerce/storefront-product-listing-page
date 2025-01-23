@@ -8,11 +8,10 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { useState, useEffect } from 'preact/hooks';
+import { useEffect,useState } from 'preact/hooks';
 import Enrichment from 'src/components/Enrichment';
 import FilterButton from 'src/components/FilterButton';
 import Loading from 'src/components/Loading';
-import Shimmer from 'src/components/Shimmer';
 
 import {
   useProducts,
