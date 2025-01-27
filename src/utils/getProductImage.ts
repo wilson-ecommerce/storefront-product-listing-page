@@ -7,7 +7,7 @@ accordance with the terms of the Adobe license agreement accompanying
 it.
 */
 import { ProductView, ProductViewMedia } from '../types/interface';
-import { 
+import {
   getColorOptionsFromProductOptions,
   getImageConfigsFromAttribute,
   getSegmentedOptions,
@@ -142,13 +142,13 @@ function getProductImagesFromAttribute(productView: ProductView, categoryId?: st
       const colorVariantId = firstColorOptionsFromProductOptions?.id;
       const defaultColorOption = colorOptionsFromAttribute.images.find((colorOption: any) => colorOption.id === colorVariantId)
         || colorOptionsFromAttribute.images[0];
-    
-      return getAbsoluteImageUrl(productView, [defaultColorOption.image, defaultColorOption.back_view_image]);
+
+      return getAbsoluteImageUrl(productView, [defaultColorOption.small_image, defaultColorOption.back_view_image]);
     }
-    
+
     const segmentedOptions = categoryId ? getSegmentedOptions(productView, colorOptionsFromProductOptions?.id || null, categoryId) : null;
     const defaultColorOption = colorOptionsFromAttribute.images.find((option: any) => !segmentedOptions || segmentedOptions.includes(option.id));
-    return getAbsoluteImageUrl(productView, [defaultColorOption.image, defaultColorOption.back_view_image]);
+    return getAbsoluteImageUrl(productView, [defaultColorOption.small_image, defaultColorOption.back_view_image]);
   }
 
   return [];
