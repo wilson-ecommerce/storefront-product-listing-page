@@ -13,6 +13,7 @@ import { Drawer } from 'src/components/Drawer/Drawer';
 import MobileFacets from 'src/components/MobileFacets';
 
 import { CategoryFilters, SelectedFilters } from "../components";
+import { FranchiseViewSelector } from "../components/Facets/FranchiseViewSelector";
 import { FilterButton } from '../components/FilterButton';
 import {
   useAttributeMetadata,
@@ -28,7 +29,6 @@ import {
   generateGQLSortInput,
   getSortOptionsfromMetadata,
 } from '../utils/sort';
-import { FranchiseViewSelector } from "../components/Facets/FranchiseViewSelector";
 
 interface Props {
   facets: Facet[];
