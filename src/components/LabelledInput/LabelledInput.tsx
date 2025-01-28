@@ -99,7 +99,7 @@ export const LabelledInput: FunctionComponent<LabelledInputProps> = ({
           </div>
         )}
 
-        {!isRangeInput && (
+        {!isRangeInput && value !== '0' &&(
           <div className="ds-sdk-labelled-input flex gap-4 items-center">
             <input
               id={name}
