@@ -8,7 +8,6 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { Input } from "postcss";
 
 export type LabelledInputOnChangeProps = {
   value: string;
@@ -43,7 +42,7 @@ export const LabelledInput: FunctionComponent<LabelledInputProps> = ({
   const href = `${window.location.origin}/${window.location.pathname.split('/')[1]}/${value}`
 
   const getRangeValue = (rangePosition: number) => {
-    let params = new URLSearchParams(document.location.search)
+    const params = new URLSearchParams(document.location.search)
 
     if (params.has('price')) {
       return (params.get('price') as string).split('--')[rangePosition]
