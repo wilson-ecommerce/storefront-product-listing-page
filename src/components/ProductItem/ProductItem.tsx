@@ -25,7 +25,7 @@ import { SEARCH_UNIT_ID } from '../../utils/constants';
 import {
   generateOptimizedImages,
   getProductImagesFromAttribute,
-  getProductImageURLs
+  getProductImageURLs,
 } from '../../utils/getProductImage';
 import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
@@ -203,15 +203,21 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     return selected;
   };
 
+  const isBundleProduct = product.__typename === 'BundleProduct'
+
   const productImageArray = imagesFromRefinedProduct
     ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
     : getProductImagesFromAttribute(productView, currentCategoryId);
 
+  const bundleImageArray = getProductImageURLs(productView.images ?? [], 2);
+
   let optimizedImageArray: { src: string; srcset: any }[] = [];
+
+  const imageArray = isBundleProduct ? bundleImageArray : productImageArray
 
   if (optimizeImages) {
     optimizedImageArray = generateOptimizedImages(
-      productImageArray,
+      imageArray,
       imageBaseWidth ?? 200,
       imageBackgroundColor || ''
     );
@@ -311,12 +317,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               className="!text-brand-700 hover:no-underline"
             >
               {/* Image */}
-              {productImageArray.length ? (
+              {imageArray.length ? (
                 <ImageHover
                   images={
                     optimizedImageArray.length
                       ? optimizedImageArray
-                      : productImageArray
+                      : imageArray
                   }
                   // productName={product.name}
                 />
@@ -409,8 +415,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     );
   }
 
-  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock) 
-    ? 'InStock' 
+  const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock)
+    ? 'InStock'
     : 'OutOfStock';
   return (
     <div itemScope itemType="http://schema.org/Product"
@@ -438,12 +444,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
-            {productImageArray.length ? (
+            {imageArray.length ? (
               <ImageHover
                 images={
                   optimizedImageArray.length
                     ? optimizedImageArray
-                    : productImageArray
+                    : imageArray
                 }
                 // productName={product.name}
               />
