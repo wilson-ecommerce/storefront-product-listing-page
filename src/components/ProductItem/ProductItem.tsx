@@ -67,7 +67,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   currencySymbol,
   currencyRate,
   categoryConfig,
-  setRoute,
   refineProduct,
   addToCart,
   disableAllPurchases,
@@ -88,8 +87,9 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const { screenSize } = useSensor();
   const translation = useTranslation();
 
+  const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(productView, currentCategoryId);
+
   const { colorSwatches, defaultColorSwatch} = useMemo(() => {
-    const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(productView, currentCategoryId);
     const colorSwatches: Swatch[] = colorSwatchesFromAttribute.map((swatch: ColorSwatchFromAttribute) => {
       const {
         id,
@@ -150,7 +150,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           if (!selectedColorSwatch || prevSelectedSwatch.current?.optionId === selectedColorSwatch.optionId) {
             return;
           }
-          
+
           const { sku, optionId} = selectedColorSwatch;
           const data = await refineProduct([optionId], sku);
           // Return early if different swatch is selected before request is complete
@@ -263,14 +263,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       });
     });
   };
-
-  const productUrl = setRoute
-    ? setRoute({
-        sku: productSku,
-        urlKey: refinedProduct?.refineProduct?.urlKey || productView?.urlKey,
-        optionsUIDs: !isSportsWear(productView) && selectedColorSwatch ? [selectedColorSwatch.optionId] : null,
-      })
-    : refinedProduct?.refineProduct?.url || product?.canonical_url;
+  const swatchSelected = colorSwatchesFromAttribute.find((swatch: any) => swatch.id === selectedColorSwatch?.optionId);
+  const productUrl = swatchSelected?.url || productView?.url;
 
   const handleAddToCart = async (evt: any) => {
     evt.preventDefault();

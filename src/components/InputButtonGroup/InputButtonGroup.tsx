@@ -91,7 +91,10 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
     return bucket.title;
   };
 
+  const disabledGroup = buckets.length === 1 && buckets[0].title === '0';
+
   return (
+    !disabledGroup ? (
     <div className="ds-sdk-input">
       {inputGroupTitleSlot ? (
         inputGroupTitleSlot(title)
@@ -145,5 +148,8 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
       </fieldset>
       <div className="ds-sdk-input__border border-t border-neutral-500"/>
     </div>
+    ) : (
+      <></>
+    )
   );
 };
