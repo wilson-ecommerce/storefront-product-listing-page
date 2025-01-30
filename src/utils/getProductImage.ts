@@ -28,7 +28,7 @@ const getProductImageURLs = (
   for (const image of images) {
     const imageUrl = image.url?.replace(/^https?:\/\//, '');
     if (isValidImageUrl(imageUrl)) {
-      if (image.roles?.includes('image')) {
+      if (image.roles?.includes('small_image')) {
         topImageUrl = imageUrl;
       } else {
         imageUrlArray.push(`${protocol}//${imageUrl}`);
