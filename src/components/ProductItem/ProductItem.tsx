@@ -71,7 +71,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   currencySymbol,
   currencyRate,
   categoryConfig,
-  setRoute,
   refineProduct,
   addToCart,
   disableAllPurchases,
@@ -92,8 +91,9 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const { screenSize } = useSensor();
   const translation = useTranslation();
 
+  const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(productView, currentCategoryId);
+
   const { colorSwatches, defaultColorSwatch} = useMemo(() => {
-    const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(productView, currentCategoryId);
     const colorSwatches: Swatch[] = colorSwatchesFromAttribute.map((swatch: ColorSwatchFromAttribute) => {
       const {
         id,
@@ -211,15 +211,21 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     return selected;
   };
 
+  const isBundleProduct = product.__typename === 'BundleProduct'
+
   const productImageArray = imagesFromRefinedProduct
     ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
     : getProductImagesFromAttribute(productView, currentCategoryId);
 
+  const bundleImageArray = getProductImageURLs(productView.images ?? [], 2);
+
   let optimizedImageArray: { src: string; srcset: any }[] = [];
+
+  const imageArray = isBundleProduct ? bundleImageArray : productImageArray
 
   if (optimizeImages) {
     optimizedImageArray = generateOptimizedImages(
-      productImageArray,
+      imageArray,
       imageBaseWidth ?? 200,
       imageBackgroundColor || ''
     );
@@ -265,14 +271,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       });
     });
   };
-
-  const productUrl = setRoute
-    ? setRoute({
-        sku: productSku,
-        urlKey: refinedProduct?.refineProduct?.urlKey || productView?.urlKey,
-        optionsUIDs: !isSportsWear(productView) && selectedColorSwatch ? [selectedColorSwatch.optionId] : null,
-      })
-    : refinedProduct?.refineProduct?.url || product?.canonical_url;
+  const swatchSelected = colorSwatchesFromAttribute.find((swatch: any) => swatch.id === selectedColorSwatch?.optionId);
+  const productUrl = swatchSelected?.url || productView?.url;
 
   const handleAddToCart = async (evt: any) => {
     evt.preventDefault();
@@ -339,12 +339,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               className="!text-brand-700 hover:no-underline"
             >
               {/* Image */}
-              {productImageArray.length ? (
+              {imageArray.length ? (
                 <ImageHover
                   images={
                     optimizedImageArray.length
                       ? optimizedImageArray
-                      : productImageArray
+                      : imageArray
                   }
                   // productName={product.name}
                 />
@@ -470,12 +470,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
             {galleryLabels.map((label) => (
               <ProductLabel key={label.alt_tag} label={label} variant="primary" />
             ))}
-            {productImageArray.length ? (
+            {imageArray.length ? (
               <ImageHover
                 images={
                   optimizedImageArray.length
                     ? optimizedImageArray
-                    : productImageArray
+                    : imageArray
                 }
                 // productName={product.name}
               />

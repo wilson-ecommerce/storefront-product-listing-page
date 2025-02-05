@@ -91,7 +91,10 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
     return bucket.title;
   };
 
+  const disabledGroup = buckets.length === 1 && buckets[0].title === '0';
+
   return (
+    !disabledGroup ? (
     <div className="ds-sdk-input">
       {inputGroupTitleSlot ? (
         inputGroupTitleSlot(title)
@@ -109,7 +112,7 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
             className="ds-sdk-input__label text-neutral-900 text-sm font-semibold py-md w-full h-full ib-display flex flex-row">{title}</label>
         ))
       )}
-      <fieldset className={`ds-sdk-input__options mt-4 md:mt-0 ${isHidden ? 'none-display' : ''}`}>
+      <fieldset className={`ds-sdk-input__options mb-md md:mt-0 ${isHidden ? 'none-display' : ''}`}>
         <div className="space-y-4">
           {buckets.map((option) => {
             const checked = isSelected(option.title);
@@ -145,5 +148,8 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
       </fieldset>
       <div className="ds-sdk-input__border border-t border-neutral-500"/>
     </div>
+    ) : (
+      <></>
+    )
   );
 };

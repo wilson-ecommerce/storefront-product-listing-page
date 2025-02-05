@@ -9,7 +9,7 @@ it.
 
 import {FunctionComponent} from 'preact';
 import {HTMLAttributes} from 'preact/compat';
-import {useEffect,useState} from 'preact/hooks';
+import {useEffect, useState} from 'preact/hooks';
 
 import './product-list.css';
 

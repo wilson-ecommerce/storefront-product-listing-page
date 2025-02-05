@@ -9,7 +9,7 @@ it.
 
 import {  FunctionComponent } from 'preact';
 import { useEffect } from 'preact/hooks';
-import { ProductCardShimmer } from 'src/components/ProductCardShimmer';
+import Loading from 'src/components/Loading';
 import {useProducts, useSearch, useSensor, useStore, useTranslation} from 'src/context';
 import {
   handleUrlPagination,
@@ -30,6 +30,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
   const productsCtx = useProducts();
   const { displayFranchises } = useSearch();
   const { screenSize } = useSensor();
+  const translation = useTranslation();
 
   const {
     variables,
@@ -52,8 +53,6 @@ export const ProductsContainer: FunctionComponent<Props> = ({
     }
   }, []);
 
-  const productCardArray = Array.from({ length: 8 });
-
   const goToPage = (page: number | string) => {
     if (typeof page === 'number') {
       setCurrentPage(page);
@@ -61,7 +60,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
     }
   };
 
-  const translation = useTranslation();
+  const loadingLabel = translation.Loading.title;
 
   if (!minQueryLengthReached) {
     const templateMinQueryText = translation.ProductContainers.minquery;
@@ -98,17 +97,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
   return (
     <>
       {loading ? (
-        <div
-          style={{
-            gridTemplateColumns: `repeat(${screenSize.columns}, minmax(0, 1fr))`,
-          }}
-          className="ds-sdk-product-list__grid mt-md grid grid-cols-1 gap-y-8 gap-x-md sm:grid-cols-2 md:grid-cols-3 xl:gap-x-4 pl-8"
-        >
-          {' '}
-          {productCardArray.map((_, index) => (
-            <ProductCardShimmer key={index} />
-          ))}
-        </div>
+        <Loading label={loadingLabel} />
       ) : (
         <ProductList
           products={items}
