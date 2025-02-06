@@ -266,9 +266,20 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const swatchSelected = colorSwatchesFromAttribute.find((swatch: any) => swatch.id === selectedColorSwatch?.optionId);
   const productUrl = swatchSelected?.url || productView?.url;
 
-  const handleAddToCart = async (evt: any) => {
+  const handleAddToCart = async (evt: any, quickAdd = false) => {
     evt.preventDefault();
     evt.stopPropagation();
+
+    if (quickAdd) {
+      window.adobeDataLayer.push((dl: any) => {
+        dl.push({
+          event: 'quickAddClicked',
+          eventInfo: {
+            sku: productSku,
+          },
+        });
+      });
+    }   
 
     const hasSizeOptions = productView?.options?.some((swatches) => swatches.title === SWATCH_SIZE);
     if ((!listview || viewType !== 'listview') && hasSizeOptions) {
@@ -466,7 +477,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                   )}
                 </div>
               )}
-              {shouldShowAddToBagButton && <AddToCartButton onClick={handleAddToCart} />}
+              {shouldShowAddToBagButton && <AddToCartButton onClick={(evt) => handleAddToCart(evt, true)} />}
               {showSizes && sizeSwatches.length > 0 && (
                 <SwatchButtonGroup
                   isSelected={() => false}
