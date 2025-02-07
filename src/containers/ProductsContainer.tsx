@@ -44,6 +44,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
     minQueryLengthReached,
     loading,
     franchises,
+    labels
   } = productsCtx;
 
   useEffect(() => {
@@ -100,6 +101,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
       ) : (
         <ProductList
           products={items}
+          labels={labels}
           franchises={franchises}
           numberOfColumns={screenSize.columns}
           showFilters={showFilters}

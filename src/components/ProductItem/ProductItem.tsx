@@ -16,6 +16,7 @@ import { useProducts, useSensor, useStore, useTranslation } from '../../context'
 import NoImage from '../../icons/NoImage.svg';
 import {
   ColorSwatchFromAttribute,
+  Label,
   Product,
   ProductViewMedia,
   RedirectRouteFunc,
@@ -31,11 +32,13 @@ import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
 import ImageHover from '../ImageHover';
+import ProductLabel from '../ProductLabel/ProductLabel';
 import { Swatch, SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
 
 export interface ProductProps {
   item: Product;
+  labels?: Label[];
   currencySymbol: string;
   currencyRate?: string;
   categoryConfig?: Record<string, any>;
@@ -64,6 +67,7 @@ const QUICK_ADD_STATUS_ERROR = 'ERROR';
 
 export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
+  labels = [],
   currencySymbol,
   currencyRate,
   categoryConfig,
@@ -130,13 +134,17 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   } | null>(defaultColorSwatch);
 
   const prevSelectedSwatch = useRef<{
-    sku: string,
-    optionId: string
+    sku: string;
+    optionId: string;
   } | null>(defaultColorSwatch);
 
   const productSku = refinedProduct?.refineProduct?.sku || product?.sku;
   const productOptions = refinedProduct?.refineProduct?.options || productView?.options;
   const sizeOption = productOptions?.find((option) => option.title === SWATCH_SIZE);
+  const currentProductId = Number(
+    refinedProduct?.refineProduct?.externalId || product.id
+  );
+
   const sizeSwatches: Swatch[] = (sizeOption?.values ?? []).map((swatch) => ({
     ...swatch,
     type: 'SIZE',
@@ -309,6 +317,26 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     }
   };
 
+  // Label Data
+  const filteredLabels = useMemo(() => {
+    return labels.filter((label) => label.product_id === currentProductId);
+  }, [labels, currentProductId]);
+
+  // Filter for "price"
+  const priceLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'price'
+  );
+
+  // Filter for "gallery"
+  const galleryLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'gallery'
+  );
+
+  // Filter for "undername"
+  const undernameLabels = filteredLabels.filter(
+    (label) => label.additional_data.place === 'under_name'
+  );
+
   if (listview && viewType === 'listview') {
     return (
       <>
@@ -449,6 +477,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       >
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
+            {/* add label here */}
+            {galleryLabels.map((label) => (
+              <ProductLabel key={label.alt_tag} label={label} variant="primary" />
+            ))}
             {imageArray.length ? (
               <ImageHover
                 images={
@@ -514,8 +546,12 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
+              priceLabel={priceLabels[0]}
               inStock={productView?.inStock}
             />
+           {undernameLabels.map((label) => (
+              <ProductLabel key={label.alt_tag} label={label} variant="secondary" />
+            ))}
           </div>
         </div>
       </a>

@@ -9,15 +9,24 @@ it.
 
 import { createContext } from 'preact';
 import { useContext, useEffect, useMemo, useState } from 'preact/hooks';
+import { getGraphQL } from 'src/api/graphql';
+import { GET_PRODUCT_LABELS_QUERY } from 'src/api/queries';
+import { getColorSwatchesFromAttribute } from 'src/utils/productUtils';
 
-import {getFranchiseSearch, getProductSearch, refineProductSearch} from '../api/search';
+import {
+  getFranchiseSearch,
+  getProductSearch,
+  refineProductSearch,
+} from '../api/search';
 import {
   CategoryView,
   Facet,
   FacetFilter,
+  Label,
   PageSizeOption,
   Product,
-  ProductSearchQuery, ProductSearchResponse,
+  ProductSearchQuery,
+  ProductSearchResponse,
   RedirectRouteFunc,
   SearchClauseInput,
 } from '../types/interface';
@@ -52,6 +61,8 @@ const ProductsContext = createContext<{
   loading: boolean;
   items: Product[];
   setItems: (items: Product[]) => void;
+  labels: Label[];
+  setLabels: (labels: Label[]) => void;
   franchises: any;
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -89,9 +100,13 @@ const ProductsContext = createContext<{
     sku: string,
     options: string[],
     quantity: number
-  ) => Promise<{user_errors: any[];}>;
+  ) => Promise<{ user_errors: any[] }>;
   disableAllPurchases?: boolean;
-  getMoreFranchiseProducts: (category: string, pageSize: number, currentPage: number) => void
+  getMoreFranchiseProducts: (
+    category: string,
+    pageSize: number,
+    currentPage: number
+  ) => void;
 }>({
   variables: {
     phrase: '',
@@ -99,6 +114,8 @@ const ProductsContext = createContext<{
   loading: false,
   items: [],
   setItems: () => {},
+  labels: [],
+  setLabels: () => {},
   currentPage: 1,
   setCurrentPage: () => {},
   pageSize: DEFAULT_PAGE_SIZE,
@@ -131,10 +148,10 @@ const ProductsContext = createContext<{
   setListViewType: () => {},
   resolveCartId: () => Promise.resolve(''),
   refreshCart: () => {},
-  addToCart: () => Promise.resolve({user_errors: []}),
+  addToCart: () => Promise.resolve({ user_errors: [] }),
   disableAllPurchases: false,
   franchises: null,
-  getMoreFranchiseProducts: () => {}
+  getMoreFranchiseProducts: () => {},
 });
 
 const ProductsContextProvider = ({ children }: WithChildrenProps) => {
@@ -160,7 +177,11 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
   const [loading, setLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(true);
   const [items, setItems] = useState<Product[]>([]);
-  const [franchises, setFranchises] = useState<Record<string, Franchise> | null>(null);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [franchises, setFranchises] = useState<Record<
+    string,
+    Franchise
+  > | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(pageDefault);
   const [pageSize, setPageSize] = useState<number>(pageSizeDefault);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -220,7 +241,11 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
     return data;
   };
 
-  const getMoreFranchiseProducts = async (categoryPath: string, pageSize: number, currentPage: number) => {
+  const getMoreFranchiseProducts = async (
+    categoryPath: string,
+    pageSize: number,
+    currentPage: number
+  ) => {
     if (!categoryPath) {
       return;
     }
@@ -243,27 +268,26 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
       if (!franchises) {
         return franchises;
       }
-      
+
       return {
         ...franchises,
         [category]: {
           ...franchises[category],
           pageSize,
           currentPage,
-          items: [
-            ...franchises[category].items,
-            ...result[category].items,
-          ],
-        }
+          items: [...franchises[category].items, ...result[category].items],
+        },
       };
     });
-  }
+  };
 
   const context = {
     variables,
     loading,
     items,
     setItems,
+    labels,
+    setLabels,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -305,7 +329,9 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
   };
 
   const handleFranchiseSearch = async (data: ProductSearchResponse['data']) => {
-    const categories = data.productSearch.facets?.find((facet) => facet.attribute === 'categories')?.buckets as CategoryView[];
+    const categories = data.productSearch.facets?.find(
+      (facet) => facet.attribute === 'categories'
+    )?.buckets as CategoryView[];
 
     if (!categories) {
       return;
@@ -337,11 +363,11 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
         ...result[key],
         currentPage: 1,
         pageSize: 20,
-      }
+      };
     });
 
     setFranchises(result);
-  }
+  };
 
   const searchProducts = async () => {
     try {
@@ -361,7 +387,35 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
           categoryId,
         });
 
+        const searchItems = [...(data?.productSearch?.items || [])];
+
+        const productIds: string[] = [];
+
+        searchItems.forEach((item) => {
+          const colorSwatch = getColorSwatchesFromAttribute(
+            item.productView,
+            storeCtx.config.currentCategoryId
+          );
+          colorSwatch.forEach((swatch) => {
+            productIds.push(swatch.config_id);
+          });
+        });
+
+        const productLabelsResults = await getGraphQL(
+          GET_PRODUCT_LABELS_QUERY,
+          {
+            productIds,
+            mode: 'CATEGORY',
+          },'',
+          storeCtx.basicToken,
+          storeCtx.graphqlEndpoint
+        );
+
+        const labels =
+          productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+
         setItems(data?.productSearch?.items || []);
+        setLabels(labels || []);
         setFacets(data?.productSearch?.facets || []);
         setTotalCount(data?.productSearch?.total_count || 0);
         setTotalPages(data?.productSearch?.page_info?.total_pages || 1);
@@ -394,6 +448,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
         (Number(storeCtx.config.minQueryLength) || DEFAULT_MIN_QUERY_LENGTH)
     ) {
       setItems([]);
+      setLabels([]);
       setFacets([]);
       setTotalCount(0);
       setTotalPages(1);
@@ -476,7 +531,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
               name: bucket.name,
               value: bucket.title,
               attribute: facet.attribute,
-              path: bucket.path
+              path: bucket.path,
             };
         });
         searchCtx.setCategoryNames(names);
@@ -493,12 +548,17 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
   useEffect(() => {
     if (attributeMetadataCtx.filterableInSearch) {
       const filtersFromConfig = [];
-      if(storeCtx?.config?.preCheckedFilters) {
-        filtersFromConfig.push(...getFiltersFromConfig(attributeMetadataCtx.filterableInSearch, storeCtx.config.preCheckedFilters));
+      if (storeCtx?.config?.preCheckedFilters) {
+        filtersFromConfig.push(
+          ...getFiltersFromConfig(
+            attributeMetadataCtx.filterableInSearch,
+            storeCtx.config.preCheckedFilters
+          )
+        );
       }
       const filtersFromUrl = getFiltersFromUrl(
         attributeMetadataCtx.filterableInSearch
-      )
+      );
       searchCtx.setFilters([...filtersFromConfig, ...filtersFromUrl]);
     }
   }, [attributeMetadataCtx.filterableInSearch]);
@@ -518,13 +578,13 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
 
 const getFiltersFromConfig = (
   filterableAttributes: string[],
-  preCheckedFilters: Array <{
-    key: string,
-    value: string,
+  preCheckedFilters: Array<{
+    key: string;
+    value: string;
   }>
 ): SearchClauseInput[] => {
   const filters: FacetFilter[] = [];
-  preCheckedFilters.forEach(({key, value}) => {
+  preCheckedFilters.forEach(({ key, value }) => {
     if (filterableAttributes.includes(key)) {
       if (value.includes('--')) {
         const range = value.split('--');
