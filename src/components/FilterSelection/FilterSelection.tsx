@@ -31,7 +31,7 @@ export const FilterSelection: FunctionComponent<FilterSelectionProps> = ({
         >
           <label
             id={`filter-${iteration + 1}`}
-            className="ds-sdk-input__label text-neutral-900 text-sm font-semibold cursor-pointer"
+            className="ds-sdk-input__label text-neutral-900 text-sm font-medium cursor-pointer"
           >
             {title}
           </label>

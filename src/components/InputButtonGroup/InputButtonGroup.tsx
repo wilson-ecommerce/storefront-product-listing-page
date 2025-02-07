@@ -102,14 +102,14 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
         (isHidden ? (
           <label
             tabindex={0}
-            className="ds-sdk-input__label text-neutral-900 text-sm font-semibold py-md w-full h-full ib-display cursor-pointer flex flex-row"
+            className="ds-sdk-input__label text-neutral-900 text-sm font-medium py-md w-full h-full ib-display cursor-pointer flex flex-row"
             onClick={(event) => toggleFilters(event)}
             onKeyDown={(event) => toggleFilters(event)}>
             {title}
           </label>
         ) : (
           <label
-            className="ds-sdk-input__label text-neutral-900 text-sm font-semibold py-md w-full h-full ib-display flex flex-row">{title}</label>
+            className="ds-sdk-input__label text-neutral-900 text-sm font-medium py-md w-full h-full ib-display flex flex-row">{title}</label>
         ))
       )}
       <fieldset className={`ds-sdk-input__options mb-md md:mt-0 ${isHidden ? 'none-display' : ''}`}>
