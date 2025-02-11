@@ -69,7 +69,7 @@ export const SortDropdown: FunctionComponent<SortDropdownProps> = ({
     <>
       <div ref={sortOptionMenu} class="ds-sdk-input">
         <label
-          className={'ds-sdk-input__label text-neutral-900 text-sm font-semibold py-md w-full h-full ib-display cursor-pointer flex flex-row'}
+          className={'ds-sdk-input__label text-neutral-900 text-sm py-md w-full h-full ib-display cursor-pointer flex flex-row'}
           onClick={(event) => toggleFilters(event)}
           onKeyDown={(event) => toggleFilters(event)}
         >
