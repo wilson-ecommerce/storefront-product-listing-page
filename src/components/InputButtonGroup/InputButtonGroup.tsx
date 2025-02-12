@@ -74,7 +74,7 @@ export const InputButtonGroup: FunctionComponent<InputButtonGroupProps> = ({
     }
 
     if (bucket.__typename === 'CategoryView') {
-      return categoryPath ? bucket.name ?? bucket.title : bucket.title;
+      return categoryPath ? bucket.name ?? bucket.title : bucket.name;
     }
 
     if (bucket.title === BOOLEAN_YES) {
