@@ -155,7 +155,7 @@ export const Facets: FunctionComponent<FacetsProps> = ({
                      onKeyDown={(event) => scrollFilter(event, displayFilter)}
                      >
                   <label id={'filter-0'}
-                         className="flex flex-row gap-4 ds-sdk-input__label text-neutral-900 text-sm font-semibold cursor-pointer">
+                         className="flex flex-row gap-4 ds-sdk-input__label text-neutral-900 text-sm cursor-pointer">
                     <SortFilterIcon className="h-[18px] w-[18px] fill-neutral-800"/>
                     {translation.Filter.title}
                   </label>
