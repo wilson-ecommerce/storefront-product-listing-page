@@ -17,7 +17,7 @@ async function getGraphQL(
   };
 
   if (basicToken) {
-    headers.Authorization = `Basic ${basicToken}`;
+    headers.Authorization = basicToken;
   }
 
   const response = await fetch(endpoint, {
