@@ -27,6 +27,7 @@ async function getGraphQL(
       query,
       variables,
     }),
+    credentials: 'include',
   }).then((res) => res.json());
 
   return response;
