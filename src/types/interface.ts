@@ -289,12 +289,14 @@ export interface Product {
   };
   productView: ProductView;
   highlights: Array<Highlights>;
+  labels?: Array<Label>;
 }
 
 export interface RefinedProduct {
   refineProduct: {
     __typename: string;
     id: number;
+    externalId: string;
     uid: string;
     name: string;
     sku: string;
@@ -499,4 +501,26 @@ export interface SortOption {
 export interface GQLSortInput {
   direction: 'ASC' | 'DESC';
   attribute: string;
+}
+
+export interface LabelAdditionalData {
+  place: string;
+  icon: string;
+  text_color: string;
+  background_color: string;
+}
+
+export interface Label {
+  label_id: number;
+  product_id: number;
+  position: string;
+  name: string;
+  txt: string;
+  image: string | null;
+  size: string;
+  style: string;
+  is_visible: boolean;
+  redirect_url: string;
+  alt_tag: string;
+  additional_data: LabelAdditionalData;
 }
