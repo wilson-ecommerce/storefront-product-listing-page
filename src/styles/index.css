@@ -1306,6 +1306,9 @@ video {
   .pr-lg {
     padding-right: var(--spacing-lg);
   }
+  .pt-\[6px\] {
+    padding-top: 6px;
+  }
   .pt-16 {
     padding-top: 4rem;
   }
