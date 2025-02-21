@@ -24,11 +24,13 @@ export const ProductLabel: FunctionComponent<ProductLabelProps> = ({
         'ds-sdk-product-label-primary absolute top-2 left-2 px-2 py-1 border border-black z-20',
       textClass: 'text-[12px] font-medium label-line',
       style: {
+        color: label.additional_data.text_color || "#000",
+        borderColor: label.additional_data.background_color || "#fff",
         backgroundColor: label.additional_data.background_color || '#fff',
       },
     },
     secondary: {
-      baseClass: 'ds-sdk-product-label-secondary',
+      baseClass: 'ds-sdk-product-label-secondary pt-[6px]',
       textClass: 'text-[12px] font-normal uppercase text-labelGold',
       style: {},
     },
