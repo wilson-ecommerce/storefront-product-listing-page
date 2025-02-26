@@ -555,6 +555,9 @@ video {
   .top-\[-3px\] {
     top: -3px;
   }
+  .z-1 {
+    z-index: 1;
+  }
   .z-20 {
     z-index: 20;
   }
