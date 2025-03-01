@@ -211,26 +211,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     return selected;
   };
 
-  const isBundleProduct = product.__typename === 'BundleProduct'
-
-  const productImageArray = imagesFromRefinedProduct
-    ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
-    : getProductImagesFromAttribute(productView, currentCategoryId);
-
-  const bundleImageArray = getProductImageURLs(productView.images ?? [], 2);
-
-  let optimizedImageArray: { src: string; srcset: any }[] = [];
-
-  const imageArray = isBundleProduct ? bundleImageArray : productImageArray
-
-  if (optimizeImages) {
-    optimizedImageArray = generateOptimizedImages(
-      imageArray,
-      imageBaseWidth ?? 200,
-      imageBackgroundColor || ''
-    );
-  }
-
   // Rating data
   const ratingValue = parseFloat(productView?.attributes?.filter((attr) => attr?.name === 'bv_rating_average')[0]?.value) || 0;
   const ratingCount = parseInt(productView?.attributes?.filter((attr) => attr?.name === 'bv_rating_count')[0]?.value, 10) || 0;
@@ -257,6 +237,25 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     && sizeSwatches.length > 0
     && !showSizes
     && quickAddStatus === QUICK_ADD_STATUS_IDLE;
+
+  // Get Product Images
+  const productImageArray = imagesFromRefinedProduct
+    ? getProductImageURLs(imagesFromRefinedProduct ?? [], 2)
+    : getProductImagesFromAttribute(productView, currentCategoryId);
+
+  const standardImageArray = getProductImageURLs(productView.images ?? [], 2);
+
+  let optimizedImageArray: { src: string; srcset: any }[] = [];
+
+  const imageArray = isBundle || isGiftCard ? standardImageArray : productImageArray;
+
+  if (optimizeImages) {
+    optimizedImageArray = generateOptimizedImages(
+      imageArray,
+      imageBaseWidth ?? 200,
+      imageBackgroundColor || ''
+    );
+  }
 
   const onProductClick = () => {
     window.adobeDataLayer.push((dl: any) => {
@@ -287,7 +286,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           },
         });
       });
-    }   
+    }
 
     const hasSizeOptions = productView?.options?.some((swatches) => swatches.title === SWATCH_SIZE);
     if ((!listview || viewType !== 'listview') && hasSizeOptions) {
