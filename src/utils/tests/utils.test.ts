@@ -17,11 +17,11 @@ describe('should sanitize string', () => {
   });
   test('valid string should not change', () => {
     const validStr1 = sanitizeString('storefront-catalog-apollo');
-    const validStr2 = sanitizeString('12,24,36');
+    const validStr2 = sanitizeString('12,24,36,48');
     const validStr3 = sanitizeString('main_website_store');
     const validStr4 = sanitizeString('b6589fc6ab0dc82cf1');
     const expectedStr1 = 'storefront-catalog-apollo';
-    const expectedStr2 = '12,24,36';
+    const expectedStr2 = '12,24,36,48';
     const expectedStr3 = 'main_website_store';
     const expectedStr4 = 'b6589fc6ab0dc82cf1';
 
@@ -43,8 +43,8 @@ describe('test validating storeDetails.', () => {
         minQueryLength: '2',
         pageSize: 8,
         perPageConfig: {
-          pageSizeOptions: '12,24,36',
-          defaultPageSizeOption: '24',
+          pageSizeOptions: '12,24,36,48',
+          defaultPageSizeOption: '36',
         },
         currencySymbol: '$',
         currencyRate: '1',
@@ -77,8 +77,8 @@ describe('test validating storeDetails.', () => {
         minQueryLength: '2',
         pageSize: 8,
         perPageConfig: {
-          pageSizeOptions: '12,24,36',
-          defaultPageSizeOption: '24',
+          pageSizeOptions: '12,24,36,48',
+          defaultPageSizeOption: '36',
         },
         currencySymbol: '$',
         currencyRate: '1',
@@ -107,8 +107,8 @@ describe('test validating storeDetails.', () => {
         minQueryLength: '2',
         pageSize: 8,
         perPageConfig: {
-          pageSizeOptions: '12,24,36',
-          defaultPageSizeOption: '24',
+          pageSizeOptions: '12,24,36,48',
+          defaultPageSizeOption: '36',
         },
         currencySymbol: '$',
         currencyRate: '1',
