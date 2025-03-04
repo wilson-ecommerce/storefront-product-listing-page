@@ -9,8 +9,8 @@ it.
 
 import { ProductSearchSortInput } from 'src/types/interface';
 
-export const DEFAULT_PAGE_SIZE = 24;
-export const DEFAULT_PAGE_SIZE_OPTIONS = '12,24,36';
+export const DEFAULT_PAGE_SIZE = 36;
+export const DEFAULT_PAGE_SIZE_OPTIONS = '12,24,36,48';
 export const DEFAULT_MIN_QUERY_LENGTH = 3;
 export const PRODUCT_COLUMNS = {
   desktop: 4,

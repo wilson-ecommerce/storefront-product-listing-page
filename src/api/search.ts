@@ -139,7 +139,7 @@ const getProductSearch = async ({
   apiKey,
   apiUrl,
   phrase,
-  pageSize = 24,
+  pageSize = 36,
   displayOutOfStock,
   currentPage = 1,
   xRequestId = uuidv4(),

@@ -83,7 +83,7 @@ export const PerPagePicker: FunctionalComponent<PerPagePickerProps> = ({
           onBlur={() => setIsFocus(false)}
         >
           <span className="font-button-2">
-            {selectedOption ? `${selectedOption.label}` : '24'}
+            {selectedOption ? `${selectedOption.label}` : '36'}
           </span>
           <Chevron
             className={`flex-shrink-0 m-auto ml-sm h-md w-md stroke-1 stroke-brand-700 ${
