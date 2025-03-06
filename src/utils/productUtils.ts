@@ -94,10 +94,10 @@ function getSegmentedOptions(productView: ProductView, optionId: string | null, 
   }
 
   const parsedSegmentation = JSON.parse(edsSegmentation);
-  if (parsedSegmentation?.['attribute_code'] === optionId) {
+  if (parsedSegmentation?.['attribute_code'] === optionId && parsedSegmentation.options) {
     const segmentedOptions = parsedSegmentation.options
-      .filter((option: any) => option?.categories?.split(',')?.includes(categoryId))
-      .map((option:any) => option.id);
+        .filter((option: any) => option?.categories?.split(',')?.includes(categoryId))
+        .map((option: any) => option.id);
     return segmentedOptions.length > 0 ? segmentedOptions : null;
   }
   return null;
