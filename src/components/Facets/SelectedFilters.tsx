@@ -40,7 +40,7 @@ export const SelectedFilters: FunctionComponent<SelectedFiltersProps> = ({
           )}
           {!screenSize.mobile && (
             <>
-              {storeCtx.config.categoryConfig?.pcm_display_by_franchise === '0' && (
+              {storeCtx.config.categoryConfig?.pcm_display_by_franchise !== '0' && (
                 <FranchiseViewSelector/>
               )}
             </>
