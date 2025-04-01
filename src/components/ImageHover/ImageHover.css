@@ -1,7 +1,15 @@
-.ds-sdk-product-image {
+.ds-sdk-product-image.lazy {
+  background-image: none;
+}
+
+.ds-sdk-product-image:not(.lazy) {
   background-image: var(--image-url);
 }
 
-.ds-sdk-product-image.hover-enabled:hover {
+.ds-sdk-product-image.lazy.hover-enabled:hover {
+  background-image: none;
+}
+
+.ds-sdk-product-image.hover-enabled:not(.lazy):hover {
   background-image: var(--hover-url);
 }
