@@ -35,7 +35,7 @@ export const en_US = {
     title: 'Sort by',
     option: '{selectedOption}',
     relevanceLabel: 'Most Relevant',
-    positionLabel: 'Position',
+    positionLabel: 'Featured',
     sortAttributeASC: '{label}: Low to High',
     sortAttributeDESC: '{label}: High to Low',
     sortASC: 'Price: Low to High',
@@ -43,6 +43,7 @@ export const en_US = {
     productName: 'Product Name',
     productInStock: 'In Stock',
     productLowStock: 'Low Stock',
+    pcm_publication_date: "New",
   },
   CategoryFilters: {
     results: 'results for {phrase}',

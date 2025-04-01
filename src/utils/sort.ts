@@ -41,36 +41,48 @@ const getSortOptionsfromMetadata = (
         ];
   const displayInStockOnly = displayOutOfStock != '1'; // '!=' is intentional for conversion
 
-  if (sortMetadata && sortMetadata.length > 0) {
-    sortMetadata.forEach((e) => {
-      if (
-        !e.attribute.includes('relevance') &&
-        !(e.attribute.includes('inStock') && displayInStockOnly) &&
-        !e.attribute.includes('position')
-        /* conditions for which we don't display the sorting option:
+  function shouldIncludeSortOption(e: SortMetadata, displayInStockOnly: boolean) {
+    /* conditions for which we don't display the sorting option:
                 1) if the option attribute is relevance
                 2) if the option attribute is "inStock" and display out of stock products is set to no
                 3) if the option attribute is "position" and there is not a categoryPath (we're not in category browse mode) -> the conditional part is handled in setting sortOptions
                 */
-      ) {
-        if (e.numeric && e.attribute.includes('price')) {
-          sortOptions.push({
+    return (
+      !e.attribute.includes('relevance') &&
+      !(e.attribute.includes('inStock') && displayInStockOnly) &&
+      !e.attribute.includes('position')
+    );
+  }
+
+  if (sortMetadata && sortMetadata.length > 0) {
+    sortMetadata.forEach((e) => {
+      if (!shouldIncludeSortOption(e, displayInStockOnly)) return;
+
+      if (e.numeric && e.attribute.includes('price')) {
+        sortOptions.push(
+          {
             label: `${e.label}: Low to High`,
             value: `${e.attribute}_ASC`,
-          });
-          sortOptions.push({
+          },
+          {
             label: `${e.label}: High to Low`,
             value: `${e.attribute}_DESC`,
-          });
-        } else {
-          sortOptions.push({
-            label: `${e.label}`,
-            value: `${e.attribute}_DESC`,
-          });
-        }
+          }
+        );
+      } else if (e.attribute.includes('pcm_publication_date')) {
+        sortOptions.push({
+          label: translation.SortDropdown.pcm_publication_date,
+          value: `${e.attribute}_DESC`,
+        });
+      } else {
+        sortOptions.push({
+          label: e.label,
+          value: `${e.attribute}_DESC`,
+        });
       }
     });
   }
+
   return sortOptions;
 };
 
