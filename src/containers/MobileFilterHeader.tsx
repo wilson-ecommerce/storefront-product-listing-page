@@ -53,9 +53,8 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
   const translation = useTranslation();
 
   const attributesToFilter = [
-    'featured',
-    'new',
     'price',
+    'pcm_publication_date'
   ];
 
   const filteredAttributes = attributeMetadata?.sortable.filter((item) =>
