@@ -135,7 +135,7 @@ export const ProductPrice: FunctionComponent<ProductPriceProps> = ({
 
     const discountPrice = discount ? (
       <>
-        <span className="text-labelRed mr-2">
+        <span className="font-medium text-labelRed mr-2">
           <meta itemProp="price" content={getOnlyProductPrice(
             item,
             currencyRate,
