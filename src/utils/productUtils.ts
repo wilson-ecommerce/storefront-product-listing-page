@@ -103,12 +103,15 @@ function getSegmentedOptions(productView: ProductView, optionId: string | null, 
   return null;
 }
 
-
 function getDefaultColorSwatchId(productView: ProductView, swatches: ColorSwatchFromAttribute[]): string | undefined {
   if (isSportsWear(productView)) {
     // There will be single color option for sportswear
     const colorOptionsFromProductOptions = getColorOptionsFromProductOptions(productView);
-    return swatches?.find((swatch: any) => swatch.id === colorOptionsFromProductOptions?.values?.[0].id)?.id;
+    const colorOption = colorOptionsFromProductOptions?.values?.[0];
+
+    if (!colorOption?.id) return swatches?.[0]?.id;
+
+    return swatches?.find((swatch: any) => swatch.id === colorOption.id)?.id;
   }
 
   return swatches?.[0]?.id;
