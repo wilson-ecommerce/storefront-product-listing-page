@@ -119,7 +119,7 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
       {screenSize.mobile && (
         <div className={'mobile-franchise'}>
           <div className={'franchise-counter'}>
-            {storeCtx.config.categoryConfig?.pcm_display_by_franchise === '0' && (
+            {storeCtx.config.categoryConfig?.pcm_display_by_franchise !== '0' && (
               <FranchiseViewSelector/>
             )}
             <SelectedFilters totalCount={totalCount} isCount={true}/>
