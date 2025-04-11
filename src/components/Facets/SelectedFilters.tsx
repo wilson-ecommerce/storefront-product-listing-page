@@ -48,11 +48,11 @@ export const SelectedFilters: FunctionComponent<SelectedFiltersProps> = ({
         </div>
       )}
 
-      {!isCount && (
+      {!isCount && searchCtx.filters?.length > 0 && (
         <div
           className="w-full h-full flex justify-between items-center sm:pb-6 py-md flex-wrap px-[12px] md:px-[24px] lg:px-[48px]">
           <div className="ds-plp-facets__pills flex flex-wrap justify-start items-center gap-[16px]">
-            {searchCtx.filters?.length > 0 && searchCtx.filters.map((filter) => (
+            {searchCtx.filters.map((filter) => (
               <div
                 key={filter.attribute}
                 className="flex items-center gap-[16px]"
@@ -107,6 +107,5 @@ export const SelectedFilters: FunctionComponent<SelectedFiltersProps> = ({
         </div>
       )}
     </>
-  )
-    ;
+  );
 };
