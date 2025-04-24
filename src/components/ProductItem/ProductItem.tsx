@@ -532,7 +532,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                   />
               </div>
             )}
-            <div itemProp="name" className="ds-sdk-product-item__product-name text-lg">
+            <div itemProp="name" className="ds-sdk-product-item__product-name">
               {product.name !== null && htmlStringDecode(product.name)}
             </div>
             <ProductPrice
