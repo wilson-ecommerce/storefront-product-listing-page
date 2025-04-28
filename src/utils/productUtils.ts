@@ -41,10 +41,16 @@ export function getImageConfigsFromAttribute(productView: ProductView) {
 * 7. If the above condition is met, return the image options
 */
 
-function getColorSwatchesFromAttribute(productView: ProductView, categoryId?: string): ColorSwatchFromAttribute[] {
+function getColorSwatchesFromAttribute(
+  productView: ProductView,
+  categoryId?: string
+): { swatches: ColorSwatchFromAttribute[]; allConfigIds: string[] } {
   const imageConfigsFromAttribute = getImageConfigsFromAttribute(productView);
 
-  //Filter out labels with "Fake Axis"
+  const allConfigIds: string[] = imageConfigsFromAttribute.flatMap(
+    (config: any) => config.images?.map((image: any) => image.config_id) || []
+  );
+
   const filteredImageConfigs = imageConfigsFromAttribute.filter(
     (config: any) => config.attribute_label !== "Fake Axis"
   );
@@ -53,18 +59,26 @@ function getColorSwatchesFromAttribute(productView: ProductView, categoryId?: st
     (config: any) => config.attribute_type === 'visual' && config.show_swatches
   );
 
-  const segmentedOptions = categoryId ? getSegmentedOptions(productView, colorOptionsFromAttribute?.attribute_id, categoryId) : null;
-  return (colorOptionsFromAttribute?.images ?? [])
+  const segmentedOptions = categoryId
+    ? getSegmentedOptions(productView, colorOptionsFromAttribute?.attribute_id, categoryId)
+    : null;
+
+  const swatches = (colorOptionsFromAttribute?.images ?? [])
     .filter((colorOption: any) => !segmentedOptions || segmentedOptions.includes(colorOption.id))
     .map((colorOption: any) => {
       const defaultImage = '/en-us/media/image/media_1ccf88b21200e64fed7e7e93e0cf2d0a76fa007a8.png';
-      const swatchImage = colorOption?.swatch_image || defaultImage
+      const swatchImage = colorOption?.swatch_image || defaultImage;
 
       return {
         ...colorOption,
-        swatch_image: swatchImage
-      }
+        swatch_image: swatchImage,
+      };
     });
+
+  return {
+    swatches,
+    allConfigIds,
+  };
 }
 
 /**

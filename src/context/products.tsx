@@ -389,16 +389,12 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
 
         const searchItems = [...(data?.productSearch?.items || [])];
 
-        const productIds: string[] = [];
-
-        searchItems.forEach((item) => {
-          const colorSwatch = getColorSwatchesFromAttribute(
+        const productIds = searchItems.flatMap((item) => {
+          const { allConfigIds } = getColorSwatchesFromAttribute(
             item.productView,
             storeCtx.config.currentCategoryId
           );
-          colorSwatch.forEach((swatch) => {
-            productIds.push(swatch.config_id);
-          });
+          return allConfigIds;
         });
 
         const productLabelsResults = await getGraphQL(
