@@ -110,6 +110,7 @@ const createProducts = (
   const products: SearchResultProduct[] = items.map((item, index) => ({
     name: item?.product?.name,
     sku: item?.product?.sku,
+    id: item?.product?.id,
     url: route
       ? route({
           sku: item?.productView?.sku,
