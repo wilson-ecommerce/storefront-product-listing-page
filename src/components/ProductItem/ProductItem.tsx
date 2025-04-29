@@ -91,7 +91,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const { screenSize } = useSensor();
   const translation = useTranslation();
 
-  const colorSwatchesFromAttribute = getColorSwatchesFromAttribute(productView, currentCategoryId);
+  const {swatches: colorSwatchesFromAttribute} = getColorSwatchesFromAttribute(productView, currentCategoryId);
 
   const { colorSwatches, defaultColorSwatch} = useMemo(() => {
     const colorSwatches: Swatch[] = colorSwatchesFromAttribute.map((swatch: ColorSwatchFromAttribute) => {
