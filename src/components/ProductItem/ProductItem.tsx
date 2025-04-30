@@ -122,6 +122,13 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
       optionId: defaultColorOptionId,
     } : null
 
+    // put selected swatch color at first
+    const selectedSwatch = colorSwatches.find((item) => item.sku === defaultColorSwatch?.sku);
+    if (selectedSwatch) {
+      colorSwatches.splice(colorSwatches.indexOf(selectedSwatch), 1);
+      colorSwatches.unshift(selectedSwatch);
+    }
+
     return {
       colorSwatches,
       defaultColorSwatch
