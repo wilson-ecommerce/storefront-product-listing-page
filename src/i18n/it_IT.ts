@@ -57,4 +57,10 @@ export const it_IT = {
   SearchBar: {
     placeholder: 'Cerca...',
   },
+  ListView: {
+    viewDetails: 'View details',
+    franchiseView: 'Franchise view',
+    listView: 'List view',
+    gridView: 'Grid view',
+  },
 };

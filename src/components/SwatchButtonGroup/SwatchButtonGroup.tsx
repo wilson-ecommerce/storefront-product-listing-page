@@ -81,6 +81,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
     return (
       <div className={wrapperClasses} key={swatch.id} ref={index === 0  ? swatchButtonRef : null} data-config-id={swatch.configId || ''}>
           <SwatchButton
+            title={swatch.title}
             id={swatch.id}
             value={swatch.value}
             type={swatch.type}
@@ -99,6 +100,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
           <a href={productUrl as string} className="hover:no-underline">
             <div className="ds-sdk-product-item__product-swatch-item text-sm text-brand-700">
               <SwatchButton
+                title=''
                 id={'show-more'}
                 value={`+${swatches.length - numberOfOptions} more`}
                 type={'TEXT'}
