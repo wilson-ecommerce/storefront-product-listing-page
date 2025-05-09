@@ -12,6 +12,7 @@ import { FunctionComponent } from 'preact';
 import { SwatchType } from '../../types/interface';
 
 export interface SwatchButtonProps {
+  title: string;
   id: string;
   value: string;
   type: SwatchType;
@@ -19,6 +20,7 @@ export interface SwatchButtonProps {
   onClick?: (e: Event) => any;
 }
 export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
+  title,
   id,
   value,
   type,
@@ -83,6 +85,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
     return (
       <div className="w-full h-full">
         <button
+          title={title}
           key={id}
           className={className}
           style={style}
