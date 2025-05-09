@@ -7,7 +7,7 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { useProducts } from 'src/context';
+import { useProducts, useTranslation } from 'src/context';
 import { handleViewType } from 'src/utils/handleUrlFilters';
 
 import GridView from '../../icons/gridView.svg';
@@ -15,6 +15,7 @@ import ListView from '../../icons/listView.svg';
 
 export const ViewSwitcher: FunctionComponent = () => {
   const { viewType, setViewType } = useProducts();
+  const translation = useTranslation();
 
   const handleClick = (viewType: string): void => {
     handleViewType(viewType);
@@ -28,16 +29,18 @@ export const ViewSwitcher: FunctionComponent = () => {
           viewType === 'gridview' ? 'bg-gray-100' : ''
         } ring-black ring-opacity-5  p-sm text-sm h-[32px] border border-gray-300`}
         onClick={() => handleClick('gridview')}
+        aria-label={translation.ListView.gridView}
       >
-        <GridView className="h-[20px] w-[20px]" />
+        <GridView className="h-[20px] w-[20px]" aria-hidden="true" focusable="false"/>
       </button>
       <button
         className={`flex items-center ${
           viewType === 'listview' ? 'bg-gray-100' : ''
         } ring-black ring-opacity-5 p-sm text-sm h-[32px] border border-gray-300`}
         onClick={() => handleClick('listview')}
+        aria-label={translation.ListView.listView}
       >
-        <ListView className="h-[20px] w-[20px]" />
+        <ListView className="h-[20px] w-[20px]" aria-hidden="true" focusable="false"/>
       </button>
     </div>
   );

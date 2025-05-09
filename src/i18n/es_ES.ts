@@ -57,4 +57,10 @@ export const es_ES = {
   SearchBar: {
     placeholder: 'Buscar...',
   },
+  ListView: {
+    viewDetails: 'View details',
+    franchiseView: 'Franchise view',
+    listView: 'List view',
+    gridView: 'Grid view',
+  },
 };
