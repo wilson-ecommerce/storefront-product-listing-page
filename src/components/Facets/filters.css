@@ -3,7 +3,7 @@
 }
 
 .franchise-selector button:hover svg {
-  opacity: 0.6;
+  fill: black;
 }
 
 .franchise-selector button[disabled] {

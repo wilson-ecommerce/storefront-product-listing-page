@@ -17,6 +17,11 @@
   margin: 25px auto auto;
 }
 
+.ds-sdk-product-list .franchises button.load-more:focus {
+  background-color: var(--button-primary-text-color);
+  color: var(--button-primary-main-color);
+}
+
 .ds-sdk-product-list .franchises .franchise-header {
   display: flex;
   flex-direction: column;
