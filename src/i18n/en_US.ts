@@ -72,5 +72,8 @@ export const en_US = {
   },
   ListView: {
     viewDetails: 'View details',
+    franchiseView: 'Franchise view',
+    listView: 'List view',
+    gridView: 'Grid view',
   },
 };
