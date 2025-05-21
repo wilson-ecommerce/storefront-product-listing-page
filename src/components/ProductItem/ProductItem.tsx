@@ -158,6 +158,9 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     sku: productSku,
   }));
 
+  const isStandardSalability = productView.attributes.find((attr) => attr.name === 'pcm_product_salability')?.value === 'STANDARD';
+
+
   useEffect(() => {
     let isSwatchUpdated = false;
     async function fetchData() {
@@ -237,6 +240,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const isGrouped = product?.__typename === 'GroupedProduct';
   const isGiftCard = product?.__typename === 'GiftCardProduct';
   const isConfigurable = product?.__typename === 'ConfigurableProduct';
+  console.log(refinedProduct)
   const shouldShowAddToBagButton = isSportsWear(productView)
     && categoryConfig?.['plp_quick_view_modal_enabled'] === '1'
     && !disableAllPurchases
@@ -501,31 +505,33 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                 className={`max-h-[45rem] w-full object-cover object-center lg:w-full`}
               />
             )}
-            <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px]">
-              {quickAddStatus !== QUICK_ADD_STATUS_IDLE && (
-                <div className="status-container flex items-center justify-center h-full w-full">
-                  {quickAddStatus === QUICK_ADD_STATUS_PENDING && (
-                    <span className="loader" />
-                  )}
-                  {quickAddStatus === QUICK_ADD_STATUS_SUCCESS && (
-                    <span className="status status-success">{translation.ProductCard.quickAddSuccess}</span>
-                  )}
-                  {quickAddStatus === QUICK_ADD_STATUS_ERROR && (
-                    <span className="status status-error">{translation.ProductCard.quickAddError}</span>
-                  )}
-                </div>
-              )}
-              {shouldShowAddToBagButton && <AddToCartButton onClick={(evt) => handleAddToCart(evt, true)} />}
-              {showSizes && sizeSwatches.length > 0 && (
-                <SwatchButtonGroup
-                  isSelected={() => false}
-                  swatches={sizeSwatches}
-                  showMore={onProductClick}
-                  productUrl={productUrl as string}
-                  onClick={handleSizeSelection}
-                />
-              )}
-            </div>
+            {isStandardSalability && (
+              <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px]">
+                {quickAddStatus !== QUICK_ADD_STATUS_IDLE && (
+                  <div className="status-container flex items-center justify-center h-full w-full">
+                    {quickAddStatus === QUICK_ADD_STATUS_PENDING && (
+                      <span className="loader" />
+                    )}
+                    {quickAddStatus === QUICK_ADD_STATUS_SUCCESS && (
+                      <span className="status status-success">{translation.ProductCard.quickAddSuccess}</span>
+                    )}
+                    {quickAddStatus === QUICK_ADD_STATUS_ERROR && (
+                      <span className="status status-error">{translation.ProductCard.quickAddError}</span>
+                    )}
+                  </div>
+                )}
+                {shouldShowAddToBagButton && <AddToCartButton onClick={(evt) => handleAddToCart(evt, true)} />}
+                {showSizes && sizeSwatches.length > 0 && (
+                  <SwatchButtonGroup
+                    isSelected={() => false}
+                    swatches={sizeSwatches}
+                    showMore={onProductClick}
+                    productUrl={productUrl as string}
+                    onClick={handleSizeSelection}
+                  />
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-col px-xsmall py-small gap-2">
             {colorSwatches && colorSwatches.length > 0 && (
