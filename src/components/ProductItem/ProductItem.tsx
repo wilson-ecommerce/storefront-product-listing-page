@@ -240,7 +240,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const isGrouped = product?.__typename === 'GroupedProduct';
   const isGiftCard = product?.__typename === 'GiftCardProduct';
   const isConfigurable = product?.__typename === 'ConfigurableProduct';
-  console.log(refinedProduct)
   const shouldShowAddToBagButton = isSportsWear(productView)
     && categoryConfig?.['plp_quick_view_modal_enabled'] === '1'
     && !disableAllPurchases
