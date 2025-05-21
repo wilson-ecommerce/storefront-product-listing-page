@@ -69,7 +69,11 @@ const getProductPrice = (
     ? price?.value * parseFloat(currencyRate)
     : price?.value;
 
-  return convertedPrice ? `${currency}${convertedPrice.toFixed(2)}` : '';
+  if (!convertedPrice) return '';
+
+  const formatted = convertedPrice.toFixed(2);
+
+  return currency === '€' ? `${formatted} €` : `${currency}${formatted}`;
 };
 
 const getOnlyProductPrice = (

@@ -16,6 +16,7 @@ describe('WidgetSDK - UIKit/SwatchButton', () => {
     const handleChange = jest.fn();
     const { container } = render(
       <SwatchButton
+        title=""
         id="test"
         value="test"
         type="TEXT"
