@@ -158,9 +158,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     sku: productSku,
   }));
 
-  const isStandardSalability = productView.attributes.find((attr) => attr.name === 'pcm_product_salability')?.value === 'STANDARD';
-
-
+  const isStandardSalability = productView.attributes.find((attr) => attr.name === 'pcm_product_salability')?.value === 'STANDARD'
+        && productView.inStock;
   useEffect(() => {
     let isSwatchUpdated = false;
     async function fetchData() {
