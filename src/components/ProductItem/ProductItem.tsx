@@ -266,7 +266,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
     );
   }
 
-  const onProductClick = () => {
+  const onProductClick = (e: Event) => {
+    e.preventDefault();
     window.adobeDataLayer.push((dl: any) => {
       dl.push({
         event: 'search-product-click',
@@ -275,6 +276,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           sku: productSku,
           optionID: selectedColorSwatch?.optionId,
           searchUnitId: SEARCH_UNIT_ID,
+          redirectUrl: productUrl,
         },
       });
     });
