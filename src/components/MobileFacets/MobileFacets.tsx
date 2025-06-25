@@ -41,6 +41,7 @@ export const MobileFacets: FunctionComponent<FacetsProps> = ({
       <div className={'flex flex-row'}>
         <h1 className={'text-2xl mb-8'}>Sort & Filter</h1>
         <CloseIcon
+          tabindex="0"
           className="h-[28px] w-[28px] rotate-45 inline-block cursor-pointer fill-neutral-800 ml-auto"
           onClick={onClose}
         />
