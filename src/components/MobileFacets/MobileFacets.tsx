@@ -36,6 +36,14 @@ export const MobileFacets: FunctionComponent<FacetsProps> = ({
     config: {priceSlider},
   } = useStore();
 
+  const closeModal = function(event: any) {
+    const activateEvent = event.type === 'click' || (event.type === 'keydown' && event.key === 'Enter') || false;
+
+    if (activateEvent) {
+      onClose();
+    }
+  }
+
   return (
     <div className="ds-plp-facets flex flex-col">
       <div className={'flex flex-row'}>
@@ -43,7 +51,8 @@ export const MobileFacets: FunctionComponent<FacetsProps> = ({
         <CloseIcon
           tabindex="0"
           className="h-[28px] w-[28px] rotate-45 inline-block cursor-pointer fill-neutral-800 ml-auto"
-          onClick={onClose}
+          onClick={(e: any) => closeModal(e)}
+          onKeyDown={(e: any) => closeModal(e)}
         />
       </div>
 
