@@ -17,10 +17,40 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
 }) => {
   const searchCtx = useSearch();
 
+  const modalTabTrap = (modalElem: any) => {
+    modalElem?.addEventListener('keydown', (event: KeyboardEvent) => {
+      // Focus loop in cases of input element causing native focus trap break
+      const focusableEls = Array.from(modalElem.querySelectorAll('a[href], button, input, textarea, select,'
+        + 'details, [tabindex]:not([tabindex="-1"])')).filter((el) => !(el as HTMLElement)?.hasAttribute('disabled')
+        && !(el as HTMLElement)?.getAttribute('aria-hidden'));
+      const firstFocusableEl = focusableEls[0];
+      const lastFocusableEl = focusableEls[focusableEls.length - 1];
+
+      if (event.key === 'Tab' || event.keyCode === 9) {
+        // if Shift + Tab focus on the last focusable elt
+        if (event.shiftKey) {
+          if (document.activeElement === firstFocusableEl) {
+            (lastFocusableEl as HTMLElement)?.focus();
+            event.preventDefault();
+          }
+          // else focus on the first focusable elt
+        } else if (document.activeElement === lastFocusableEl) {
+          (firstFocusableEl as HTMLElement)?.focus();
+          event.preventDefault();
+        }
+      }
+    });
+  }
+
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('no-scroll');
       document.body.style.overflow = 'hidden';
+
+      // ADA: set focus on first indexed element and trap tab movement insode modal
+      const modalElem = document.querySelector('.mobile-filters-container');
+      (modalElem?.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement)?.focus();
+      modalTabTrap(modalElem);
     } else {
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
