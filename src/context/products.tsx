@@ -357,7 +357,7 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
     });
 
     Object.keys(result).forEach((key) => {
-      const category = sortedCategories.find((c) => c.title.replaceAll('-', '').endsWith(key));
+      const category = sortedCategories.find((c) => c.title.split('/')?.pop()?.replaceAll('-', '') === key);
       result[key] = {
         ...category,
         ...result[key],
