@@ -63,4 +63,10 @@ export const fr_FR = {
     listView: 'List view',
     gridView: 'Grid view',
   },
+  Pagination: {
+    first: 'First',
+    last: 'Last',
+    previous: 'Précédent',
+    next: 'Suivant',
+  },
 };

@@ -26,6 +26,7 @@ export const AddToCartButton: FunctionComponent<AddToCartButtonProps> = ({
       <button
         className="flex items-center justify-center h-full w-full gap-2 lg:px-big lg:py-[10px]"
         onClick={onClick}
+        aria-label={translation.ProductCard.quickAdd}
       >
         <PlusIcon className="w-[14px]" />
         {screenSize.desktop && translation.ProductCard.quickAdd}
