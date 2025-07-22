@@ -36,6 +36,14 @@ export const de_DE = {
     option: 'Sortieren nach: {selectedOption}',
     relevanceLabel: 'Höchste Relevanz',
     positionLabel: 'Position',
+    sortAttributeASC: '{label}: Low to High',
+    sortAttributeDESC: '{label}: High to Low',
+    sortASC: 'Price: Low to High',
+    sortDESC: 'Price: High to Low',
+    productName: 'Product Name',
+    productInStock: 'In Stock',
+    productLowStock: 'Low Stock',
+    pcm_publication_date: "New",
   },
   CategoryFilters: {
     results: 'Ergebnisse für {phrase}',
@@ -46,11 +54,16 @@ export const de_DE = {
     startingAt: 'Ab {productPrice}',
     bundlePrice: 'Aus {fromBundlePrice} zu {toBundlePrice}',
     from: 'Ab {productPrice}',
+    quickAdd: 'Quick Add',
+    quickAddSuccess: 'Added to your bag',
+    quickAddError: 'Error. Can\'t add to bag',
   },
   ProductContainers: {
     minquery:
       'Ihr Suchbegriff {variables.phrase} ist kürzer als das Minimum von {minQueryLength} Zeichen.',
+    resultsText: 'Results',
     noresults: 'Zu Ihrer Suche wurden keine Ergebnisse zurückgegeben.',
+    noresultsEgift: 'Check out our {variables.egift} for endless options!',
     pagePicker: '{pageSize} pro Seite anzeigen',
     showAll: 'alle',
   },
@@ -62,5 +75,11 @@ export const de_DE = {
     franchiseView: 'Franchise view',
     listView: 'List view',
     gridView: 'Grid view',
+  },
+  Pagination: {
+    first: 'Erste Seite',
+    last: 'Letzte Seite',
+    previous: 'Zurück',
+    next: 'Weiter',
   },
 };

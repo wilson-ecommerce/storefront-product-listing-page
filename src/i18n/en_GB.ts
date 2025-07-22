@@ -36,6 +36,14 @@ export const en_GB = {
     option: 'Sort by: {selectedOption}',
     relevanceLabel: 'Most Relevant',
     positionLabel: 'Position',
+    sortAttributeASC: '{label}: Low to High',
+    sortAttributeDESC: '{label}: High to Low',
+    sortASC: 'Price: Low to High',
+    sortDESC: 'Price: High to Low',
+    productName: 'Product Name',
+    productInStock: 'In Stock',
+    productLowStock: 'Low Stock',
+    pcm_publication_date: "New",
   },
   CategoryFilters: {
     results: 'results for {phrase}',
@@ -46,11 +54,16 @@ export const en_GB = {
     startingAt: 'Starting at {productPrice}',
     bundlePrice: 'From {fromBundlePrice} To {toBundlePrice}',
     from: 'From {productPrice}',
+    quickAdd: 'Quick Add',
+    quickAddSuccess: 'Added to your bag',
+    quickAddError: 'Error. Can\'t add to bag',
   },
   ProductContainers: {
     minquery:
       'Your search term {variables.phrase} has not reached the minimum of {minQueryLength} characters.',
+    resultsText: 'Results',
     noresults: 'Your search returned no results.',
+    noresultsEgift: 'Check out our {variables.egift} for endless options!',
     pagePicker: 'Show {pageSize} per page',
     showAll: 'all',
   },
@@ -62,5 +75,11 @@ export const en_GB = {
     franchiseView: 'Franchise view',
     listView: 'List view',
     gridView: 'Grid view',
+  },
+  Pagination: {
+    first: 'First page',
+    last: 'Last page',
+    previous: 'Previous',
+    next: 'Next',
   },
 };
