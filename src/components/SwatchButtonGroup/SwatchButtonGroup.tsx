@@ -36,7 +36,6 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
   isSelected,
   swatches,
   showMore,
-  productUrl,
   onClick,
 }: SwatchButtonGroupProps) => {
   const [visibleCount, setVisibleCount] = useState<number|null>(null);
@@ -97,7 +96,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
       {moreSwatches ? (
         <div className="flex h-full w-full">
           {swatchButtons}
-          <a href={productUrl as string} className="hover:no-underline">
+          <div>
             <div className="ds-sdk-product-item__product-swatch-item text-sm text-brand-700">
               <SwatchButton
                 title=''
@@ -108,7 +107,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
                 onClick={showMore}
               />
             </div>
-          </a>
+          </div>
         </div>
       ) : swatchButtons}
     </div>
