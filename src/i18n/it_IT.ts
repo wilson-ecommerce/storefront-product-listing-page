@@ -63,4 +63,10 @@ export const it_IT = {
     listView: 'List view',
     gridView: 'Grid view',
   },
+  Pagination: {
+    first: 'First',
+    last: 'Last',
+    previous: 'Precedente',
+    next: 'Successivo',
+  },
 };
