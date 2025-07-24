@@ -77,8 +77,8 @@ export const en_US = {
     gridView: 'Grid view',
   },
   Pagination: {
-    first: 'First',
-    last: 'Last',
+    first: 'First page',
+    last: 'Last page',
     previous: 'Previous',
     next: 'Next',
   },
