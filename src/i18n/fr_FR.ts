@@ -64,9 +64,9 @@ export const fr_FR = {
     gridView: 'Grid view',
   },
   Pagination: {
-    first: 'First',
-    last: 'Last',
-    previous: 'Précédent',
-    next: 'Suivant',
+    first: 'Première page',
+    last: 'Dernière page',
+    previous: 'Précédente',
+    next: 'Suivante',
   },
 };
