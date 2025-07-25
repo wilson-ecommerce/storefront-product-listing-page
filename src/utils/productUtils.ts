@@ -6,6 +6,11 @@ function isSportsWear(productView: ProductView) {
   return department?.value.includes('Sportswear');
 }
 
+function canProductsBeLinked(productView: ProductView) {
+  const allowProductLinking = productView?.attributes?.find(({ name }) => name === 'pcm_allow_product_linking_swatches');
+  return allowProductLinking?.value === 'yes';
+}
+
 export function getColorOptionsFromProductOptions(productView: ProductView) {
   // First pim_axis option in product option is a color options config
   const productOptions = productView?.options?.find((option) => option.id?.startsWith('pim_axis'));
@@ -118,7 +123,7 @@ function getSegmentedOptions(productView: ProductView, optionId: string | null, 
 }
 
 function getDefaultColorSwatchId(productView: ProductView, swatches: ColorSwatchFromAttribute[]): string | undefined {
-  if (isSportsWear(productView)) {
+  if (canProductsBeLinked(productView)) {
     // There will be single color option for sportswear
     const colorOptionsFromProductOptions = getColorOptionsFromProductOptions(productView);
     const colorOption = colorOptionsFromProductOptions?.values?.[0];
@@ -131,4 +136,4 @@ function getDefaultColorSwatchId(productView: ProductView, swatches: ColorSwatch
   return swatches?.[0]?.id;
 }
 
-export { isSportsWear, getColorSwatchesFromAttribute, getDefaultColorSwatchId, getSegmentedOptions };
+export { isSportsWear, canProductsBeLinked, getColorSwatchesFromAttribute, getDefaultColorSwatchId, getSegmentedOptions };
