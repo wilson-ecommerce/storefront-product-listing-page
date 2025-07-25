@@ -11,7 +11,8 @@ import {
   getColorOptionsFromProductOptions,
   getImageConfigsFromAttribute,
   getSegmentedOptions,
-  isSportsWear} from './productUtils';
+  isSportsWear,
+  canProductsBeLinked} from './productUtils';
 
 const isValidImageUrl = (url: string | undefined) => url && !url.includes('product/no_selection');
 
@@ -138,7 +139,7 @@ function getProductImagesFromAttribute(productView: ProductView, categoryId?: st
   const firstColorOptionsFromProductOptions = colorOptionsFromProductOptions?.values?.[0];
 
   if (colorOptionsFromAttribute && colorOptionsFromAttribute.images.length > 0) {
-    if (isSportsWear(productView)) {
+    if (canProductsBeLinked(productView)) {
       const colorVariantId = firstColorOptionsFromProductOptions?.id;
       const defaultColorOption = colorOptionsFromAttribute.images.find((colorOption: any) => colorOption.id === colorVariantId)
         || colorOptionsFromAttribute.images[0];
