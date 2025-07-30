@@ -125,10 +125,10 @@ const createProducts = (
       item?.product?.price_range?.minimum_price?.final_price?.value,
     priceRange: item?.productView?.priceRange,
     rank: index,
-    ratingCount: item?.productView?.attributes.find((attr) => attr.name === 'bv_rating_count')?.value ?? '0',
-    ratingAverage: item?.productView?.attributes.find((attr) => attr.name === 'bv_rating_average')?.value ?? '0',
+    ratingCount: item?.productView?.attributes?.find((attr) => attr.name === 'bv_rating_count')?.value ?? '0',
+    ratingAverage: item?.productView?.attributes?.find((attr) => attr.name === 'bv_rating_average')?.value ?? '0',
     optionID: item?.productView?.options?.[0]?.values?.[0]?.id,
-    season: item?.productView?.attributes.find((attr) => attr.name === 'pim_season_dev')?.value || '',
+    season: item?.productView?.attributes?.find((attr) => attr.name === 'pim_season_dev')?.value || '',
   }));
 
   return products;
