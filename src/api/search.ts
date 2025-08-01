@@ -42,6 +42,22 @@ const getHeaders = (headers: MagentoHeaders) => {
   };
 };
 
+function searchStatepreparer(state: any){
+
+  const result = structuredClone(state);
+
+  const modifiedProducts = result.searchResultsContext.units[0].products.map((product: any) => {
+    delete product.id;
+    delete product.priceRange;
+    delete product.ratingCount;
+    delete product.ratingAverage;
+    delete product.optionID;
+    delete product.season;
+    return product;
+  });
+  result.searchResultsContext.units[0].products = modifiedProducts;
+  return result;
+}
 
 const discontinuedFilter = {
   attribute: 'pcm_product_salability',
@@ -242,10 +258,12 @@ const getProductSearch = async ({
     route
   );
 
+  
   window.adobeDataLayer.push((dl: any) => {
+    const state = searchStatepreparer(dl.getState());
     dl.push({
       event: 'search-response-received',
-      eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+      eventInfo: { ...state, searchUnitId: SEARCH_UNIT_ID },
     });
   });
 
@@ -259,9 +277,10 @@ const getProductSearch = async ({
     });
   } else {
     window.adobeDataLayer.push((dl: any) => {
+      const state = searchStatepreparer(dl.getState());
       dl.push({
         event: 'search-results-view',
-        eventInfo: { ...dl.getState(), searchUnitId: SEARCH_UNIT_ID },
+        eventInfo: { ...state, searchUnitId: SEARCH_UNIT_ID },
       });
     });
   }
