@@ -68,7 +68,7 @@ export const ProductsContainer: FunctionComponent<Props> = ({
       .replace('{variables.phrase}', variables.phrase)
       .replace('{minQueryLength}', minQueryLength);
     return (
-      <div className="ds-sdk-min-query__page mx-auto max-w-8xl py-12 px-4 sm:px-6 lg:px-8">
+      <div className="ds-sdk-min-query__page flex flex-col gap-8 justify-center items-center w-full mt-md">
         <Alert title={title} type="warning" description="" />
       </div>
     );

@@ -55,14 +55,16 @@ export const App: FunctionComponent = () => {
               </div>
             )}
             <div className="flex flex-col">
-              <div className="flex w-full h-full testing">
-                <MobileFilterHeader
-                    facets={productsCtx.facets}
-                    totalCount={productsCtx.totalCount}
-                    screenSize={screenSize}
-                />
-              </div>
-              <Enrichment position={'above-grid'}/>
+              {productsCtx.minQueryLengthReached && (
+                <>
+                  <div className="flex w-full h-full testing">
+                    <MobileFilterHeader
+                      facets={productsCtx.facets}
+                      totalCount={productsCtx.totalCount}
+                      screenSize={screenSize}/>
+                  </div>
+                  <Enrichment position={'above-grid'}/></>
+            )}
               <div
                   className={`ds-widgets_results flex flex-col items-center flex-[75] ds-widgets-results__center-container `}
               >
@@ -110,7 +112,9 @@ export const App: FunctionComponent = () => {
                         screenSize={screenSize}
                       />
                     </div>
-                    <Enrichment position={'above-grid'} />
+                    {productsCtx.minQueryLengthReached && (
+                      <Enrichment position={'above-grid'} />
+                      )}
                     <ProductsContainer
                       showFilters={showFilters && productsCtx.facets.length > 0}
                     />
