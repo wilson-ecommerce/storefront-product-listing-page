@@ -78,8 +78,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
   }
 
   const moreSwatches = visibleCount === null ? false : swatches.length > visibleCount;
-  // const numberOfOptions = moreSwatches && visibleCount !== null ? visibleCount: swatches.length;
-  // .slice(0, numberOfOptions)
+
   const swatchButtons = swatches.map((swatch, index) => {
     const handleClick = (evt: Event) => {
       evt.preventDefault();
