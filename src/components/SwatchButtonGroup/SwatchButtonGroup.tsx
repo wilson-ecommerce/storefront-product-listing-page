@@ -68,23 +68,19 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
 
   const handleArrowRightClick = (evt: Event) => {
     evt.preventDefault();
-    evt.stopPropagation();
-
-    // setVisibleCount(swatches.length);
     setSwatchButtonsClasses('transform -translate-x-1');
     showMore();
   }
 
   const handleArrowLeftClick = (evt: Event) => {
     evt.preventDefault();
-    evt.stopPropagation();
     setSwatchButtonsClasses('');
   }
 
   const moreSwatches = visibleCount === null ? false : swatches.length > visibleCount;
-  const numberOfOptions = moreSwatches && visibleCount !== null && swatchButtonsClasses === '' ? visibleCount: swatches.length;
-
-  const swatchButtons = swatches.slice(0, numberOfOptions).map((swatch, index) => {
+  // const numberOfOptions = moreSwatches && visibleCount !== null ? visibleCount: swatches.length;
+  // .slice(0, numberOfOptions)
+  const swatchButtons = swatches.map((swatch, index) => {
     const handleClick = (evt: Event) => {
       evt.preventDefault();
       evt.stopPropagation();
@@ -115,13 +111,13 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
       {(
         <div className="flex h-full w-full overflow-hidden">
           {moreSwatches ? (
-            <button onClick={handleArrowLeftClick} className="absolute left-0 h-[44px]">
+            <button onClick={handleArrowLeftClick} className="absolute left-0 h-[44px]" aria-label="Next swatches">
               <ChevronLeft aria-hidden="true"/> 
             </button>
           ) : ''}
           <div className={`flex h-full w-full transition ${swatchButtonsClasses}`}>{swatchButtons}</div>
           {moreSwatches ? (
-            <button onClick={handleArrowRightClick} className="absolute right-0 h-[44px]">
+            <button onClick={handleArrowRightClick} className="absolute right-0 h-[44px]" aria-label="Previous swatches">
               <ChevronRight aria-hidden="true"/> 
             </button>
           ) : ''}
