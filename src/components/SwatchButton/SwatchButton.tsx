@@ -33,23 +33,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
     ? 'border-transparent'
     : 'border-gray';
 
-  if (type === 'TEXT' && id === 'show-more') {
-    const className = `min-w-[44px] p-sm border border-[1.5px] ${outlineColor} h-[44px] outline-transparent`;
-    return (
-      <div className={`ds-sdk-swatch-button_${id} colors-neutral-700 h-full`}>
-        <span 
-          title={value}
-          key={id}
-          className={className}
-          onClick={onClick}
-          checked={checked}
-        >{id === 'show-more' ? value : ''}</span>
-      </div>
-    );
-  }
-
   if (type === 'TEXT') {
-    // const color = `swatch-color-${value.toLowerCase().replaceAll(' ', '-')}`; // tokenize the text value
     const color = value.toLowerCase();
     const mockColor = value.split(' ')[0].toLowerCase();
     const className = `min-w-[44px] p-sm border border-[1.5px] ${outlineColor} h-[44px] outline-transparent`;
@@ -61,12 +45,12 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
           key={id}
           className={className}
           style={{
-            backgroundColor: id === 'show-more' ? null : mockColor,
+            backgroundColor: mockColor,
             border: !checked && isWhite ? '1px solid #ccc' : undefined,
           }}
           onClick={onClick}
           checked={checked}
-        >{id === 'show-more' ? value : ''}</button>
+        />
       </div>
     );
   }
