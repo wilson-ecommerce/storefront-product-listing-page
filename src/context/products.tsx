@@ -397,21 +397,21 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
           return allConfigIds;
         });
 
-        const productLabelsResults = await getGraphQL(
-          GET_PRODUCT_LABELS_QUERY,
-          {
-            productIds,
-            mode: 'CATEGORY',
-          },'',
-          storeCtx.basicToken,
-          storeCtx.graphqlEndpoint
-        );
+        // const productLabelsResults = await getGraphQL(
+        //   GET_PRODUCT_LABELS_QUERY,
+        //   {
+        //     productIds,
+        //     mode: 'CATEGORY',
+        //   },'',
+        //   storeCtx.basicToken,
+        //   storeCtx.graphqlEndpoint
+        // );
 
-        const labels =
-          productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+        // const labels =
+        //   productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
 
         setItems(data?.productSearch?.items || []);
-        setLabels(labels || []);
+        //setLabels(labels || []);
         setFacets(data?.productSearch?.facets || []);
         setTotalCount(data?.productSearch?.total_count || 0);
         setTotalPages(data?.productSearch?.page_info?.total_pages || 1);
