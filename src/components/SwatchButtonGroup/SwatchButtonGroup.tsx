@@ -14,6 +14,9 @@ import { useEffect, useState } from 'react';
 import { SwatchType } from '../../types/interface';
 import { SwatchButton } from '../SwatchButton';
 
+import ChevronLeft from '../../icons/chevron-left.svg';
+import ChevronRight from '../../icons/chevron-right.svg';
+
 export type Swatch = {
     id: string;
     title: string;
@@ -39,6 +42,7 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
   onClick,
 }: SwatchButtonGroupProps) => {
   const [visibleCount, setVisibleCount] = useState<number|null>(null);
+  const [swatchButtonsClasses, setSwatchButtonsClasses] = useState<string|null>('');
   const swatchButtonContainerRef = useRef<HTMLDivElement>(null);
   const swatchButtonRef = useRef<HTMLDivElement>(null);
 
@@ -62,10 +66,20 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
     return () => resizeObserver.disconnect();
   }, []);
 
-  const moreSwatches = visibleCount === null ? false : swatches.length > visibleCount;
-  const numberOfOptions = moreSwatches && visibleCount !== null ? visibleCount - 1 : swatches.length;
+  const handleArrowRightClick = (evt: Event) => {
+    evt.preventDefault();
+    setSwatchButtonsClasses('transform -translate-x-1');
+    showMore();
+  }
 
-  const swatchButtons = swatches.slice(0, numberOfOptions).map((swatch, index) => {
+  const handleArrowLeftClick = (evt: Event) => {
+    evt.preventDefault();
+    setSwatchButtonsClasses('');
+  }
+
+  const moreSwatches = visibleCount === null ? false : swatches.length > visibleCount;
+
+  const swatchButtons = swatches.map((swatch, index) => {
     const handleClick = (evt: Event) => {
       evt.preventDefault();
       evt.stopPropagation();
@@ -92,24 +106,23 @@ export const SwatchButtonGroup: FunctionComponent<SwatchButtonGroupProps> = ({
   });
 
   return (
-    <div className="ds-sdk-product-item__product-swatch-group flex column items-center space-x-2" ref={swatchButtonContainerRef}>
-      {moreSwatches ? (
-        <div className="flex h-full w-full">
-          {swatchButtons}
-          <div>
-            <div className="ds-sdk-product-item__product-swatch-item text-sm text-brand-700">
-              <SwatchButton
-                title=''
-                id={'show-more'}
-                value={`+${swatches.length - numberOfOptions} more`}
-                type={'TEXT'}
-                checked={false}
-                onClick={showMore}
-              />
-            </div>
-          </div>
+    <div className="ds-sdk-product-item__product-swatch-group flex column items-center space-x-2 overflow-hidden px-xsmall" ref={swatchButtonContainerRef}>
+      {(
+        <div className="flex h-full w-full overflow-hidden">
+          {moreSwatches ? (
+            <button onClick={handleArrowLeftClick} className="absolute left-0 h-[44px]" aria-label="Next swatches">
+              <ChevronLeft aria-hidden="true"/> 
+            </button>
+          ) : ''}
+          <div className={`flex h-full w-full transition ${swatchButtonsClasses}`}>{swatchButtons}</div>
+          {moreSwatches ? (
+            <button onClick={handleArrowRightClick} className="absolute right-0 h-[44px]" aria-label="Previous swatches">
+              <ChevronRight aria-hidden="true"/> 
+            </button>
+          ) : ''}
         </div>
-      ) : swatchButtons}
+        )
+      }
     </div>
   );
 };
