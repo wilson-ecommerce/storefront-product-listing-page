@@ -18,8 +18,6 @@ import {
   ProductSearchResponse,
   RefinedProduct,
   RefineProductQuery,
-  Product as ProductInterface,
-  Label,
 } from '../types/interface';
 import { SEARCH_UNIT_ID } from '../utils/constants';
 import { Product, ProductView } from './fragments';
@@ -29,9 +27,7 @@ import {
   FranchiseQueryFragment,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
-  GET_PRODUCT_LABELS_QUERY,
 } from './queries';
-import { getGraphQL } from './graphql';
 
 const getHeaders = (headers: MagentoHeaders) => {
   return {
@@ -74,35 +70,12 @@ const discontinuedFilterString = `{
             }`;
 const isSlugger = window.location.hostname.indexOf('slugger') !== -1;
 
-const getLabels = async(searchItems: Array<ProductInterface>, basicToken: string | undefined, graphqlEndpoint: string | undefined) => {
-  let labels: Label[] = [];
-
-  const productIds = searchItems.flatMap((item: ProductInterface) => item?.product?.id);
-  const productLabelsResults = await getGraphQL(
-    GET_PRODUCT_LABELS_QUERY,
-    {
-      productIds,
-      mode: 'CATEGORY',
-    },'',
-    basicToken,
-    graphqlEndpoint,
-    'GET',
-  );
-
-  labels =
-    productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
-
-  return labels;
-};
-
 const getFranchiseSearch = async ({
   environmentId,
   websiteCode,
   storeCode,
   storeViewCode,
   apiKey,
-  basicToken,
-  graphqlEndpoint,
   apiUrl,
   xRequestId = uuidv4(),
   context,
@@ -115,8 +88,6 @@ const getFranchiseSearch = async ({
   storeCode: string;
   storeViewCode: string;
   apiKey: string;
-  basicToken: string | undefined;
-  graphqlEndpoint: string | undefined;
   apiUrl: string;
   xRequestId?: string;
   context?: any;
@@ -173,14 +144,6 @@ const getFranchiseSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
-
-  // add labels in products datas
-  results?.data?.productSearch?.items.forEach((item: ProductInterface) => {
-    const labelsitem = labels?.filter((label: Label) => label.product_id === item.product.id);
-    item.labels = labelsitem;
-  });
-
   return results?.data;
 }
 
@@ -190,8 +153,6 @@ const getProductSearch = async ({
   storeCode,
   storeViewCode,
   apiKey,
-  basicToken,
-  graphqlEndpoint,
   apiUrl,
   phrase,
   pageSize = 24,
@@ -216,6 +177,7 @@ const getProductSearch = async ({
     categoryId,
     context,
   };
+
   // default filters if search is "catalog (category)" or "search"
   let searchType = 'Search';
   if (categorySearch) {
@@ -288,8 +250,6 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
-
   // ======  initialize data collection =====
   updateSearchResultsCtx(
     SEARCH_UNIT_ID,
@@ -325,12 +285,6 @@ const getProductSearch = async ({
     });
   }
   // ======  end of data collection =====
-
-  // add labels in products datas
-  results?.data?.productSearch?.items.forEach((item: ProductInterface) => {
-    const labelsitem = labels?.filter((label: Label) => label.product_id === item.product.id);
-    item.labels = labelsitem;
-  });
 
   return results?.data;
 };
