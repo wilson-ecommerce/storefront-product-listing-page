@@ -74,6 +74,27 @@ const discontinuedFilterString = `{
             }`;
 const isSlugger = window.location.hostname.indexOf('slugger') !== -1;
 
+const getLabels = async(searchItems: Array<ProductInterface>, basicToken: string | undefined, graphqlEndpoint: string | undefined) => {
+  let labels: Label[] = [];
+
+  const productIds = searchItems.flatMap((item: ProductInterface) => item?.product?.id);
+  const productLabelsResults = await getGraphQL(
+    GET_PRODUCT_LABELS_QUERY,
+    {
+      productIds,
+      mode: 'CATEGORY',
+    },'',
+    basicToken,
+    graphqlEndpoint,
+    'GET',
+  );
+
+  labels =
+    productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+
+  return labels;
+};
+
 const getFranchiseSearch = async ({
   environmentId,
   websiteCode,
@@ -152,26 +173,7 @@ const getFranchiseSearch = async ({
     }),
   }).then((res) => res.json());
 
-  // labels
-  const searchItems = results?.data?.productSearch?.items;
-  let labels: Label[] = [];
-
-  if (searchItems) {
-    const productIds = searchItems.flatMap((item: ProductInterface) => item?.product?.id);
-    const productLabelsResults = await getGraphQL(
-      GET_PRODUCT_LABELS_QUERY,
-      {
-        productIds,
-        mode: 'CATEGORY',
-      },'',
-      basicToken,
-      graphqlEndpoint,
-      'GET',
-    );
-
-    labels =
-      productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
-  }
+  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
 
   // add labels in products datas
   results?.data?.productSearch?.items.forEach((item: ProductInterface) => {
@@ -286,25 +288,7 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const searchItems = results?.data?.productSearch?.items;
-  let labels: Label[] = [];
-
-  if (searchItems) {
-    const productIds = searchItems.flatMap((item: ProductInterface) => item?.product?.id);
-    const productLabelsResults = await getGraphQL(
-      GET_PRODUCT_LABELS_QUERY,
-      {
-        productIds,
-        mode: 'CATEGORY',
-      },'',
-      basicToken,
-      graphqlEndpoint,
-      'GET',
-    );
-
-    labels =
-      productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
-  }
+  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
 
   // ======  initialize data collection =====
   updateSearchResultsCtx(
