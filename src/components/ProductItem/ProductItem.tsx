@@ -67,7 +67,6 @@ const QUICK_ADD_STATUS_ERROR = 'ERROR';
 
 export const ProductItem: FunctionComponent<ProductProps> = ({
   item,
-  labels = [],
   currencySymbol,
   currencyRate,
   categoryConfig,
@@ -75,7 +74,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   addToCart,
   disableAllPurchases,
 }: ProductProps) => {
-  const { product, productView } = item;
+  const { product, productView, labels } = item;
   const {
     config: { optimizeImages, imageBaseWidth, listview, imageBackgroundColor, currentCategoryId },
   } = useStore();
@@ -148,10 +147,6 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const productSku = refinedProduct?.refineProduct?.sku || product?.sku;
   const productOptions = refinedProduct?.refineProduct?.options || productView?.options;
   const sizeOption = productOptions?.find((option) => option.title === SWATCH_SIZE);
-  const currentProductId = Number(
-    refinedProduct?.refineProduct?.externalId || product.id
-  );
-
   const sizeSwatches: Swatch[] = (sizeOption?.values ?? []).map((swatch) => ({
     ...swatch,
     type: 'SIZE',
@@ -326,22 +321,19 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   };
 
   // Label Data
-  const filteredLabels = useMemo(() => {
-    return labels.filter((label) => label.product_id === currentProductId);
-  }, [labels, currentProductId]);
 
   // Filter for "price"
-  const priceLabels = filteredLabels.filter(
+  const priceLabels = labels?.filter(
     (label) => label.additional_data.place === 'price'
   );
 
   // Filter for "gallery"
-  const galleryLabels = filteredLabels.filter(
+  const galleryLabels = labels?.filter(
     (label) => label.additional_data.place === 'gallery'
   );
 
   // Filter for "undername"
-  const undernameLabels = filteredLabels.filter(
+  const undernameLabels = labels?.filter(
     (label) => label.additional_data.place === 'under_name'
   );
 
@@ -486,7 +478,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
         <div className="ds-sdk-product-item__main relative flex flex-col justify-between h-full">
           <div className="ds-sdk-product-item__image relative w-full h-full h-[445px] overflow-hidden">
             {/* add label here */}
-            {galleryLabels.map((label) => (
+            {galleryLabels?.map((label) => (
               <ProductLabel key={label.alt_tag} label={label} variant="primary" />
             ))}
             {imageArray.length ? (
@@ -556,10 +548,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               discount={discount}
               currencySymbol={currencySymbol}
               currencyRate={currencyRate}
-              priceLabel={priceLabels[0]}
+              priceLabel={priceLabels ? priceLabels[0] : undefined}
               inStock={productView?.inStock}
             />
-           {undernameLabels.map((label) => (
+           {undernameLabels?.map((label) => (
               <ProductLabel key={label.alt_tag} label={label} variant="secondary" />
             ))}
           </div>

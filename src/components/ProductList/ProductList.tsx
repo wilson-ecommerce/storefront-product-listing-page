@@ -15,7 +15,7 @@ import './product-list.css';
 
 import {Alert} from '../../components/Alert';
 import {useProducts, useSearch, useStore, useSensor} from '../../context';
-import {Label,Product} from '../../types/interface';
+import {Product} from '../../types/interface';
 import {classNames} from '../../utils/dom';
 import ProductItem, {ProductProps} from '../ProductItem';
 
@@ -28,12 +28,11 @@ type FranchiseProps = Omit<ProductProps, "item"> & {
 
 const NEXT_NUMBER_OF_ROWS = 4;
 
-const renderProductList = (products: Product[], labels: Label[], setError: (error: boolean) => void, currencySymbol: string, currencyRate: string, categoryConfig: any, setRoute: any, refineProduct: any, setCartUpdated: (updated: boolean) => void, setItemAdded: (item: string) => void, addToCart: any, disableAllPurchases: boolean) => {
+const renderProductList = (products: Product[], setError: (error: boolean) => void, currencySymbol: string, currencyRate: string, categoryConfig: any, setRoute: any, refineProduct: any, setCartUpdated: (updated: boolean) => void, setItemAdded: (item: string) => void, addToCart: any, disableAllPurchases: boolean) => {
   return products.map((product) => (
       <ProductItem
           key={product.productView.id}
           item={product}
-          labels={labels}
           setError={setError}
           currencySymbol={currencySymbol}
           currencyRate={currencyRate}
@@ -136,7 +135,6 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
 
 export interface ProductListProps extends HTMLAttributes<HTMLDivElement> {
   products: Array<Product> | null | undefined;
-  labels: Array<Label> | null | undefined;
   numberOfColumns: number;
   showFilters: boolean;
   franchises: any;
@@ -144,7 +142,6 @@ export interface ProductListProps extends HTMLAttributes<HTMLDivElement> {
 
 export const ProductList: FunctionComponent<ProductListProps> = ({
   products,
-  labels,
   numberOfColumns,
   showFilters,
   franchises,
@@ -196,7 +193,7 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
   };
 
   const merchandisingData = useStore().inGridPromoIndexes || [];
-  const finalProductList = insertMerchandise(renderProductList(products ?? [], labels ?? [], setError, currencySymbol, currencyRate, categoryConfig, setRoute, refineProduct, setCartUpdated, setItemAdded, addToCart, disableAllPurchases), merchandisingData, currentPage);
+  const finalProductList = insertMerchandise(renderProductList(products ?? [], setError, currencySymbol, currencyRate, categoryConfig, setRoute, refineProduct, setCartUpdated, setItemAdded, addToCart, disableAllPurchases), merchandisingData, currentPage);
   useEffect(() => {
 
       // custom event

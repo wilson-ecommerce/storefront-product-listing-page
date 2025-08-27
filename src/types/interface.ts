@@ -26,6 +26,8 @@ export interface ClientProps {
   storeViewCode: string;
   apiKey: string;
   xRequestId?: string;
+  basicToken?: string;
+  graphqlEndpoint?: string;
 }
 
 export interface CategoryExtraInfo {
