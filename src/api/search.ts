@@ -295,7 +295,6 @@ const getProductSearch = async ({
     SEARCH_UNIT_ID,
     searchRequestId,
     results?.data?.productSearch,
-    labels,
     route
   );
 

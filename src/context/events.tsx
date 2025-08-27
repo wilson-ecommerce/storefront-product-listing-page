@@ -18,7 +18,7 @@ import {
   SearchSort,
 } from '@adobe/magento-storefront-events-sdk/dist/types/types/schemas';
 
-import { ProductSearchResponse, RedirectRouteFunc, Label } from '../types/interface';
+import { ProductSearchResponse, RedirectRouteFunc } from '../types/interface';
 
 const updateSearchInputCtx = (
   searchUnitId: string,
@@ -64,7 +64,6 @@ const updateSearchResultsCtx = (
   searchUnitId: string,
   searchRequestId: string,
   results: ProductSearchResponse['data']['productSearch'],
-  labels?: Array<Label>,
   route?: RedirectRouteFunc
 ): void => {
   window.adobeDataLayer.push((dl: any) => {
@@ -81,7 +80,7 @@ const updateSearchResultsCtx = (
     const searchResultUnit: SearchResultUnit = {
       searchUnitId,
       searchRequestId,
-      products: createProducts(results.items, labels, route),
+      products: createProducts(results.items, route),
       categories: [],
       suggestions: createSuggestions(results.suggestions),
       page: results?.page_info?.current_page || 1,
@@ -102,7 +101,6 @@ const updateSearchResultsCtx = (
 
 const createProducts = (
   items: ProductSearchResponse['data']['productSearch']['items'],
-  labels?: Array<Label>,
   route?: RedirectRouteFunc
 ): SearchResultProduct[] => {
   if (!items) {
@@ -131,7 +129,7 @@ const createProducts = (
     ratingAverage: item?.productView?.attributes?.find((attr) => attr.name === 'bv_rating_average')?.value ?? '0',
     optionID: item?.productView?.options?.[0]?.values?.[0]?.id,
     season: item?.productView?.attributes?.find((attr) => attr.name === 'pim_season_dev')?.value || '',
-    label: labels?.find((label) => label.product_id === item?.product?.id) || ''
+    label: item?.labels?.filter((label) => label.txt !== '').flatMap((l) => l.txt).join(', ') || '',
   }));
 
   return products;
