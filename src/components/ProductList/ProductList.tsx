@@ -57,7 +57,6 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
    addToCart,
   franchise,
   franchises,
-  labels,
   numberOfColumns,
   disableAllPurchases,
   setCartUpdated,
@@ -114,7 +113,6 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
             item={item}
             setError={setError}
             key={item?.productView?.id}
-            labels={labels}
             currencySymbol={currencySymbol}
             currencyRate={currencyRate}
             categoryConfig={categoryConfig}
@@ -242,7 +240,6 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
               numberOfColumns={numberOfColumns}
               franchises={franchises}
               franchise={franchise}
-              labels={labels || []}
               setError={setError}
               key={franchise}
               currencySymbol={currencySymbol}
