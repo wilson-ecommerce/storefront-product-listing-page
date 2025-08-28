@@ -173,12 +173,20 @@ const getFranchiseSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
+  // get franchises items labels
+  let searchItems: Array<ProductInterface> = [];
+  Object.values(results?.data).forEach((sport: any) => {
+    searchItems = searchItems.concat(sport.items);
+  });
+
+  const labels = await getLabels(searchItems, basicToken, graphqlEndpoint);
 
   // add labels in products datas
-  results?.data?.productSearch?.items.forEach((item: ProductInterface) => {
-    const labelsitem = labels?.filter((label: Label) => label.product_id === item.product.id);
-    item.labels = labelsitem;
+  Object.values(results?.data).forEach((sport: any) => {
+    sport.items.forEach((item: ProductInterface) => {
+      const labelsitem = labels?.filter((label: Label) => label.product_id === item.product.id);
+      item.labels = labelsitem;
+    })
   });
 
   return results?.data;
