@@ -129,6 +129,7 @@ const createProducts = (
     ratingAverage: item?.productView?.attributes?.find((attr) => attr.name === 'bv_rating_average')?.value ?? '0',
     optionID: item?.productView?.options?.[0]?.values?.[0]?.id,
     season: item?.productView?.attributes?.find((attr) => attr.name === 'pim_season_dev')?.value || '',
+    label: item?.labels?.filter((label) => label.txt !== '').flatMap((l) => l.txt).join(', ') || '',
   }));
 
   return products;
