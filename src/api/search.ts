@@ -57,6 +57,7 @@ function searchStatepreparer(state: any){
     delete product.ratingAverage;
     delete product.optionID;
     delete product.season;
+    delete product.label;
     return product;
   });
   result.searchResultsContext.units[0].products = modifiedProducts;
