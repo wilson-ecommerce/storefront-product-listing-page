@@ -16,9 +16,8 @@ describe('WidgetSDK - UIKit/ImageCarousel', () => {
     const { container } = render(
       <ImageCarousel
         images={[]}
-        productName=""
-        carouselIndex={0}
-        setCarouselIndex={() => {}}
+        selectedColorSwatch={null}
+        refineProduct={() => {}}
       />
     );
 

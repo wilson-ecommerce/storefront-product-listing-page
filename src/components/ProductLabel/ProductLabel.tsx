@@ -21,7 +21,7 @@ export const ProductLabel: FunctionComponent<ProductLabelProps> = ({
   const variantStyles = {
     primary: {
       baseClass:
-        'ds-sdk-product-label-primary absolute top-2 left-2 px-2 py-1 border border-black z-1',
+        'ds-sdk-product-label-primary absolute top-2 left-2 px-2 py-1 border border-black z-20',
       textClass: 'text-[12px] font-medium label-line',
       style: {
         color: label.additional_data.text_color || "#000",

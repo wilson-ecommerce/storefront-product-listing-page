@@ -35,6 +35,7 @@ import ImageHover from '../ImageHover';
 import ProductLabel from '../ProductLabel/ProductLabel';
 import { Swatch, SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
+import { ImageCarousel } from '../ImageCarousel';
 
 export interface ProductProps {
   item: Product;
@@ -163,7 +164,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
             return;
           }
 
-          const { sku, optionId} = selectedColorSwatch;
+          const { sku, optionId } = selectedColorSwatch;
           const data = await refineProduct([optionId], sku);
           // Return early if different swatch is selected before request is complete
           if (isSwatchUpdated) {
@@ -482,14 +483,15 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               <ProductLabel key={label.alt_tag} label={label} variant="primary" />
             ))}
             {imageArray.length ? (
-              <ImageHover
-                images={
-                  optimizedImageArray.length
-                    ? optimizedImageArray
-                    : imageArray
-                }
-                // productName={product.name}
-              />
+                <ImageCarousel
+                  images={
+                    optimizedImageArray.length
+                      ? optimizedImageArray
+                      : imageArray
+                  }
+                  selectedColorSwatch={selectedColorSwatch}
+                  refineProduct={refineProduct}
+                />
             ) : (
               <NoImage
                 className={`max-h-[45rem] w-full object-cover object-center lg:w-full`}
