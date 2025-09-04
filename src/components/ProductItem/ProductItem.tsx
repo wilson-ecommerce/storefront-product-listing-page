@@ -498,7 +498,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               />
             )}
             {isStandardSalability && (
-              <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px]">
+              <div className="add-to-cart-overlay absolute left-0 right-0 bottom-0 p-xsmall h-[56px] z-1">
                 {quickAddStatus !== QUICK_ADD_STATUS_IDLE && (
                   <div className="status-container flex items-center justify-center h-full w-full">
                     {quickAddStatus === QUICK_ADD_STATUS_PENDING && (
