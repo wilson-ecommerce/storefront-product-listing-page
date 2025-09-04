@@ -297,8 +297,8 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
-
+  const labels: Label[] = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
+  
   // ======  initialize data collection =====
   updateSearchResultsCtx(
     SEARCH_UNIT_ID,
