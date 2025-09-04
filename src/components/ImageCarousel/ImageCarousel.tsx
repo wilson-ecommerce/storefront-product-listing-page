@@ -43,9 +43,8 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   useEffect(() => {
     if (!entry) return;
 
-    if (entry?.isIntersecting) {
-      const image = entry.target;
-      image.classList.remove("lazy");
+    if (entry.isIntersecting) {
+      entry.target.classList.remove("lazy");
 
       if (backImage) {
         const preloadLink = document.createElement('link');
