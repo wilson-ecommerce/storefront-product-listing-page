@@ -39,6 +39,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     ? (typeof images[0] === 'object' ? images[0].src : images[0])
     : '';
   const [carouselInit, setCarouselInit] = useState(false);
+  const [prevSelectedSwatchOptionId, setPrevSelectedSwatchOptionId] = useState('');
 
   useEffect(() => {
     if (!entry) return;
@@ -81,9 +82,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
   const hoverHandler = async(e: Event) => {
     e.preventDefault();
-    if (selectedColorSwatch && !imagesCarousel.length && !carouselInit) {
+    if (selectedColorSwatch && selectedColorSwatch.optionId !== prevSelectedSwatchOptionId) {
       setCarouselInit(true);
       const { sku, optionId } = selectedColorSwatch;
+      setPrevSelectedSwatchOptionId(optionId);
       const data = await refineProduct([optionId], sku);
       const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
       if (dataImages) {
@@ -107,9 +109,9 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
           >
             <div className="overflow-hidden relative w-full h-full">
               <div className={`${backImage || imagesCarousel?.length > 0 ? 'main-image' : ''} relative z-1 transition duration-40 w-full h-full`}>
-                <div className="ds-sdk-product-image absolute h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" 
+                <div className="ds-sdk-product-image absolute h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" 
                   style={{
-                    'background-image': `url(${frontImage})`,
+                    '--image-url': `url('${frontImage}')`,
                   }} 
                   ref={imageRef} />
               </div>
@@ -120,16 +122,16 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
                   width: `${imagesWrapperWidth}px`,
                 }}
               >
-                {backImage && (
-                <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" style={{
-                  'background-image': `url(${backImage})`,
-                }} />
+                {backImage && carouselInit && (
+                  <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
+                    '--image-url': `url(${backImage})`,
+                  }} />
                 )}
                 {imagesCarousel && imagesCarousel.map((item, index) => {
                   return (
-                      <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
-                        'background-image': `url(${item})`,
-                      }} key={index} />
+                    <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
+                      'background-image': `url(${item})`,
+                    }} key={index} />
                   );
                 })}
               </div>
