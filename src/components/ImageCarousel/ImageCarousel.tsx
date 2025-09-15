@@ -32,13 +32,13 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const [imageWidth, setImageWidth] = useState(0);
   const imageRef = useRef<HTMLDivElement>(null);
   const entry = useIntersectionObserver(imageRef, { rootMargin: '200px' });
+  const imageBackRef = useRef<HTMLDivElement>(null);
   const backImage = images.length > 1 
     ? (typeof images[1] === 'object' ? images[1].src : images[1])
     : '';
   const frontImage = images.length
     ? (typeof images[0] === 'object' ? images[0].src : images[0])
     : '';
-  const [carouselInit, setCarouselInit] = useState(false);
   const [prevSelectedSwatchOptionId, setPrevSelectedSwatchOptionId] = useState('');
 
   useEffect(() => {
@@ -53,6 +53,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.as = 'image';
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
+
+        if (imageBackRef.current) {
+          imageBackRef.current.classList.remove("lazy");
+        }
       }
     }
 
@@ -83,7 +87,6 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const hoverHandler = async(e: Event) => {
     e.preventDefault();
     if (selectedColorSwatch && selectedColorSwatch.optionId !== prevSelectedSwatchOptionId) {
-      setCarouselInit(true);
       const { sku, optionId } = selectedColorSwatch;
       setPrevSelectedSwatchOptionId(optionId);
       const data = await refineProduct([optionId], sku);
@@ -94,7 +97,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
   };
 
-  const imagesWrapperWidth = imageWidth * (imagesCarousel?.length + 1);
+  let imagesWrapperWidth = imageWidth * (imagesCarousel?.length);
+  if (backImage) {
+    imagesWrapperWidth += imageWidth;
+  }
 
   return (
     <>
@@ -122,10 +128,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
                   width: `${imagesWrapperWidth}px`,
                 }}
               >
-                {backImage && carouselInit && (
-                  <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
+                {backImage && (
+                  <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" style={{
                     '--image-url': `url(${backImage})`,
-                  }} />
+                  }} ref={imageBackRef}/>
                 )}
                 {imagesCarousel && imagesCarousel.map((item, index) => {
                   return (
