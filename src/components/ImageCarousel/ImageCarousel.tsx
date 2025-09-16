@@ -12,6 +12,7 @@ import { FunctionComponent } from 'preact';
 import { useState } from 'react';
 import { useRef, useEffect } from 'preact/compat';
 import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
+import { generateOptimizedImages } from '../../utils/getProductImage';
 
 import Chevron from '../../icons/chevron-light.svg';
 
@@ -45,7 +46,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     if (!entry) return;
 
     if (entry.isIntersecting) {
-      entry.target.classList.remove("lazy");
+      entry.target.classList.remove('lazy');
 
       if (backImage) {
         const preloadLink = document.createElement('link');
@@ -55,7 +56,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         document.head.appendChild(preloadLink);
 
         if (imageBackRef.current) {
-          imageBackRef.current.classList.remove("lazy");
+          imageBackRef.current.classList.remove('lazy');
         }
       }
     }
@@ -92,22 +93,27 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       const data = await refineProduct([optionId], sku);
       const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
       if (dataImages) {
-        setImagesCarousel(dataImages.flatMap((img: { url: string; }) => img.url));
+        const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
+        const optimizedImageArray = generateOptimizedImages(
+          dataImagesUrls,
+          imageWidth ?? 420,
+          ''
+        );
+
+        setImagesCarousel(optimizedImageArray.flatMap((img: { src: string; }) => img.src));
       }
     }
   };
 
-  let imagesWrapperWidth = imageWidth * (imagesCarousel?.length);
-  if (backImage) {
-    imagesWrapperWidth += imageWidth;
-  }
-
+  const imagesCarouselSize = backImage ? imagesCarousel?.length + 1 : imagesCarousel?.length;
+  const imagesWrapperWidth = imageWidth * (imagesCarouselSize);
+  
   return (
     <>
       <meta itemProp="image" content={frontImage} />
       <div class="relative w-full pb-[122.22%]">
         <div class="ds-sdk-product-image-carousel max-w-2xl m-auto absolute h-full w-full" onMouseOver={(e: Event) => hoverHandler(e)}>
-          {imagesCarousel?.length > 0 && (
+          {imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform rotate-180 stroke-neutral-900 absolute top-mid left-2 z-1 transition ease-out duration-40" onClick={(e: Event) => prevHandler(e)}/>
           )}
           <div
@@ -143,7 +149,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
               </div>
             </div>
           </div>
-          {imagesCarousel?.length > 0 && (
+          {imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform stroke-neutral-900 absolute z-1 right-2 top-mid transition ease-out duration-40" onClick={(e: Event) => nextHandler(e)}/>
           )}
         </div>
