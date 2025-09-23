@@ -1,0 +1,20 @@
+.ds-sdk-product-image-carousel svg {
+  opacity: 0;
+}
+
+.ds-sdk-product-image-carousel:hover svg {
+  opacity: 1;
+}
+
+.ds-sdk-product-image-carousel svg:hover {
+  opacity: .5;
+}
+
+.ds-sdk-product-image-carousel .main-image {
+  opacity: 1;
+}
+
+.ds-sdk-product-image-carousel:hover .main-image {
+  opacity: 0;
+  pointer-events: none;
+}
