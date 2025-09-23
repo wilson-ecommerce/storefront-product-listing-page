@@ -187,7 +187,7 @@ const getFranchiseSearch = async ({
     searchItems = searchItems.concat(sport.items);
   });
 
-  const labels = await getLabels(searchItems, storeViewCode, basicToken, graphqlEndpoint);
+  const labels: Label[] = await getLabels(searchItems, storeViewCode, basicToken, graphqlEndpoint);
 
   // add labels in products datas
   Object.values(results?.data).forEach((sport: any) => {
@@ -304,7 +304,7 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels = await getLabels(results?.data?.productSearch?.items, storeViewCode, basicToken, graphqlEndpoint);
+  const labels: Label[] = await getLabels(results?.data?.productSearch?.items, storeViewCode, basicToken, graphqlEndpoint);
 
   // ======  initialize data collection =====
   updateSearchResultsCtx(
