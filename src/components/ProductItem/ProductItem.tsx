@@ -56,6 +56,7 @@ export interface ProductProps {
     user_errors: any[];
   }>;
   disableAllPurchases: boolean;
+  franchiseTitle: string | undefined;
 }
 
 const SWATCH_SIZE = 'Size';
@@ -73,6 +74,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   refineProduct,
   addToCart,
   disableAllPurchases,
+  franchiseTitle,
 }: ProductProps) => {
   const { product, productView, labels } = item;
   const {
@@ -451,9 +453,17 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock)
     ? 'InStock'
     : 'OutOfStock';
+
+  let franchiseCategoryId = productView?.attributes.filter((a:any) => a.name === 'eds_category_data')[0]?.value;
+
+  if (franchiseTitle && franchiseCategoryId) {
+    franchiseCategoryId = JSON.parse(franchiseCategoryId).find((a:any) => a.categoryPath === franchiseTitle).categoryId;
+  }
+
   return (
     <div itemScope itemType="http://schema.org/Product"
       className="ds-sdk-product-item group relative flex flex-col w-full justify-between h-full"
+      data-category-id={franchiseCategoryId ?? currentCategoryId}
       style={{
         'border-color': '#D5D5D5',
       }}

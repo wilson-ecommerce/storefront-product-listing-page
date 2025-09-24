@@ -8,11 +8,9 @@ it.
 */
 import { ProductView, ProductViewMedia } from '../types/interface';
 import {
-  getColorOptionsFromProductOptions,
+  canProductsBeLinked,  getColorOptionsFromProductOptions,
   getImageConfigsFromAttribute,
-  getSegmentedOptions,
-  isSportsWear,
-  canProductsBeLinked} from './productUtils';
+  getSegmentedOptions } from './productUtils';
 
 const isValidImageUrl = (url: string | undefined) => url && !url.includes('product/no_selection');
 

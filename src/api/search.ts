@@ -13,25 +13,25 @@ import { updateSearchInputCtx, updateSearchResultsCtx } from '../context';
 import {
   AttributeMetadataResponse,
   ClientProps,
+  Label,
   MagentoHeaders,
+  Product as ProductInterface,
   ProductSearchQuery,
   ProductSearchResponse,
   RefinedProduct,
   RefineProductQuery,
-  Product as ProductInterface,
-  Label,
 } from '../types/interface';
 import { SEARCH_UNIT_ID } from '../utils/constants';
 import { Product, ProductView } from './fragments';
+import { getGraphQL } from './graphql';
 import {
   ATTRIBUTE_METADATA_QUERY,
   CATEGORY_QUERY,
   FranchiseQueryFragment,
+  GET_PRODUCT_LABELS_QUERY,
   PRODUCT_SEARCH_QUERY,
   REFINE_PRODUCT_QUERY,
-  GET_PRODUCT_LABELS_QUERY,
 } from './queries';
-import { getGraphQL } from './graphql';
 
 const getHeaders = (headers: MagentoHeaders) => {
   return {
@@ -307,7 +307,7 @@ const getProductSearch = async ({
     route
   );
 
-  
+
   window.adobeDataLayer.push((dl: any) => {
     const state = searchStatepreparer(dl.getState());
     dl.push({
