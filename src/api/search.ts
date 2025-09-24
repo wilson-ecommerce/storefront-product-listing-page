@@ -75,23 +75,30 @@ const discontinuedFilterString = `{
             }`;
 const isSlugger = window.location.hostname.indexOf('slugger') !== -1;
 
-const getLabels = async(searchItems: Array<ProductInterface>, basicToken: string | undefined, graphqlEndpoint: string | undefined) => {
+const getLabels = async (
+  searchItems: Array<ProductInterface>,
+  storeViewCode: string | undefined,
+  basicToken: string | undefined,
+  graphqlEndpoint: string | undefined
+) => {
   let labels: Label[] = [];
 
-  const productIds = searchItems.flatMap((item: ProductInterface) => item?.product?.id);
+  const productIds = searchItems.flatMap(
+    (item: ProductInterface) => item?.product?.id
+  );
   const productLabelsResults = await getGraphQL(
     GET_PRODUCT_LABELS_QUERY,
     {
       productIds,
       mode: 'CATEGORY',
-    },'',
+    },
+    storeViewCode,
     basicToken,
     graphqlEndpoint,
-    'GET',
+    'GET'
   );
 
-  labels =
-    productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+  labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
 
   return labels;
 };
@@ -180,7 +187,7 @@ const getFranchiseSearch = async ({
     searchItems = searchItems.concat(sport.items);
   });
 
-  const labels = await getLabels(searchItems, basicToken, graphqlEndpoint);
+  const labels: Label[] = await getLabels(searchItems, storeViewCode, basicToken, graphqlEndpoint);
 
   // add labels in products datas
   Object.values(results?.data).forEach((sport: any) => {
@@ -297,8 +304,8 @@ const getProductSearch = async ({
     }),
   }).then((res) => res.json());
 
-  const labels: Label[] = await getLabels(results?.data?.productSearch?.items, basicToken, graphqlEndpoint);
-  
+  const labels: Label[] = await getLabels(results?.data?.productSearch?.items, storeViewCode, basicToken, graphqlEndpoint);
+
   // ======  initialize data collection =====
   updateSearchResultsCtx(
     SEARCH_UNIT_ID,
@@ -307,7 +314,7 @@ const getProductSearch = async ({
     route
   );
 
-  
+
   window.adobeDataLayer.push((dl: any) => {
     const state = searchStatepreparer(dl.getState());
     dl.push({
