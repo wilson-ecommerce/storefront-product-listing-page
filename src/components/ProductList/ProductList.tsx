@@ -14,7 +14,7 @@ import {useEffect, useState} from 'preact/hooks';
 import './product-list.css';
 
 import {Alert} from '../../components/Alert';
-import {useProducts, useSearch, useStore, useSensor} from '../../context';
+import {useProducts, useSearch, useSensor,useStore} from '../../context';
 import {Product} from '../../types/interface';
 import {classNames} from '../../utils/dom';
 import ProductItem, {ProductProps} from '../ProductItem';
@@ -43,6 +43,7 @@ const renderProductList = (products: Product[], setError: (error: boolean) => vo
           setItemAdded={setItemAdded}
           addToCart={addToCart}
           disableAllPurchases={disableAllPurchases}
+          franchiseTitle={undefined}
       />
   ));
 };
@@ -121,6 +122,7 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
             setCartUpdated={setCartUpdated}
             setItemAdded={setItemAdded}
             addToCart={addToCart}
+            franchiseTitle={franchises[franchise].title}
           />
         ))}
       </div>
@@ -249,6 +251,7 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
               setItemAdded={setItemAdded}
               addToCart={addToCart}
               getMoreFranchiseProducts={getMoreFranchiseProducts}
+              franchiseTitle={undefined}
             />
           ))}
         </div>

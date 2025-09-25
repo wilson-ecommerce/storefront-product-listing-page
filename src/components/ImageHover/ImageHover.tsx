@@ -8,9 +8,10 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
+import { useEffect,useRef } from 'preact/compat';
 
 import './ImageHover.css';
-import { useRef, useEffect } from 'preact/compat';
+
 import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
 
 export interface ImageCarouselProps {
@@ -20,7 +21,7 @@ export interface ImageCarouselProps {
 export const ImageHover: FunctionComponent<ImageCarouselProps> = ({
   images,
 }) => {
-    const backImage = images.length > 1 
+    const backImage = images.length > 1
     ? (typeof images[1] === 'object' ? images[1].src : images[1])
     : '';
     const imageRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,7 @@ export const ImageHover: FunctionComponent<ImageCarouselProps> = ({
       if (!entry) return;
 
       if (entry?.isIntersecting) {
-        var image = entry.target;
+        const image = entry.target;
         image.classList.remove("lazy");
 
         if (backImage) {
