@@ -2,14 +2,6 @@
   opacity: 0;
 }
 
-.ds-sdk-product-image-carousel:hover svg {
-  opacity: 1;
-}
-
-.ds-sdk-product-image-carousel svg:hover {
-  opacity: .5;
-}
-
 .ds-sdk-product-image-carousel .main-image {
   opacity: 1;
 }
@@ -17,4 +9,44 @@
 .ds-sdk-product-image-carousel:hover .main-image {
   opacity: 0;
   pointer-events: none;
+}
+
+.ds-sdk-product-image-carousel .progress-bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #ddd;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.ds-sdk-product-image-carousel .progress-bar span {
+  background: #656565;
+  display: inline-block;
+  height: 2px;
+  width: var(--progress-width);
+  top: 0;
+  position: absolute;
+  transition: width .4s;
+}
+
+@media screen and (max-width: 767px) {
+  .ds-sdk-product-image-carousel .main-image {
+    opacity: 0;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .ds-sdk-product-image-carousel:hover svg {
+    opacity: 1;
+  }
+
+  .ds-sdk-product-image-carousel svg:hover {
+    opacity: .5;
+  }
+
+  .ds-sdk-product-image-carousel .progress-bar {
+    display: none;
+  }
 }
