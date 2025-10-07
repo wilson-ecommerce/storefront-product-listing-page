@@ -59,10 +59,13 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
       if (dataImages) {
         const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
-        const imageW = imageWidth || imageRef.current?.offsetWidth || 420;
+        let imageW = imageWidth || imageRef.current?.offsetWidth;
+        if (screenSize.mobile && imageW) {
+          imageW = imageW * 2;
+        }
         const optimizedImageArray = generateOptimizedImages(
           dataImagesUrls,
-          screenSize.mobile ? imageW * 2 : imageW,
+          imageW || 420,
           ''
         );
 
