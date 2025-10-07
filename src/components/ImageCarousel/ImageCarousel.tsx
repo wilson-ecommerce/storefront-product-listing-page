@@ -59,9 +59,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
       if (dataImages) {
         const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
+        const imageW = imageWidth || imageRef.current?.offsetWidth || 420;
         const optimizedImageArray = generateOptimizedImages(
           dataImagesUrls,
-          imageWidth || imageRef.current?.offsetWidth || 420,
+          screenSize.mobile ? imageW * 2 : imageW,
           ''
         );
 
@@ -89,7 +90,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
         if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
-        setImagesCarouselSize(1);
+        setImagesCarouselSize(screenSize.mobile ? 2 : 1);
       }
 
       if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
