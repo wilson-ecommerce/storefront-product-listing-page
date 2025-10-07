@@ -54,7 +54,7 @@ export const fr_FR = {
     startingAt: 'À partir de {productPrice}',
     bundlePrice: 'De {fromBundlePrice} à {toBundlePrice}',
     from: 'De {productPrice}',
-    quickAdd: 'Quick Add',
+    quickAdd: 'Ajouter rapidement',
     quickAddSuccess: 'Added to your bag',
     quickAddError: 'Error. Can\'t add to bag',
   },
