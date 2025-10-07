@@ -57,7 +57,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         const { sku, optionId } = selectedColorSwatch;
         setPrevSelectedSwatchOptionId(optionId);
         const data = await refineProduct([optionId], sku);
-        const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
+        const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
         if (dataImages) {
           const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
           const optimizedImageArray = generateOptimizedImages(
@@ -94,17 +94,11 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
       }
 
-      if (imageFrontMobileRef.current) {
-        imageFrontMobileRef.current.classList.remove('lazy');
-      }
+      if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
 
-      if (imageRef.current) {
-        imageRef.current.classList.remove('lazy');
-      }
+      if (imageRef.current) imageRef.current.classList.remove('lazy');
 
-      if (screenSize.mobile) {
-        loadCarousel();
-      }
+      if (screenSize.mobile) loadCarousel();
     }
 
     if (imageRef.current) {

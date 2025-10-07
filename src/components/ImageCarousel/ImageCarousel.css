@@ -3,7 +3,7 @@
 }
 
 .ds-sdk-product-image-carousel .main-image {
-  opacity: 1;
+  opacity: 0;
 }
 
 .ds-sdk-product-image-carousel:hover .main-image {
@@ -31,13 +31,11 @@
   transition: width .4s;
 }
 
-@media screen and (max-width: 767px) {
-  .ds-sdk-product-image-carousel .main-image {
-    opacity: 0;
-  }
-}
-
 @media screen and (min-width: 768px) {
+  .ds-sdk-product-image-carousel .main-image {
+    opacity: 1;
+  }
+
   .ds-sdk-product-image-carousel:hover svg {
     opacity: 1;
   }
