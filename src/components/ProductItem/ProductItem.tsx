@@ -452,6 +452,10 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   const productAvailability = (refinedProduct?.refineProduct ? refinedProduct?.refineProduct.inStock : productView?.inStock)
     ? 'InStock'
     : 'OutOfStock';
+
+  const firstOption = productView?.options ? productView?.options[0] : null;
+  const firstOptionId = firstOption?.values ? firstOption?.values[0]?.id : '';
+
   return (
     <div itemScope itemType="http://schema.org/Product"
       className="ds-sdk-product-item group relative flex flex-col w-full justify-between h-full"
@@ -489,7 +493,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                       ? optimizedImageArray
                       : imageArray
                   }
-                  selectedColorSwatch={selectedColorSwatch}
+                  selectedColorSwatch={selectedColorSwatch || { sku: productView.sku, optionId: firstOptionId }}
                   refineProduct={refineProduct}
                 />
             ) : (
