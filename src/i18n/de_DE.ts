@@ -54,7 +54,7 @@ export const de_DE = {
     startingAt: 'Ab {productPrice}',
     bundlePrice: 'Aus {fromBundlePrice} zu {toBundlePrice}',
     from: 'Ab {productPrice}',
-    quickAdd: 'Quick Add',
+    quickAdd: 'Schnell hinzufügen',
     quickAddSuccess: 'Added to your bag',
     quickAddError: 'Error. Can\'t add to bag',
   },

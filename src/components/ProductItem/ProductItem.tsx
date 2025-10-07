@@ -460,6 +460,8 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
   if (franchiseTitle && franchiseCategoryId) {
     franchiseCategoryId = JSON.parse(franchiseCategoryId).find((a:any) => a.categoryPath === franchiseTitle).categoryId;
   }
+  const firstOption = productView?.options ? productView?.options[0] : null;
+  const firstOptionId = firstOption?.values ? firstOption?.values[0]?.id : '';
 
   return (
     <div itemScope itemType="http://schema.org/Product"
@@ -499,7 +501,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                       ? optimizedImageArray
                       : imageArray
                   }
-                  selectedColorSwatch={selectedColorSwatch}
+                  selectedColorSwatch={selectedColorSwatch || { sku: productView.sku, optionId: firstOptionId }}
                   refineProduct={refineProduct}
                 />
             ) : (

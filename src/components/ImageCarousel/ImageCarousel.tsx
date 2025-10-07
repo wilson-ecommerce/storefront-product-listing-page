@@ -44,7 +44,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const frontImage = images.length
     ? (typeof images[0] === 'object' ? images[0].src : images[0])
     : '';
-  const [prevSelectedSwatchOptionId, setPrevSelectedSwatchOptionId] = useState('');
+  const [prevSelectedSwatchSku, setPrevSelectedSwatchSku] = useState('');
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [origin, setOrigin] = useState(0);
@@ -52,31 +52,28 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const [lastPos, setLastPos] = useState(0);
 
   const loadCarousel = async() => {
+    if (selectedColorSwatch && selectedColorSwatch.sku !== prevSelectedSwatchSku) {
+      const { sku, optionId } = selectedColorSwatch;
+      setPrevSelectedSwatchSku(sku);
+      const data = await refineProduct([optionId], sku);
+      const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
+      if (dataImages) {
+        const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
+        const optimizedImageArray = generateOptimizedImages(
+          dataImagesUrls,
+          imageWidth || imageRef.current?.offsetWidth || 420,
+          ''
+        );
 
-      if (selectedColorSwatch && selectedColorSwatch.optionId !== prevSelectedSwatchOptionId) {
-        const { sku, optionId } = selectedColorSwatch;
-        setPrevSelectedSwatchOptionId(optionId);
-        const data = await refineProduct([optionId], sku);
-        const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
-        if (dataImages) {
-          const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
-          const optimizedImageArray = generateOptimizedImages(
-            dataImagesUrls,
-            imageWidth || imageRef.current?.offsetWidth || 420,
-            ''
-          );
-
-          const images = optimizedImageArray.flatMap((img: { src: string; }) => img.src);
-          setImagesCarousel(images);
-
-          let size = backImage ? images?.length + 1 : images?.length;
-          if (screenSize.mobile) {
-            size = size + 1;
-          }
-          setImagesCarouselSize(size);
+        const images = optimizedImageArray.flatMap((img: { src: string; }) => img.src);
+        setImagesCarousel(images);
+        let size = backImage ?  images?.length + 1 : images?.length;
+        if (screenSize.mobile) {
+          size = size + 1;
         }
-
+        setImagesCarouselSize(size);
       }
+    }
   };
 
   useEffect(() => {
@@ -92,6 +89,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
         if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
+        setImagesCarouselSize(1);
       }
 
       if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
@@ -168,7 +166,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
   };
 
-  const imagesWrapperWidth = imageWidth * (imagesCarouselSize);
+  const imagesWrapperWidth = imageWidth * imagesCarouselSize;
   const translateX = dragging ? -dragX : carouselIndex * imageWidth;
   const progressBarWidth = (carouselIndex + 1) * 100 / imagesCarouselSize;
 
