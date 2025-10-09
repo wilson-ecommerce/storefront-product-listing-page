@@ -34,16 +34,13 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const [imagesCarousel, setImagesCarousel] = useState(initialImagesValue);
   const [imagesCarouselSize, setImagesCarouselSize] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const imageFrontMobileRef = useRef<HTMLDivElement>(null);
   const entry = useIntersectionObserver(imageRef, { rootMargin: '200px' });
   const imageBackRef = useRef<HTMLDivElement>(null);
-  const backImage = images.length > 1 
-    ? (typeof images[1] === 'object' ? images[1].src : images[1])
-    : '';
-  const frontImage = images.length
-    ? (typeof images[0] === 'object' ? images[0].src : images[0])
-    : '';
+  const backImage = images.length > 1 ? (typeof images[1] === 'object' ? images[1].src : images[1]) : '';
+  const frontImage = images.length ? (typeof images[0] === 'object' ? images[0].src : images[0]) : '';
   const [prevSelectedSwatchSku, setPrevSelectedSwatchSku] = useState('');
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
@@ -60,7 +57,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       if (dataImages) {
         const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
         let imageW = imageWidth || imageRef.current?.offsetWidth;
-        if (screenSize.mobile && imageW) {
+        if (!screenSize.desktop && imageW) {
           imageW = imageW * 2;
         }
         const optimizedImageArray = generateOptimizedImages(
@@ -72,7 +69,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         const images = optimizedImageArray.flatMap((img: { src: string; }) => img.src);
         setImagesCarousel(images);
         let size = backImage ?  images?.length + 1 : images?.length;
-        if (screenSize.mobile) {
+        if (navigator.maxTouchPoints > 0) {
           size = size + 1;
         }
         setImagesCarouselSize(size);
@@ -93,14 +90,14 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
         if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
-        setImagesCarouselSize(screenSize.mobile ? 2 : 1);
+        setImagesCarouselSize(navigator.maxTouchPoints > 0 ? 2 : 1);
       }
 
       if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
 
       if (imageRef.current) imageRef.current.classList.remove('lazy');
 
-      if (screenSize.mobile) loadCarousel();
+      if (navigator.maxTouchPoints > 0) loadCarousel();
     }
 
     if (imageRef.current) {
@@ -128,6 +125,12 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
     setCarouselIndex(newIndex);
     setLastTranslate(newIndex * imageWidth);
+
+    // remove carousel images lazy class
+    const images = sliderRef.current?.querySelectorAll('.ds-sdk-product-image');
+    images?.forEach((img) => {
+      img.classList.remove('lazy');
+    });
   };
 
   const startDragHandle = async(e: TouchEvent) => {
@@ -165,7 +168,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
   const hoverHandler = async(e: Event) => {
     e.preventDefault();
-    if (screenSize.desktop) {
+    if (navigator.maxTouchPoints < 1) {
       loadCarousel();
     }
   };
@@ -173,18 +176,20 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const imagesWrapperWidth = imageWidth * imagesCarouselSize;
   const translateX = dragging ? -dragX : carouselIndex * imageWidth;
   const progressBarWidth = (carouselIndex + 1) * 100 / imagesCarouselSize;
+  const hasTouch = navigator.maxTouchPoints > 0;
+  const classTouch = hasTouch ? 'touch' : '';
 
   return (
     <>
       <meta itemProp="image" content={frontImage} />
       <div class="relative w-full pb-[122.22%]">
-        <div class="ds-sdk-product-image-carousel m-auto absolute h-full w-full" 
+        <div className={`ds-sdk-product-image-carousel m-auto absolute h-full w-full ${classTouch}`}
           onTouchMove={dragHandle}
           onTouchStart={startDragHandle}
           onTouchEnd={stopDragHandle}
           onMouseOver={(e: Event) => hoverHandler(e)}
           >
-          {imagesCarouselSize > 1 && (
+          {!hasTouch && imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform rotate-180 stroke-neutral-900 absolute top-mid left-2 z-1 transition ease-out duration-40" onClick={(e: Event) => prevHandler(e)}/>
           )}
           <div
@@ -204,8 +209,9 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
                   transform: `translateX(-${translateX}px)`,
                   width: `${imagesWrapperWidth}px`,
                 }}
+                ref={sliderRef}
               >
-                {screenSize.mobile && (
+                {hasTouch && (
                   <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" style={{
                     '--image-url': `url(${frontImage})`,
                   }}
@@ -217,19 +223,20 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
                   }} ref={imageBackRef}/>
                 )}
                 {imagesCarousel && imagesCarousel.map((item, index) => {
+                  const lazyClass = (hasTouch && (backImage || (!backImage && index > 0))) || (!hasTouch && index > 1) ? 'lazy' : '';
                   return (
-                    <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
-                      'background-image': `url(${item})`,
+                    <div className={`ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center ${lazyClass}`} style={{
+                      '--image-url': `url(${item})`,
                     }} key={index} />
                   );
                 })}
               </div>
             </div>
           </div>
-          {imagesCarouselSize > 1 && (
+          {!hasTouch && imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform stroke-neutral-900 absolute z-1 right-2 top-mid transition ease-out duration-40" onClick={(e: Event) => nextHandler(e)}/>
           )}
-          {imagesCarouselSize > 1 && (
+          {hasTouch && imagesCarouselSize > 1 && (
             <div className="progress-bar">
               <span style={{
                 '--progress-width': `${progressBarWidth}%`,
