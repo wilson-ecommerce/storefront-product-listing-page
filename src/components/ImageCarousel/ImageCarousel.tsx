@@ -10,7 +10,7 @@ it.
 import './ImageCarousel.css';
 import { FunctionComponent } from 'preact';
 import { useState } from 'react';
-import { useRef, useEffect } from 'preact/compat';
+import { useRef, useEffect, useCallback } from 'preact/compat';
 import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
 import { generateOptimizedImages } from '../../utils/getProductImage';
 import { useSensor } from '../../context';
@@ -29,6 +29,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   refineProduct,
 }) => {
   const { screenSize } = useSensor();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const initialImagesValue:string[] = [];
   const [imagesCarousel, setImagesCarousel] = useState(initialImagesValue);
@@ -77,6 +78,21 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
   };
 
+  const handleResize = useCallback((entries: any) => {
+    // Avoid state updates that trigger re-renders during resize
+    entries.forEach((entry: any) => {
+      const imagesCarouselSize = entry.target.dataset?.size;
+      const carouselIndex = entry.target.dataset?.carouselIndex;
+      if (sliderRef.current && imagesCarouselSize) {
+        const { width } = entry.contentRect;
+        const imagesWrapperWidth = width * imagesCarouselSize;
+        const translateX = carouselIndex * width;
+        sliderRef.current.style.transform = `translateX(-${translateX}px)`;
+        sliderRef.current.style.width = `${imagesWrapperWidth}px`;
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (!entry) return;
 
@@ -101,10 +117,21 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
 
     if (imageRef.current) {
-      const containerWidth = imageRef.current.offsetWidth;
-      setImageWidth(containerWidth);
+      setImageWidth(imageRef.current.offsetWidth);
     }
-  }, [entry]);
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+
+  }, [entry, handleResize]);
 
   const prevHandler = (e: Event) => {
     e.preventDefault();
@@ -114,7 +141,8 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       newIndex = carouselIndex - 1;
     }
     setCarouselIndex(newIndex);
-    setLastTranslate(newIndex * imageWidth);
+    const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+    setLastTranslate(newIndex * width);
   };
 
   const nextHandler = (e: Event) => {
@@ -124,7 +152,9 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       newIndex = carouselIndex + 1;
     }
     setCarouselIndex(newIndex);
-    setLastTranslate(newIndex * imageWidth);
+
+    const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+    setLastTranslate(newIndex * width);
 
     // remove carousel images lazy class
     const images = sliderRef.current?.querySelectorAll('.ds-sdk-product-image');
@@ -160,7 +190,8 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
     if (dragging && lastPos) {
       setDragging(false);
-      if (Math.abs(lastPos / imageWidth) > .2 ) {
+      const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+      if (Math.abs(lastPos / width) > .2 ) {
         lastPos < 0 ? nextHandler(e) : prevHandler(e);
       }
     }
@@ -173,8 +204,9 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
     }
   };
 
-  const imagesWrapperWidth = imageWidth * imagesCarouselSize;
-  const translateX = dragging ? -dragX : carouselIndex * imageWidth;
+  const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+  const imagesWrapperWidth = width * imagesCarouselSize;
+  const translateX = dragging ? -dragX : carouselIndex * width;
   const progressBarWidth = (carouselIndex + 1) * 100 / imagesCarouselSize;
   const hasTouch = navigator.maxTouchPoints > 0;
   const classTouch = hasTouch ? 'touch' : '';
@@ -182,7 +214,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   return (
     <>
       <meta itemProp="image" content={frontImage} />
-      <div class="relative w-full pb-[122.22%]">
+      <div class="relative w-full pb-[122.22%]" ref={containerRef} data-size={imagesCarouselSize} data-carousel-index={carouselIndex}>
         <div className={`ds-sdk-product-image-carousel m-auto absolute h-full w-full ${classTouch}`}
           onTouchMove={dragHandle}
           onTouchStart={startDragHandle}
