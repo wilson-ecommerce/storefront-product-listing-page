@@ -10,9 +10,10 @@ it.
 import './ImageCarousel.css';
 import { FunctionComponent } from 'preact';
 import { useState } from 'react';
-import { useRef, useEffect } from 'preact/compat';
+import { useRef, useEffect, useCallback } from 'preact/compat';
 import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
 import { generateOptimizedImages } from '../../utils/getProductImage';
+import { useSensor } from '../../context';
 
 import Chevron from '../../icons/chevron-light.svg';
 
@@ -27,20 +28,70 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   selectedColorSwatch,
   refineProduct,
 }) => {
+  const { screenSize } = useSensor();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const initialImagesValue:string[] = [];
   const [imagesCarousel, setImagesCarousel] = useState(initialImagesValue);
+  const [imagesCarouselSize, setImagesCarouselSize] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const imageFrontMobileRef = useRef<HTMLDivElement>(null);
   const entry = useIntersectionObserver(imageRef, { rootMargin: '200px' });
   const imageBackRef = useRef<HTMLDivElement>(null);
-  const backImage = images.length > 1 
-    ? (typeof images[1] === 'object' ? images[1].src : images[1])
-    : '';
-  const frontImage = images.length
-    ? (typeof images[0] === 'object' ? images[0].src : images[0])
-    : '';
-  const [prevSelectedSwatchOptionId, setPrevSelectedSwatchOptionId] = useState('');
+  const backImage = images.length > 1 ? (typeof images[1] === 'object' ? images[1].src : images[1]) : '';
+  const frontImage = images.length ? (typeof images[0] === 'object' ? images[0].src : images[0]) : '';
+  const [prevSelectedSwatchSku, setPrevSelectedSwatchSku] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const [dragX, setDragX] = useState(0);
+  const [origin, setOrigin] = useState(0);
+  const [lastTranslate, setLastTranslate] = useState(0);
+  const [lastPos, setLastPos] = useState(0);
+
+  const loadCarousel = async() => {
+    if (selectedColorSwatch && selectedColorSwatch.sku !== prevSelectedSwatchSku) {
+      const { sku, optionId } = selectedColorSwatch;
+      setPrevSelectedSwatchSku(sku);
+      const data = await refineProduct([optionId], sku);
+      const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
+      if (dataImages) {
+        const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
+        let imageW = imageWidth || imageRef.current?.offsetWidth;
+        if (!screenSize.desktop && imageW) {
+          imageW = imageW * 2;
+        }
+        const optimizedImageArray = generateOptimizedImages(
+          dataImagesUrls,
+          imageW || 420,
+          ''
+        );
+
+        const images = optimizedImageArray.flatMap((img: { src: string; }) => img.src);
+        setImagesCarousel(images);
+        let size = backImage ?  images?.length + 1 : images?.length;
+        if (navigator.maxTouchPoints > 0) {
+          size = size + 1;
+        }
+        setImagesCarouselSize(size);
+      }
+    }
+  };
+
+  const handleResize = useCallback((entries: any) => {
+    // Avoid state updates that trigger re-renders during resize
+    entries.forEach((entry: any) => {
+      const imagesCarouselSize = entry.target.dataset?.size;
+      const carouselIndex = entry.target.dataset?.carouselIndex;
+      if (sliderRef.current && imagesCarouselSize) {
+        const { width } = entry.contentRect;
+        const imagesWrapperWidth = width * imagesCarouselSize;
+        const translateX = carouselIndex * width;
+        sliderRef.current.style.transform = `translateX(-${translateX}px)`;
+        sliderRef.current.style.width = `${imagesWrapperWidth}px`;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (!entry) return;
@@ -54,66 +105,123 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.as = 'image';
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
-
-        if (imageBackRef.current) {
-          imageBackRef.current.classList.remove('lazy');
-        }
+        if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
+        setImagesCarouselSize(navigator.maxTouchPoints > 0 ? 2 : 1);
       }
+
+      if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
+
+      if (imageRef.current) imageRef.current.classList.remove('lazy');
+
+      if (navigator.maxTouchPoints > 0) loadCarousel();
     }
 
     if (imageRef.current) {
-      const containerWidth = imageRef.current.offsetWidth;
-      setImageWidth(containerWidth);
+      setImageWidth(imageRef.current.offsetWidth);
     }
-  }, [entry]);
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+
+  }, [entry, handleResize]);
 
   const prevHandler = (e: Event) => {
     e.preventDefault();
-    if (carouselIndex === 0) {
-      setCarouselIndex(0);
-    } else {
+    let newIndex = 0;
+    if (carouselIndex > 0) {
       setCarouselIndex(carouselIndex - 1);
+      newIndex = carouselIndex - 1;
     }
+    setCarouselIndex(newIndex);
+    const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+    setLastTranslate(newIndex * width);
   };
 
   const nextHandler = (e: Event) => {
     e.preventDefault();
-    if (carouselIndex === imagesCarousel.length) {
-      setCarouselIndex(0);
-    } else {
-      setCarouselIndex(carouselIndex + 1);
+    let newIndex = 0;
+    if (carouselIndex < imagesCarouselSize - 1) {
+      newIndex = carouselIndex + 1;
+    }
+    setCarouselIndex(newIndex);
+
+    const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+    setLastTranslate(newIndex * width);
+
+    // remove carousel images lazy class
+    const images = sliderRef.current?.querySelectorAll('.ds-sdk-product-image');
+    images?.forEach((img) => {
+      img.classList.remove('lazy');
+    });
+  };
+
+  const startDragHandle = async(e: TouchEvent) => {
+    setOrigin(e.touches[0].screenX);
+    setDragging(false);
+  };
+
+  const dragHandle = async(e: TouchEvent) => {
+    e.preventDefault();
+    setDragging(true);
+      const pos = {
+        x: e.touches[0].screenX - origin - lastTranslate,
+        y: e.touches[0].screenY
+      };
+      if (e.touches && Math.abs(pos.x) > Math.abs(pos.y)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setLastPos(e.touches[0].screenX - origin);
+      setDragX(pos.x);
+  };
+
+  const stopDragHandle = async(e: Event) => {
+    if (dragging) {
+      e.preventDefault();
+    }
+
+    if (dragging && lastPos) {
+      setDragging(false);
+      const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+      if (Math.abs(lastPos / width) > .2 ) {
+        lastPos < 0 ? nextHandler(e) : prevHandler(e);
+      }
     }
   };
 
   const hoverHandler = async(e: Event) => {
     e.preventDefault();
-    if (selectedColorSwatch && selectedColorSwatch.optionId !== prevSelectedSwatchOptionId) {
-      const { sku, optionId } = selectedColorSwatch;
-      setPrevSelectedSwatchOptionId(optionId);
-      const data = await refineProduct([optionId], sku);
-      const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
-      if (dataImages) {
-        const dataImagesUrls = dataImages.flatMap((img: { url: string; }) => img.url);
-        const optimizedImageArray = generateOptimizedImages(
-          dataImagesUrls,
-          imageWidth ?? 420,
-          ''
-        );
-
-        setImagesCarousel(optimizedImageArray.flatMap((img: { src: string; }) => img.src));
-      }
+    if (navigator.maxTouchPoints < 1) {
+      loadCarousel();
     }
   };
 
-  const imagesCarouselSize = backImage ? imagesCarousel?.length + 1 : imagesCarousel?.length;
-  const imagesWrapperWidth = imageWidth * (imagesCarouselSize);
-  
+  const width = imageRef.current? imageRef.current.offsetWidth : imageWidth;
+  const imagesWrapperWidth = width * imagesCarouselSize;
+  const translateX = dragging ? -dragX : carouselIndex * width;
+  const progressBarWidth = (carouselIndex + 1) * 100 / imagesCarouselSize;
+  const hasTouch = navigator.maxTouchPoints > 0;
+  const classTouch = hasTouch ? 'touch' : '';
+
   return (
     <>
       <meta itemProp="image" content={frontImage} />
-      <div class="relative w-full pb-[122.22%]">
-        <div class="ds-sdk-product-image-carousel max-w-2xl m-auto absolute h-full w-full" onMouseOver={(e: Event) => hoverHandler(e)}>
-          {imagesCarouselSize > 1 && (
+      <div class="relative w-full pb-[122.22%]" ref={containerRef} data-size={imagesCarouselSize} data-carousel-index={carouselIndex}>
+        <div className={`ds-sdk-product-image-carousel m-auto absolute h-full w-full ${classTouch}`}
+          onTouchMove={dragHandle}
+          onTouchStart={startDragHandle}
+          onTouchEnd={stopDragHandle}
+          onMouseOver={(e: Event) => hoverHandler(e)}
+          >
+          {!hasTouch && imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform rotate-180 stroke-neutral-900 absolute top-mid left-2 z-1 transition ease-out duration-40" onClick={(e: Event) => prevHandler(e)}/>
           )}
           <div
@@ -130,27 +238,43 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
               <div
                 className={`flex transition ease-out duration-40 absolute top-0 w-full h-full`}
                 style={{
-                  transform: `translateX(-${carouselIndex * imageWidth}px)`,
+                  transform: `translateX(-${translateX}px)`,
                   width: `${imagesWrapperWidth}px`,
                 }}
+                ref={sliderRef}
               >
+                {hasTouch && (
+                  <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" style={{
+                    '--image-url': `url(${frontImage})`,
+                  }}
+                  ref={imageFrontMobileRef} />
+                )}
                 {backImage && (
                   <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" style={{
                     '--image-url': `url(${backImage})`,
                   }} ref={imageBackRef}/>
                 )}
                 {imagesCarousel && imagesCarousel.map((item, index) => {
+                  const lazyClass = (hasTouch && (backImage || (!backImage && index > 0))) || (!hasTouch && index > 1) ? 'lazy' : '';
                   return (
-                    <div className="ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center" style={{
-                      'background-image': `url(${item})`,
+                    <div className={`ds-sdk-product-image relative h-full w-full m-auto bg-cover bg-no-repeat bg-position-center ${lazyClass}`} style={{
+                      '--image-url': `url(${item})`,
                     }} key={index} />
                   );
                 })}
               </div>
             </div>
           </div>
-          {imagesCarouselSize > 1 && (
+          {!hasTouch && imagesCarouselSize > 1 && (
             <Chevron className="h-[32px] w-md transform stroke-neutral-900 absolute z-1 right-2 top-mid transition ease-out duration-40" onClick={(e: Event) => nextHandler(e)}/>
+          )}
+          {hasTouch && imagesCarouselSize > 1 && (
+            <div className="progress-bar">
+              <span style={{
+                '--progress-width': `${progressBarWidth}%`,
+              }}
+              />
+            </div>
           )}
         </div>
       </div>
