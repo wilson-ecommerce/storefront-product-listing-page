@@ -18,7 +18,7 @@ export function getColorOptionsFromProductOptions(productView: ProductView) {
 }
 
 export function getImageConfigsFromAttribute(productView: ProductView) {
-  const imageAttributes = productView?.attributes?.find(({ name }) => name === 'eds_images');
+  const imageAttributes = productView?.attributes?.find(({ name, value }) => name === 'eds_images' && value !== '');
   if (!imageAttributes) {
     return [];
   }
@@ -107,7 +107,7 @@ function getSegmentedOptions(productView: ProductView, optionId: string | null, 
   if (!categoryId) {
     return null;
   }
-  const edsSegmentation = productView?.attributes?.find(({name}) => name === 'eds_segmentation')?.value;
+  const edsSegmentation = productView?.attributes?.find(({name, value}) => name === 'eds_segmentation' && value !== '')?.value;
   if (!edsSegmentation) {
     return null;
   }
