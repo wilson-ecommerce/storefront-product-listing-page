@@ -82,6 +82,7 @@ const getLabels = async (
   graphqlEndpoint: string | undefined
 ) => {
   let labels: Label[] = [];
+
   const productIds = searchItems.flatMap(
     (item: ProductInterface) => item?.product?.id
   );
