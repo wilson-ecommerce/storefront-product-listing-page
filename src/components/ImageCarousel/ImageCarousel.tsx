@@ -51,6 +51,13 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
   const loadCarousel = async() => {
     if (selectedColorSwatch && selectedColorSwatch.sku !== prevSelectedSwatchSku) {
+      setCarouselIndex(0)
+      setDragging(false)
+      setDragX(0)
+      setOrigin(0)
+      setLastTranslate(0)
+      setLastPos(0)
+
       const { sku, optionId } = selectedColorSwatch;
       setPrevSelectedSwatchSku(sku);
       const data = await refineProduct([optionId], sku);
@@ -131,7 +138,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
       }
     };
 
-  }, [entry, handleResize]);
+  }, [entry, handleResize, selectedColorSwatch]);
 
   const prevHandler = (e: Event) => {
     e.preventDefault();

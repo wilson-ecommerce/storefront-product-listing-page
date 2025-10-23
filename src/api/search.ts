@@ -82,23 +82,23 @@ const getLabels = async (
   graphqlEndpoint: string | undefined
 ) => {
   let labels: Label[] = [];
+  console.log(searchItems, storeViewCode, basicToken, graphqlEndpoint);
+  // const productIds = searchItems.flatMap(
+  //   (item: ProductInterface) => item?.product?.id
+  // );
+  // const productLabelsResults = await getGraphQL(
+  //   GET_PRODUCT_LABELS_QUERY,
+  //   {
+  //     productIds,
+  //     mode: 'CATEGORY',
+  //   },
+  //   storeViewCode,
+  //   basicToken,
+  //   graphqlEndpoint,
+  //   'GET'
+  // );
 
-  const productIds = searchItems.flatMap(
-    (item: ProductInterface) => item?.product?.id
-  );
-  const productLabelsResults = await getGraphQL(
-    GET_PRODUCT_LABELS_QUERY,
-    {
-      productIds,
-      mode: 'CATEGORY',
-    },
-    storeViewCode,
-    basicToken,
-    graphqlEndpoint,
-    'GET'
-  );
-
-  labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
+  // labels = productLabelsResults?.data?.wilsonAmLabelProvider.items ?? [];
 
   return labels;
 };
