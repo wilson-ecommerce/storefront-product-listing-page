@@ -43,6 +43,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const backImage = images.length > 1 ? (typeof images[1] === 'object' ? images[1].src : images[1]) : '';
   const frontImage = images.length ? (typeof images[0] === 'object' ? images[0].src : images[0]) : '';
   const [prevSelectedSwatchSku, setPrevSelectedSwatchSku] = useState('');
+  const [prevSelectedSwatchOptionId, setPrevSelectedSwatchOptionId] = useState('');
   const [dragging, setDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [origin, setOrigin] = useState(0);
@@ -50,7 +51,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
   const [lastPos, setLastPos] = useState(0);
 
   const loadCarousel = async() => {
-    if (selectedColorSwatch && selectedColorSwatch.sku !== prevSelectedSwatchSku) {
+    if (selectedColorSwatch && (selectedColorSwatch.sku !== prevSelectedSwatchSku || selectedColorSwatch.optionId !== prevSelectedSwatchOptionId)) {
       setCarouselIndex(0)
       setDragging(false)
       setDragX(0)
@@ -60,6 +61,7 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
       const { sku, optionId } = selectedColorSwatch;
       setPrevSelectedSwatchSku(sku);
+      setPrevSelectedSwatchOptionId(optionId);
       const data = await refineProduct([optionId], sku);
       const dataImages = data.refineProduct?.images.filter((img: { label: string; url: string; roles: string[]; }) => !img.roles.some((role) => ['image', 'thumbnail', 'swatch_image', 'small_image'].includes(role)) && img.url !== backImage?.replace(/\?.*/,''));
       if (dataImages) {
@@ -76,10 +78,13 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
 
         const images = optimizedImageArray.flatMap((img: { src: string; }) => img.src);
         setImagesCarousel(images);
-        let size = backImage ?  images?.length + 1 : images?.length;
+        let size = backImage ? images?.length + 1 : images?.length;
         if (navigator.maxTouchPoints > 0) {
           size = size + 1;
         }
+        setImagesCarouselSize(size);
+      } else if (backImage) {
+        const size = navigator.maxTouchPoints > 0 ? 2 : 1
         setImagesCarouselSize(size);
       }
     }
@@ -113,7 +118,6 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
         preloadLink.href = backImage;
         document.head.appendChild(preloadLink);
         if (imageBackRef.current) imageBackRef.current.classList.remove('lazy');
-        setImagesCarouselSize(navigator.maxTouchPoints > 0 ? 2 : 1);
       }
 
       if (imageFrontMobileRef.current) imageFrontMobileRef.current.classList.remove('lazy');
