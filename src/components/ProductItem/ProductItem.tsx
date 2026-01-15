@@ -273,6 +273,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
           sku: productSku,
           optionID: selectedColorSwatch?.optionId,
           searchUnitId: SEARCH_UNIT_ID,
+          refineProduct: productView,
         },
       });
     });
