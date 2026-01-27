@@ -61,22 +61,22 @@
     const root = document.querySelector('div.search-plp-root');
     const storeDetails = {
       /* Wilson US */
-      // environmentId: '331e4848-1413-4428-8e26-75924f47a8b8',
-      // websiteCode: 'wil_us',
-      // storeCode: 'wil_us',
-      // storeViewCode: 'wil_us_en',
+      environmentId: '331e4848-1413-4428-8e26-75924f47a8b8',
+      websiteCode: 'wil_us',
+      storeCode: 'wil_us',
+      storeViewCode: 'wil_us_en',
 
        /* Wilson UK*/
-      environmentId: '26a63ca5-a114-400b-8127-93919bf1b974',
-      websiteCode: 'wil_uk',
-      storeCode: 'wil_uk',
-      storeViewCode: 'wil_uk_en',
+      // environmentId: '26a63ca5-a114-400b-8127-93919bf1b974',
+      // websiteCode: 'wil_uk',
+      // storeCode: 'wil_uk',
+      // storeViewCode: 'wil_uk_en',
 
       /* Wilson FR*/
-      environmentId: 'da3a1ae0-d1b2-463b-bb01-0f4b911aede5',
-      websiteCode: 'wil_fr',
-      storeCode: 'wil_fr',
-      storeViewCode: 'wil_fr_fr',
+      // environmentId: 'da3a1ae0-d1b2-463b-bb01-0f4b911aede5',
+      // websiteCode: 'wil_fr',
+      // storeCode: 'wil_fr',
+      // storeViewCode: 'wil_fr_fr',
 
       /* slugger */
       // environmentId: '331e4848-1413-4428-8e26-75924f47a8b8',
@@ -95,10 +95,11 @@
         displaySearchBox: true, // display search box
         displayOutOfStock: true,
         allowAllProducts: false,
-        currentCategoryUrlPath: 'sportswear/women/tops/tanks',
+        currentCategoryUrlPath: 'golf/golf-balls',
+        // currentCategoryUrlPath: 'basketball/basketballs/outdoor-balls',
         // currentCategoryUrlPath: 'custom/custom-golf-balls',
         // currentCategoryUrlPath: 'select-team/5-racket-bundles',
-        currentCategoryId: '488', // current category id
+        currentCategoryId: '77', // current category id
 
         /** FRANCHISE VIEW SETTINGS **/
         // currentCategoryUrlPath: 'baseball', // current category url path, please prefer using currentCategoryId
@@ -182,7 +183,8 @@
       // },
       // Will result to `http://localhost:8081/v1/MT11`
       basicToken: 'Basic d2lsc29udGVhbXNob3AtZGV2OndpbHMwbnRlYW1zaDBwLUQzVg==',
-      graphqlEndpoint: `https://qual-it.ecom.wilson.com/fr-fr/graphql`,
+      graphqlEndpoint: `https://qual-it.ecom.wilson.com/en-us/graphql`,
+      defaultSortBy: '',
     };
 
     window.adobeDataLayer = window.adobeDataLayer || [];
