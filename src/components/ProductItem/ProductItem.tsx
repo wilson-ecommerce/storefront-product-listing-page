@@ -379,7 +379,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
                 className="!text-brand-700 hover:no-underline"
               >
                 <div className="ds-sdk-product-item__product-name mt-xs text-sm text-brand-700">
-                  {product.name !== null && htmlStringDecode(product.name)}
+                  {product.name !== null && htmlStringDecode(product.name)?.split(/([®™℠])/g).map((part, index) => /[®™℠]/.test(part) ? <sup key={index}>{part}</sup> : part )}
                 </div>
                 <div className="ds-sdk-product-item__product-sku mt-xs text-sm text-brand-700">
                   SKU:
@@ -551,7 +551,7 @@ export const ProductItem: FunctionComponent<ProductProps> = ({
               </div>
             )}
             <div itemProp="name" className="ds-sdk-product-item__product-name">
-              {product.name !== null && htmlStringDecode(product.name)}
+              {product.name !== null && htmlStringDecode(product.name)?.split(/([®™℠])/g).map((part, index) => /[®™℠]/.test(part) ? <sup key={index}>{part}</sup> : part )}
             </div>
             <ProductPrice
               item={refinedProduct ?? item}
