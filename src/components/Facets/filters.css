@@ -23,6 +23,10 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
+.mobile-filters-container .mainBgContainer > div {
+  transition: top .3s;
+}
+
 .mobile-filters-container form .ds-sdk-input > label::after {
   content: '+';
   display: inline-block;

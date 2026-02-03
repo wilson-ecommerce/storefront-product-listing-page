@@ -43,17 +43,29 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
   }
 
   useEffect(() => {
+    const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
+    const isMobile = window.matchMedia('only screen and (max-width: 768px)').matches;
+
     if (isOpen) {
       document.body.classList.add('no-scroll');
       document.body.style.overflow = 'hidden';
 
       // ADA: set focus on first indexed element and trap tab movement insode modal
-      const modalElem = document.querySelector('.mobile-filters-container');
+      const modalElem = document.querySelector('.mobile-filters-container') as HTMLElement;
+      const filterContainer = modalElem.querySelector('.mainBgContainer > div') as HTMLElement;
+      const header = document.querySelector('.header') as HTMLElement;
       (modalElem?.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement)?.focus();
       modalTabTrap(modalElem);
+      breadcrumbs?.classList.add('no-border');
+
+      if (!isMobile) {
+        filterContainer.style.top = `${header.offsetHeight}px`;
+      }
+
     } else {
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
+      breadcrumbs?.classList.remove('no-border');
     }
   }, [isOpen]);
 
