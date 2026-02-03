@@ -28,7 +28,6 @@ export interface ClientProps {
   xRequestId?: string;
   basicToken?: string;
   graphqlEndpoint?: string;
-  defaultSortBy?: string;
 }
 
 export interface CategoryExtraInfo {

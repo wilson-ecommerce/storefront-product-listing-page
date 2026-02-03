@@ -35,7 +35,6 @@ export interface StoreDetailsProps extends WithChildrenProps {
   basicToken?: string;
   graphqlEndpoint?: string;
   inGridPromoIndexes?:Array<number>;
-  defaultSortBy?: string;
 }
 
 const StoreContext = createContext<StoreDetailsProps>({
@@ -56,7 +55,6 @@ const StoreContext = createContext<StoreDetailsProps>({
   basicToken: '',
   graphqlEndpoint: '',
   inGridPromoIndexes: [],
-  defaultSortBy: '',
 });
 
 const StoreContextProvider = ({
@@ -74,7 +72,6 @@ const StoreContextProvider = ({
   basicToken,
   graphqlEndpoint,
   inGridPromoIndexes,
-  defaultSortBy,
 }: StoreDetailsProps) => {
   const storeProps = useMemo(
     () => ({
@@ -98,7 +95,6 @@ const StoreContextProvider = ({
       graphqlEndpoint,
       basicToken,
       inGridPromoIndexes,
-      defaultSortBy,
     }),
     [environmentId, websiteCode, storeCode, storeViewCode, inGridPromoIndexes]
   );
