@@ -121,6 +121,8 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
 
     if (userChangedSortRef.current) return;
 
+    if (sortBy === defaultSortOption) return;
+
     setSortBy(defaultSortOption);
     searchCtx.setSort(generateGQLSortInput(defaultSortOption));
   }, [defaultSortOption, sortFromUrl]);
