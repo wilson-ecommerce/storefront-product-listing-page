@@ -106,24 +106,11 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
   const sortByDefault = sortFromUrl ? sortFromUrl : defaultSortOption;
   const [sortBy, setSortBy] = useState<string>(sortByDefault);
 
-  const userChangedSortRef = useRef(false);
-
   const onSortChange = (sortOption: string) => {
-    userChangedSortRef.current = true;
-
     setSortBy(sortOption);
     searchCtx.setSort(generateGQLSortInput(sortOption));
     handleUrlSort(sortOption);
   };
-
-  useEffect(() => {
-    if (sortFromUrl) return;
-
-    if (userChangedSortRef.current) return;
-
-    setSortBy(defaultSortOption);
-    searchCtx.setSort(generateGQLSortInput(defaultSortOption));
-  }, [defaultSortOption, sortFromUrl]);
 
   return (
     <div className="flex flex-col max-w-full ml-auto w-full h-full">
