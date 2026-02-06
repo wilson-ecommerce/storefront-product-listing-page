@@ -90,6 +90,7 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
   const sortFromUrl = getValueFromUrl('product_list_order');
   const sortByDefault = sortFromUrl ? sortFromUrl : defaultSortOption;
   const [sortBy, setSortBy] = useState<string>(sortByDefault);
+
   const onSortChange = (sortOption: string) => {
     setSortBy(sortOption);
     searchCtx.setSort(generateGQLSortInput(sortOption));
