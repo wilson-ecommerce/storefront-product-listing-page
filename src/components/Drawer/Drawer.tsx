@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'preact';
 import { useEffect } from 'preact/hooks';
 
-import { useSearch } from "../../context";
+import { useSearch, useSensor } from "../../context";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
 
   useEffect(() => {
     const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
-    const isMobile = window.matchMedia('only screen and (max-width: 768px)').matches;
+    const { screenSize } = useSensor();
 
     if (isOpen) {
       document.body.classList.add('no-scroll');
@@ -58,7 +58,7 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
       modalTabTrap(modalElem);
       breadcrumbs?.classList.add('no-border');
 
-      if (!isMobile) {
+      if (!screenSize.mobile) {
         filterContainer.style.top = `${header.offsetHeight}px`;
       }
 
