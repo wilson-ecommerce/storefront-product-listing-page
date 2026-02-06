@@ -8,7 +8,7 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { useCallback, useEffect, useState, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Drawer } from 'src/components/Drawer/Drawer';
 import MobileFacets from 'src/components/MobileFacets';
 
@@ -82,26 +82,11 @@ export const MobileFilterHeader: FunctionComponent<Props> = ({
     getSortOptions();
   }, [getSortOptions]);
 
-  const SORT_KEY_TO_VALUE = {
-    featured: 'position_ASC',
-    new: 'pcm_publication_date_DESC',
-    'price-low-to-high': 'price_ASC',
-    'price-high-to-low': 'price_DESC',
-  };
-
-  type DefaultSortByKey = keyof typeof SORT_KEY_TO_VALUE;
-
-  const mappedDefaultSort =
-    storeCtx.defaultSortBy !== ''
-      ? SORT_KEY_TO_VALUE[storeCtx.defaultSortBy as DefaultSortByKey]
-      : undefined;
-
   const defaultSortOption =
-    mappedDefaultSort ??
-    (storeCtx.config?.currentCategoryUrlPath || storeCtx.config?.currentCategoryId
+    storeCtx.config?.currentCategoryUrlPath ||
+    storeCtx.config?.currentCategoryId
       ? 'position_ASC'
-      : 'relevance_DESC');
-
+      : 'relevance_DESC';
   const sortFromUrl = getValueFromUrl('product_list_order');
   const sortByDefault = sortFromUrl ? sortFromUrl : defaultSortOption;
   const [sortBy, setSortBy] = useState<string>(sortByDefault);
