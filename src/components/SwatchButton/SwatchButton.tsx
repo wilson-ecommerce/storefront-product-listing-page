@@ -37,12 +37,12 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
     const className = `min-w-[44px] p-sm border border-[1.5px] ${outlineColor} h-[44px] outline-transparent`;
     return (
       <div className={`ds-sdk-swatch-button_${id} colors-neutral-700 h-full`}>
-        <span 
+        <span
           title={value}
           key={id}
           className={className}
           onClick={onClick}
-          checked={checked}
+          data-checked={checked}
         >{id === 'show-more' ? value : ''}</span>
       </div>
     );
@@ -56,7 +56,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
     const isWhite = color === '#ffffff' || color === '#fff';
     return (
       <div className={`ds-sdk-swatch-button_${id} colors-neutral-700 h-full`}>
-        <button 
+        <button
           title={value}
           key={id}
           className={className}
@@ -65,7 +65,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
             border: !checked && isWhite ? '1px solid #ccc' : undefined,
           }}
           onClick={onClick}
-          checked={checked}
+          data-checked={checked}
         >{id === 'show-more' ? value : ''}</button>
       </div>
     );
@@ -86,7 +86,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
             border: !checked && isWhite ? '1px solid #ccc' : undefined,
           }}
           onClick={onClick}
-          checked={checked}
+          data-checked={checked}
         />
       </div>
     );
@@ -94,7 +94,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
 
   if (type === 'IMAGE' && value) {
     value = value.replace('&quot;', '"');
-    
+
     const className = `object-cover object-center min-w-[32px] rounded-full p-sm border border-[1.5px] ${outlineColor} h-[32px] outline-transparent`;
     const style = `background: url(${value}) no-repeat center; background-size: contain;`;
     return (
@@ -105,7 +105,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
           className={className}
           style={style}
           onClick={onClick}
-          checked={checked}
+          data-checked={checked}
         />
       </div>
     );
@@ -119,7 +119,7 @@ export const SwatchButton: FunctionComponent<SwatchButtonProps> = ({
         key={id}
         className={className}
         onClick={onClick}
-        checked={checked}
+        data-checked={checked}
       >
         {value}
       </button>
