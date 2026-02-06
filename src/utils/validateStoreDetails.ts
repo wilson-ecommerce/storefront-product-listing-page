@@ -15,6 +15,7 @@ const validStoreDetailsKeys: Array<keyof StoreDetailsProps> = [
   'basicToken',
   'graphqlEndpoint',
   'inGridPromoIndexes',
+  'defaultSortBy',
 ];
 
 export const sanitizeString = (value: any) => {
