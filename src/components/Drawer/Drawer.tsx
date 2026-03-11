@@ -48,12 +48,14 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
       document.body.style.overflow = 'hidden';
 
       // ADA: set focus on first indexed element and trap tab movement insode modal
-      const modalElem = document.querySelector('.mobile-filters-container');
+      const modalElem = document.querySelector('.mobile-filters-container') as HTMLElement;
       (modalElem?.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement)?.focus();
       modalTabTrap(modalElem);
     } else {
+      const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
+      breadcrumbs?.classList.remove('no-border');
     }
   }, [isOpen]);
 

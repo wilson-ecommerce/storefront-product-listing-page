@@ -81,6 +81,16 @@ export const scrollFilter = (
   const callback = async (mutationList:MutationRecord[]) => {
     for (const mutation of mutationList) {
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+        // Sticky header position correction
+        const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
+        const isMobile = window.matchMedia('only screen and (max-width: 768px)').matches;
+        const header = document.querySelector('.header') as HTMLElement;
+        breadcrumbs?.classList.add('no-border');
+        if (!isMobile) {
+          const filterContainer = document.querySelector('.mobile-filters-container .mainBgContainer > div') as HTMLElement;
+          filterContainer.style.top = `${header.offsetHeight}px`;
+        }
+
         await wait(300);
         const filterInput = document.querySelectorAll('.mobile-filters-container form .ds-sdk-input');
         const filterToShow = filterInput[filterNumber] || null;
@@ -153,7 +163,7 @@ export const Facets: FunctionComponent<FacetsProps> = ({
                      tabindex={0}
                      onClick={(event) => scrollFilter(event, displayFilter)}
                      onKeyDown={(event) => scrollFilter(event, displayFilter)}
-                     >
+                >
                   <label id={'filter-0'}
                          className="flex flex-row gap-4 ds-sdk-input__label text-neutral-900 text-sm cursor-pointer">
                     <SortFilterIcon className="h-[18px] w-[18px] fill-neutral-800"/>
