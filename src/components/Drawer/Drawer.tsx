@@ -52,17 +52,10 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
 
       // ADA: set focus on first indexed element and trap tab movement insode modal
       const modalElem = document.querySelector('.mobile-filters-container') as HTMLElement;
-      const filterContainer = modalElem.querySelector('.mainBgContainer > div') as HTMLElement;
-      const header = document.querySelector('.header') as HTMLElement;
       (modalElem?.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement)?.focus();
       modalTabTrap(modalElem);
-      breadcrumbs?.classList.add('no-border');
-
-      if (!screenSize.mobile) {
-        filterContainer.style.top = `${header.offsetHeight}px`;
-      }
-
     } else {
+      const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
       breadcrumbs?.classList.remove('no-border');
