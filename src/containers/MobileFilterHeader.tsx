@@ -8,7 +8,7 @@ it.
 */
 
 import { FunctionComponent } from 'preact';
-import { useCallback, useEffect, useState, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Drawer } from 'src/components/Drawer/Drawer';
 import MobileFacets from 'src/components/MobileFacets';
 
