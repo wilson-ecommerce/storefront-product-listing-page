@@ -83,9 +83,11 @@ export const scrollFilter = (
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
         // Sticky header position correction
         const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
+        const discountCTA = document.querySelector('.evg-popup-CTA-wrapper') as HTMLElement;
         const isMobile = window.matchMedia('only screen and (max-width: 768px)').matches;
         const header = document.querySelector('.header') as HTMLElement;
         breadcrumbs?.classList.add('no-border');
+        if (discountCTA) discountCTA.style.zIndex = '-1';
         if (!isMobile) {
           const filterContainer = document.querySelector('.mobile-filters-container .mainBgContainer > div') as HTMLElement;
           filterContainer.style.top = `${header.offsetHeight}px`;
