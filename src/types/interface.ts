@@ -34,6 +34,7 @@ export interface ClientProps {
 export interface CategoryExtraInfo {
   id: string;
   url: string;
+  inGridPromoIndexes?: number[];
   [key: string]: any;
 }
 

@@ -71,28 +71,69 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
   const { screenSize } = useSensor();
   const styleColumnNumber = screenSize.mobile ? numberOfColumns/2 : numberOfColumns;
 
+  // Look up per-franchise inGridPromoIndexes from categoriesExtraInfo
+  const franchisePath = franchises[franchise]?.path ?? franchises[franchise]?.title;
+  const categoriesExtraInfo = storeCtx.config?.categoriesExtraInfo;
+  // Match by last path segment (item.url is a partial segment, franchisePath is a full path)
+  const franchisePathSegment = franchisePath?.split('/')?.pop() ?? franchisePath;
+  const franchiseExtraInfo = categoriesExtraInfo?.find(
+    (item) => item.url && (
+      item.url === franchisePathSegment
+      || item.url === franchisePath
+      || (franchisePath && franchisePath.endsWith(`/${item.url}`))
+    )
+  );
+  const franchisePromoIndexes: number[] = franchiseExtraInfo?.inGridPromoIndexes ?? [];
+
+  const insertFranchiseMerchandise = (items: JSX.Element[]): JSX.Element[] => {
+    const result = [...items];
+    for (const position of franchisePromoIndexes) {
+      if (position - 1 <= result.length) {
+        result.splice(position - 1, 0, <div className={`enrichment-container position-${position}`}/>);
+      }
+    }
+    return result;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const franchiseData = franchises[franchise];
-      if (!franchiseData) {
-        return;
-      }
-
-      const {
-        currentPage,
-        pageSize,
-        path
-      } = franchiseData;
-
-      const requestedProducts = page * numberOfColumns;
+      if (!franchiseData) return;
+      const { currentPage, pageSize, path } = franchiseData;
+      const requestedProducts = page * numberOfColumns - franchisePromoIndexes.filter((pos) => pos <= page * numberOfColumns).length;
       const fetchedProducts = franchises[franchise].items.length;
       if (requestedProducts > fetchedProducts) {
         await getMoreFranchiseProducts(path, pageSize, currentPage + 1);
       }
     }
-
     fetchData();
   }, [page, franchises, franchise])
+
+  const visibleLimit = numberOfColumns * page;
+  const enrichmentCount = franchisePromoIndexes.filter((pos) => pos <= visibleLimit).length;
+  const productSliceCount = franchisePromoIndexes.length > 0 ? visibleLimit - enrichmentCount : visibleLimit;
+
+
+  const franchiseItems = franchises[franchise].items?.slice(0, productSliceCount).map((item: Product) => (
+    <ProductItem
+      item={item}
+      setError={setError}
+      key={item?.productView?.id}
+      currencySymbol={currencySymbol}
+      currencyRate={currencyRate}
+      categoryConfig={categoryConfig}
+      disableAllPurchases={disableAllPurchases}
+      setRoute={setRoute}
+      refineProduct={refineProduct}
+      setCartUpdated={setCartUpdated}
+      setItemAdded={setItemAdded}
+      addToCart={addToCart}
+    />
+  ));
+
+  const finalFranchiseItems = franchisePromoIndexes.length > 0
+    ? insertFranchiseMerchandise(franchiseItems)
+    : franchiseItems;
 
   return (
     <div className="franchises" key={franchise}>
@@ -108,23 +149,7 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
         gridTemplateColumns: `repeat(${styleColumnNumber}, minmax(0, 1fr))`,
       }}
            className="ds-sdk-product-list__grid mt-md grid gap-y-8 gap-x-xs md:gap-x-4">
-        {franchises[franchise].items?.slice(0, numberOfColumns * page).map((item: Product) => (
-          <ProductItem
-            item={item}
-            setError={setError}
-            key={item?.productView?.id}
-            currencySymbol={currencySymbol}
-            currencyRate={currencyRate}
-            categoryConfig={categoryConfig}
-            disableAllPurchases={disableAllPurchases}
-            setRoute={setRoute}
-            refineProduct={refineProduct}
-            setCartUpdated={setCartUpdated}
-            setItemAdded={setItemAdded}
-            addToCart={addToCart}
-            franchiseTitle={franchises[franchise].title}
-          />
-        ))}
+        {finalFranchiseItems}
       </div>
       {page * numberOfColumns < totalProductsCount &&
         <button onClick={() => setPage((p) => p + NEXT_NUMBER_OF_ROWS)} className="button primary load-more">Load More</button>
@@ -197,8 +222,6 @@ export const ProductList: FunctionComponent<ProductListProps> = ({
   const merchandisingData = useStore().inGridPromoIndexes || [];
   const finalProductList = insertMerchandise(renderProductList(products ?? [], setError, currencySymbol, currencyRate, categoryConfig, setRoute, refineProduct, setCartUpdated, setItemAdded, addToCart, disableAllPurchases), merchandisingData, currentPage);
   useEffect(() => {
-
-      // custom event
       const event = new CustomEvent('product-list-rendered');
       window.dispatchEvent(event);
 
