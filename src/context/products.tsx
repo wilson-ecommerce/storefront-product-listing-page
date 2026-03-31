@@ -396,8 +396,6 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
         handleCategoryNames(data?.productSearch?.facets || []);
 
         getPageSizeOptions(data?.productSearch?.total_count);
-
-        console.log(searchCtx.displayFranchises);
         if (searchCtx.displayFranchises) {
           await handleFranchiseSearch(data);
         }
