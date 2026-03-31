@@ -331,11 +331,18 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
     let sortedCategories = categories;
     /* Sort categories based on id from categoriesExtraInfo */
     if (categoriesExtraInfo) {
-      sortedCategories = categories.sort((a, b) => {
-        const idA = categoriesExtraInfo.findIndex(item => item.url === a.path);
-        const idB = categoriesExtraInfo.findIndex(item => item.url === b.path)
-        return idA - idB;
-      });
+      // Build a Map url → index for O(1) lookup instead of O(n) findIndex on every comparison
+      const extraInfoIndexByUrl = new Map(
+        categoriesExtraInfo.map((item, idx) => [item.url, idx])
+      );
+      // item.url is a partial segment (e.g. "tennis-rackets"), path is a full path
+      const getExtraInfoIndex = (categoryPath: string) => {
+        const segment = categoryPath?.split('/')?.pop() ?? categoryPath;
+        return extraInfoIndexByUrl.get(segment) ?? extraInfoIndexByUrl.get(categoryPath) ?? -1;
+      };
+      sortedCategories = categories
+        .filter((c) => getExtraInfoIndex(c.path) !== -1)
+        .sort((a, b) => getExtraInfoIndex(a.path) - getExtraInfoIndex(b.path));
     }
 
     const result = await getFranchiseSearch({
@@ -389,7 +396,6 @@ const ProductsContextProvider = ({ children }: WithChildrenProps) => {
         handleCategoryNames(data?.productSearch?.facets || []);
 
         getPageSizeOptions(data?.productSearch?.total_count);
-
         if (searchCtx.displayFranchises) {
           await handleFranchiseSearch(data);
         }
