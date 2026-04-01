@@ -53,9 +53,11 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
       modalTabTrap(modalElem);
     } else {
       const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
+      const discountCTA = document.querySelector('.evg-popup-CTA-wrapper') as HTMLElement;
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
       breadcrumbs?.classList.remove('no-border');
+      if (discountCTA) discountCTA.style.zIndex = '0';
     }
   }, [isOpen]);
 
