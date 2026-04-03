@@ -85,11 +85,14 @@ const Franchises : FunctionComponent<FranchiseProps> = ({
   );
   const franchisePromoIndexes: number[] = franchiseExtraInfo?.inGridPromoIndexes ?? [];
 
+
   const insertFranchiseMerchandise = (items: JSX.Element[]): JSX.Element[] => {
     const result = [...items];
+    let offset = 0;
     for (const position of franchisePromoIndexes) {
       if (position - 1 <= result.length) {
-        result.splice(position - 1, 0, <div className={`enrichment-container position-${position}`}/>);
+        result.splice(position - 1 + offset, 0, <div className={`enrichment-container position-${position}`}/>);
+        offset++;
       }
     }
     return result;
