@@ -48,12 +48,23 @@ export const Drawer: FunctionComponent<DrawerProps> = ({
       document.body.style.overflow = 'hidden';
 
       // ADA: set focus on first indexed element and trap tab movement insode modal
-      const modalElem = document.querySelector('.mobile-filters-container');
+      const modalElem = document.querySelector('.mobile-filters-container') as HTMLElement;
       (modalElem?.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement)?.focus();
       modalTabTrap(modalElem);
+
+      // If present move promo button below body index for mobile / for desktop in facets
+      const isMobile = window.matchMedia('only screen and (max-width: 768px)').matches;
+      if (isMobile) {
+        const discountCTA = document.querySelector('.evg-popup-CTA-wrapper') as HTMLElement;
+        if (discountCTA) discountCTA.style.zIndex = '-1';
+      }
     } else {
+      const breadcrumbs = document.querySelector('.breadcrumbs') as HTMLElement;
+      const discountCTA = document.querySelector('.evg-popup-CTA-wrapper') as HTMLElement;
       document.body.classList.remove('no-scroll');
       document.body.style.overflow = 'visible';
+      breadcrumbs?.classList.remove('no-border');
+      if (discountCTA) discountCTA.style.zIndex = '0';
     }
   }, [isOpen]);
 
