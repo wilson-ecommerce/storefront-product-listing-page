@@ -86,8 +86,6 @@ const SearchProvider: FunctionComponent = ({ children }) => {
       ? (initialGraphQLSort as ProductSearchSortInput[])
       : SEARCH_SORT_DEFAULT;
 
-  console.log('sortDefault',sortDefault)
-
   const [phrase, setPhrase] = useState<string>(phraseFromUrl);
   const [categoryPath, setCategoryPath] = useState<string>('');
   const [filters, setFilters] = useState<SearchClauseInput[]>([]);
@@ -167,7 +165,7 @@ const SearchProvider: FunctionComponent = ({ children }) => {
   const displayFranchises = storeCtx.config.categoryConfig?.pcm_display_by_franchise === '1'
     && (filters.length === 0)
     && (sort.length === 1)
-    && (sort[0].attribute === 'relevance')
+    && (sort[0].attribute === 'relevance' || sort[0].attribute === 'position')
     && preferFranchiseView;
 
   const toggleFranchiseView = useCallback(async (showFranchise: boolean) => {
