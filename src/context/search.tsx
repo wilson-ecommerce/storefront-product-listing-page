@@ -47,15 +47,6 @@ interface SearchContextProps {
   toggleFranchiseView: (showFranchise: boolean) => void;
 }
 
-const SORT_KEY_TO_VALUE = {
-  featured: 'position_ASC',
-  new: 'pcm_publication_date_DESC',
-  'price-low-to-high': 'price_ASC',
-  'price-high-to-low': 'price_DESC',
-} as const;
-
-type DefaultSortByKey = keyof typeof SORT_KEY_TO_VALUE;
-
 export const SearchContext = createContext({} as SearchContextProps);
 
 const SearchProvider: FunctionComponent = ({ children }) => {
@@ -63,30 +54,12 @@ const SearchProvider: FunctionComponent = ({ children }) => {
 
   const phraseFromUrl = getValueFromUrl(storeCtx.searchQuery || 'q');
 
-  const rawSortFromUrl = getValueFromUrl('product_list_order');
-  const sortFromUrl =
-    rawSortFromUrl && rawSortFromUrl.trim() ? rawSortFromUrl : undefined;
+  const sortFromUrl = getValueFromUrl('product_list_order');
 
-  const mappedDefaultSortOption =
-    storeCtx.defaultSortBy !== ''
-      ? SORT_KEY_TO_VALUE[storeCtx.defaultSortBy as DefaultSortByKey]
-      : undefined;
-
-  const storeDefaultSortOption =
-    mappedDefaultSortOption ??
-    (storeCtx.config?.currentCategoryUrlPath || storeCtx.config?.currentCategoryId
-      ? 'position_ASC'
-      : 'relevance_DESC');
-
-  const initialSortOption = sortFromUrl ?? storeDefaultSortOption;
-
-  const initialGraphQLSort = generateGQLSortInput(initialSortOption);
-  const sortDefault =
-    initialGraphQLSort
-      ? (initialGraphQLSort as ProductSearchSortInput[])
-      : SEARCH_SORT_DEFAULT;
-
-  console.log('sortDefault',sortDefault)
+  const graphQLSort = generateGQLSortInput(sortFromUrl);
+  const sortDefault = graphQLSort
+    ? (graphQLSort as ProductSearchSortInput[])
+    : SEARCH_SORT_DEFAULT; // default to "relevance" sort
 
   const [phrase, setPhrase] = useState<string>(phraseFromUrl);
   const [categoryPath, setCategoryPath] = useState<string>('');
