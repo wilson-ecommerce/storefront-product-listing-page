@@ -102,7 +102,8 @@ const handleUrlPagination = (pageNumber: number) => {
   } else {
     params.set('p', pageNumber.toString());
   }
-  window.history.pushState({}, '', `${url.pathname}?${params}`);
+  const queryString = params.toString();
+  window.history.pushState({}, '', qs ? `${url.pathname}?${qs}` : url.pathname)
 };
 
 const getFiltersFromUrl = (
