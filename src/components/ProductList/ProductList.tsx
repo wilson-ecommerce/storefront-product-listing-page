@@ -14,7 +14,7 @@ import {useEffect, useState} from 'preact/hooks';
 import './product-list.css';
 
 import {Alert} from '../../components/Alert';
-import {useProducts, useSearch, useStore, useSensor} from '../../context';
+import {useProducts, useSearch, useSensor,useStore} from '../../context';
 import {Product} from '../../types/interface';
 import {classNames} from '../../utils/dom';
 import ProductItem, {ProductProps} from '../ProductItem';

@@ -7,15 +7,16 @@ accordance with the terms of the Adobe license agreement accompanying
 it.
 */
 
-import './ImageCarousel.css';
 import { FunctionComponent } from 'preact';
+import { useCallback,useEffect, useRef } from 'preact/compat';
 import { useState } from 'react';
-import { useRef, useEffect, useCallback } from 'preact/compat';
-import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
-import { generateOptimizedImages } from '../../utils/getProductImage';
-import { useSensor } from '../../context';
 
+import './ImageCarousel.css';
+
+import { useSensor } from '../../context';
 import Chevron from '../../icons/chevron-light.svg';
+import { generateOptimizedImages } from '../../utils/getProductImage';
+import { useIntersectionObserver } from '../../utils/useIntersectionObserver';
 
 export interface ImageCarouselProps {
   images: string[] | { src: string; srcset: any }[];
@@ -240,10 +241,10 @@ export const ImageCarousel: FunctionComponent<ImageCarouselProps> = ({
           >
             <div className="overflow-hidden relative w-full h-full">
               <div className={`${backImage || imagesCarousel?.length > 0 ? 'main-image' : ''} relative z-1 transition duration-40 w-full h-full`}>
-                <div className="ds-sdk-product-image absolute h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy" 
+                <div className="ds-sdk-product-image absolute h-full w-full m-auto bg-cover bg-no-repeat bg-position-center lazy"
                   style={{
                     '--image-url': `url('${frontImage}')`,
-                  }} 
+                  }}
                   ref={imageRef} />
               </div>
               <div

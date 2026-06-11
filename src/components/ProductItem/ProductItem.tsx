@@ -31,11 +31,11 @@ import {
 import { htmlStringDecode } from '../../utils/htmlStringDecode';
 import { getColorSwatchesFromAttribute, getDefaultColorSwatchId, isSportsWear } from '../../utils/productUtils';
 import { AddToCartButton } from '../AddToCartButton';
+import { ImageCarousel } from '../ImageCarousel';
 import ImageHover from '../ImageHover';
 import ProductLabel from '../ProductLabel/ProductLabel';
 import { Swatch, SwatchButtonGroup } from '../SwatchButtonGroup';
 import ProductPrice from './ProductPrice';
-import { ImageCarousel } from '../ImageCarousel';
 
 export interface ProductProps {
   item: Product;
